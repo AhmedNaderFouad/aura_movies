@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "829871499051",
+    "project_id": "auramovies-ef737",
+    "storage_bucket": "auramovies-ef737.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829871499051:android:e8ac26c2aaa3285bee876e",
+        "android_client_info": {
+          "package_name": "com.example.aura_movies"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "829871499051-vkod287nmr5ve1osnverjskk6mjjstk3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aura_movies",
+            "certificate_hash": "a042f783a11486b0b01875a3973680a28784b87f"
+          }
+        },
+        {
+          "client_id": "829871499051-ol13drbqn581s844hlm2e61f47qpf82b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC99QufvCZHsgl4X6iREygsL6_0wk27mw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "829871499051-ol13drbqn581s844hlm2e61f47qpf82b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "829871499051-gvupl3cea4oc6gk9b3apu2i299umlkdg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.auraMovies"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
