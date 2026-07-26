@@ -18,11 +18,13 @@ class BrowseScreen extends StatefulWidget {
 
 class _BrowseScreenState extends State<BrowseScreen> {
   late TextEditingController _searchController;
+  late FocusNode _searchFocusNode;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _searchFocusNode = FocusNode();
     // Clear previous search results when entering browse screen
     Future.delayed(Duration.zero, () {
       if (mounted) {
@@ -34,53 +36,69 @@ class _BrowseScreenState extends State<BrowseScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  void _unfocus() {
+    _searchFocusNode.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          // Search Bar
-          _buildSearchBar(),
-          // Search Results
-          Expanded(
-            child: BlocBuilder<SearchCubit, SearchState>(
-              builder: (context, state) {
-                if (state is SearchInitial) {
-                  return _buildInitialState();
-                } else if (state is SearchLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  );
-                } else if (state is SearchSuccess) {
-                  return _buildSearchResults(state.results);
-                } else if (state is SearchEmpty) {
-                  return _buildEmptyState();
-                } else if (state is SearchError) {
-                  return Center(
-                    child: Text(
-                      'Error: ${state.message}',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  );
-                } else if (state is SearchNoInternet) {
-                  return Center(
-                    child: NoInternetWidget(
-                      onRetry: () => context
-                          .read<SearchCubit>()
-                          .searchMovies(_searchController.text),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          _unfocus();
+        }
+      },
+      child: GestureDetector(
+        onTap: _unfocus,
+        child: Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: _buildAppBar(),
+          body: Column(
+            children: [
+              // Search Bar
+              _buildSearchBar(),
+              // Search Results
+              Expanded(
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) {
+                    if (state is SearchInitial) {
+                      return _buildInitialState();
+                    } else if (state is SearchLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: AppColors.primary),
+                      );
+                    } else if (state is SearchSuccess) {
+                      return _buildSearchResults(state.results);
+                    } else if (state is SearchEmpty) {
+                      return _buildEmptyState();
+                    } else if (state is SearchError) {
+                      return Center(
+                        child: Text(
+                          'Error: ${state.message}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    } else if (state is SearchNoInternet) {
+                      return Center(
+                        child: NoInternetWidget(
+                          onRetry: () => context
+                              .read<SearchCubit>()
+                              .searchMovies(_searchController.text),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -119,6 +137,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             ),
             child: TextField(
               controller: _searchController,
+              focusNode: _searchFocusNode,
               style: TextStyle(color: Colors.white, fontSize: 16.sp),
               onChanged: (query) {
                 context.read<SearchCubit>().searchMovies(query);

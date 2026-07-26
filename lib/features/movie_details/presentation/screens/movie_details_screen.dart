@@ -20,8 +20,8 @@ import '../widgets/movie_details_header_widget.dart';
 import '../widgets/movie_info_section_widget.dart';
 import '../widgets/shimmer_loading_widget.dart';
 import '../widgets/synopsis_section_widget.dart';
-import '../../../../core/widgets/movie_player_screen_widget.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
+import '../../../../core/utils/watch_now_handler.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   final int movieId;
@@ -128,15 +128,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         isInWatchlist: isInWatchlist,
                         isComingSoon: isComingSoon,
                         onWatchNowPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MoviePlayerScreen(
-                                id: movieDetails.id.toString(),
-                                title: movieDetails.title,
-                                isTvShow: false,
-                              ),
-                            ),
+                          WatchNowHandler.handleWatchNow(
+                            context: context,
+                            tmdbId: movieDetails.id.toString(),
+                            imdbId: movieDetails.imdbId,
+                            title: movieDetails.title,
+                            isTvShow: false,
                           );
                         },
                         onAddToWatchlistPressed: () {

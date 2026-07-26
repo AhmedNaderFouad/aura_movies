@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_back_button.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
-import '../../../../core/widgets/movie_player_screen_widget.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
+import '../../../../core/utils/watch_now_handler.dart';
 import '../cubit/tv_show_details_cubit.dart';
 import '../cubit/tv_show_details_state.dart';
 import '../../domain/entities/tv_show_details.dart';
@@ -380,17 +380,13 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 SizedBox(height: 8.h),
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MoviePlayerScreen(
-                          id: widget.tvShowId.toString(),
-                          title: episode.name,
-                          isTvShow: true,
-                          seasonNumber: seasonNumber,
-                          episodeNumber: episode.episodeNumber,
-                        ),
-                      ),
+                    WatchNowHandler.handleWatchNow(
+                      context: context,
+                      tmdbId: widget.tvShowId.toString(),
+                      title: episode.name,
+                      isTvShow: true,
+                      season: seasonNumber,
+                      episode: episode.episodeNumber,
                     );
                   },
                   icon: const Icon(Icons.play_arrow, size: 16),

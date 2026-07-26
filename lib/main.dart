@@ -28,13 +28,15 @@ import 'package:aura_movies/features/movie_details/presentation/cubit/movie_deta
 import 'package:aura_movies/features/tv_show_details/data/repositories/tv_show_details_repository_impl.dart';
 import 'package:aura_movies/features/tv_show_details/presentation/cubit/tv_show_details_cubit.dart';
 import 'package:aura_movies/features/watchlist/presentation/cubit/watchlist_cubit.dart';
-import 'package:aura_movies/core/utils/app_cache_manager.dart';
 import 'package:dio/dio.dart';
+import 'package:media_kit/media_kit.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

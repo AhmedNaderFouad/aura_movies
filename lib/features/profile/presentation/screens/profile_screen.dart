@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
@@ -101,11 +102,16 @@ class ProfileScreen extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 60.r,
                     backgroundColor: AppColors.surface,
-                    child: Icon(
-                      Icons.person_rounded,
-                      size: 70.r,
-                      color: AppColors.primary,
-                    ),
+                    backgroundImage: user?.photoURL != null
+                        ? CachedNetworkImageProvider(user!.photoURL!)
+                        : null,
+                    child: user?.photoURL == null
+                        ? Icon(
+                            Icons.person_rounded,
+                            size: 70.r,
+                            color: AppColors.primary,
+                          )
+                        : null,
                   ),
                 ),
               ),

@@ -2,7 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/movie_player_screen_widget.dart';
+import '../../../../core/utils/watch_now_handler.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
 import '../../../../core/routing/routes.dart';
 import '../../domain/entities/movie.dart';
@@ -250,17 +250,13 @@ class _HomeCarouselSliderState extends State<HomeCarouselSlider> {
       child: IconButton(
         icon: Icon(Icons.play_arrow_rounded, color: Colors.black, size: 36.r),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MoviePlayerScreen(
-                id: item.id.toString(),
-                title: isMovie ? item.title : item.name,
-                isTvShow: !isMovie,
-                seasonNumber: isMovie ? null : 1,
-                episodeNumber: isMovie ? null : 1,
-              ),
-            ),
+          WatchNowHandler.handleWatchNow(
+            context: context,
+            tmdbId: item.id.toString(),
+            title: isMovie ? item.title : item.name,
+            isTvShow: !isMovie,
+            season: isMovie ? null : 1,
+            episode: isMovie ? null : 1,
           );
         },
       ),
