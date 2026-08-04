@@ -50,9 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   currentIndex: _currentNavIndex,
                   onTap: (index) {
                     setState(() => _currentNavIndex = index);
-                    // Navigate to browse screen when Browse button is tapped
+                    // Navigate to search screen when Search button is tapped
                     if (index == 1) {
-                      Navigator.pushNamed(context, Routes.browse);
+                      Navigator.pushNamed(context, Routes.search);
                       // Reset to home index after navigation
                       setState(() => _currentNavIndex = 0);
                     } else if (index == 2) {

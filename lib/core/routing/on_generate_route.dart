@@ -8,7 +8,7 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/movie_details/presentation/screens/movie_details_screen.dart';
 import '../../features/tv_show_details/presentation/screens/tv_show_details_screen.dart';
-import '../../features/browse/presentation/screens/browse_screen.dart';
+import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/watchlist/presentation/screens/watchlist_screen.dart';
 import '../../features/home/presentation/screens/view_all_media_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -34,8 +34,8 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       );
     case Routes.home:
       return MaterialPageRoute(builder: (_) => const HomeScreen());
-    case Routes.browse:
-      return MaterialPageRoute(builder: (_) => const BrowseScreen());
+    case Routes.search:
+      return MaterialPageRoute(builder: (_) => const SearchScreen());
     case Routes.watchlist:
       return MaterialPageRoute(builder: (_) => const WatchlistScreen());
     case Routes.profile:

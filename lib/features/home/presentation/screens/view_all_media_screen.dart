@@ -120,7 +120,7 @@ class ViewAllMediaScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 12.h),
                   InkWell(
-                    onTap: () => Navigator.pushNamed(context, Routes.browse),
+                    onTap: () => Navigator.pushNamed(context, Routes.search),
                     borderRadius: BorderRadius.circular(12.r),
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
@@ -130,7 +130,7 @@ class ViewAllMediaScreen extends StatelessWidget {
                         border: Border.all(color: AppColors.primary, width: 1.5),
                       ),
                       child: Text(
-                        'Explore More Content',
+                        'Search More Content',
                         style: TextStyle(
                           color: AppColors.primary,
                           fontSize: 14.sp,

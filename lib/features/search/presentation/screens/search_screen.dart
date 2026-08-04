@@ -9,14 +9,14 @@ import '../../../../core/widgets/no_internet_widget.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
 import '../cubit/search_cubit.dart';
 
-class BrowseScreen extends StatefulWidget {
-  const BrowseScreen({super.key});
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
   @override
-  State<BrowseScreen> createState() => _BrowseScreenState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _BrowseScreenState extends State<BrowseScreen> {
+class _SearchScreenState extends State<SearchScreen> {
   late TextEditingController _searchController;
   late FocusNode _searchFocusNode;
 
@@ -25,7 +25,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
     super.initState();
     _searchController = TextEditingController();
     _searchFocusNode = FocusNode();
-    // Clear previous search results when entering browse screen
+    // Clear previous search results when entering search screen
     Future.delayed(Duration.zero, () {
       if (mounted) {
         context.read<SearchCubit>().clearSearch();
@@ -108,7 +108,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
       backgroundColor: AppColors.background,
       elevation: 0,
       title: Text(
-        'Browse',
+        'Search',
         style: TextStyle(
           fontSize: 28.sp,
           fontWeight: FontWeight.bold,
@@ -187,13 +187,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.explore_rounded,
+            Icons.search_rounded,
             size: 80.r,
             color: AppColors.primary.withOpacity(0.3),
           ),
           SizedBox(height: 16.h),
           Text(
-            'Start Exploring',
+            'Start Searching',
             style: TextStyle(
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,

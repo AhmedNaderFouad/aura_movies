@@ -25,7 +25,7 @@ class CustomBottomNavBar extends StatelessWidget {
     required this.onTap,
     this.items = const [
       BottomNavItem(icon: Icons.home_filled, label: 'HOME', index: 0),
-      BottomNavItem(icon: Icons.explore_rounded, label: 'BROWSE', index: 1),
+      BottomNavItem(icon: Icons.search_rounded, label: 'SEARCH', index: 1),
       BottomNavItem(icon: Icons.bookmark_rounded, label: 'WATCHLIST', index: 2),
       BottomNavItem(icon: Icons.person_rounded, label: 'PROFILE', index: 3),
     ],

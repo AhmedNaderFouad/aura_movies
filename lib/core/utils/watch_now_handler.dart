@@ -4,6 +4,7 @@ import '../services/video_extractor_service.dart';
 import '../services/subtitle_service.dart';
 import '../models/video_source_model.dart';
 import '../widgets/native_video_player.dart';
+import '../widgets/custom_snackbar.dart';
 import '../theme/app_colors.dart';
 
 class WatchNowHandler {
@@ -15,9 +16,12 @@ class WatchNowHandler {
     required String tmdbId,
     String? imdbId,
     required String title,
+    String? posterPath,
     bool isTvShow = false,
     int? season,
     int? episode,
+    Duration? startPosition,
+    String? initialSubtitle,
   }) async {
     // 1. Show loading dialog
     showDialog(
@@ -42,7 +46,7 @@ class WatchNowHandler {
     try {
       // 2. Call backend APIs in parallel
       final results = await Future.wait([
-        _extractorService.extractSources(
+        _extractorService.extractVidsrcSource(
           type: isTvShow ? 'tv' : 'movie',
           tmdbId: tmdbId,
           season: season,
@@ -57,71 +61,38 @@ class WatchNowHandler {
         ),
       ]);
 
-      final sources = results[0] as List<VideoSource>;
-      final externalSubtitles = results[1] as List<SubtitleModel>;
-
-      debugPrint('Extracted Sources: ${sources.length}');
-      debugPrint('Fetched External Subtitles: ${externalSubtitles.length}');
-
-      // Combine external subtitles with each VideoSource
-      final List<VideoSource> combinedSources = sources.map((source) {
-        final List<SubtitleModel> allSubtitles = [
-          ...source.subtitles,
-          ...externalSubtitles,
-        ];
-        
-        // Remove duplicate subtitles by URL if any
-        final uniqueSubtitles = <String, SubtitleModel>{};
-        for (var sub in allSubtitles) {
-          if (sub.url != null) {
-            uniqueSubtitles[sub.url!] = sub;
-          }
-        }
-
-        final combined = source.copyWith(subtitles: uniqueSubtitles.values.toList());
-        debugPrint('Source ${source.name} now has ${combined.subtitles.length} subtitles');
-        return combined;
-      }).toList();
+      final VideoSource? source = results[0] as VideoSource?;
+      final List<SubtitleModel> wyzieSubs = results[1] as List<SubtitleModel>;
 
       // Dismiss loading dialog
       if (context.mounted) Navigator.pop(context);
 
-      if (combinedSources.isEmpty) {
-        _showError(context);
+      if (source == null || source.hlsUrl == null || source.hlsUrl!.isEmpty) {
+        if (context.mounted) _showError(context, isTvShow);
         return;
       }
 
-      // 3. Selection Hierarchy & Sorting
-      final List<VideoSource> sortedSources = List<VideoSource>.from(combinedSources);
-      sortedSources.sort((a, b) {
-        final aHasHls = a.hlsUrl != null && a.hlsUrl!.isNotEmpty;
-        final bHasHls = b.hlsUrl != null && b.hlsUrl!.isNotEmpty;
-        final aHasSubs = a.subtitles.isNotEmpty;
-        final bHasSubs = b.subtitles.isNotEmpty;
+      final finalSource = source.copyWith(subtitles: wyzieSubs);
 
-        if (aHasHls && aHasSubs && !(bHasHls && bHasSubs)) return -1;
-        if (!(aHasHls && aHasSubs) && bHasHls && bHasSubs) return 1;
-        if (aHasHls && !bHasHls) return -1;
-        if (!aHasHls && bHasHls) return 1;
-        return 0;
-      });
+      debugPrint(
+        'Final Source ${finalSource.name} has ${finalSource.subtitles.length} external subtitles from Wyzie',
+      );
 
-      // Check if we have at least one valid source
-      if (sortedSources.isEmpty || 
-          sortedSources.first.hlsUrl == null || 
-          sortedSources.first.hlsUrl!.isEmpty) {
-        _showError(context);
-        return;
-      }
-
-      // 4. Navigate to Native Video Player with all sources for fallback
+      // 3. Navigate to Native Video Player
       if (context.mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => NativeVideoPlayer(
-              sources: sortedSources,
+              source: finalSource,
               title: title,
+              mediaId: int.tryParse(tmdbId) ?? 0,
+              mediaType: isTvShow ? 'tv' : 'movie',
+              posterPath: posterPath,
+              seasonNumber: season,
+              episodeNumber: episode,
+              startPosition: startPosition,
+              initialSubtitle: initialSubtitle,
             ),
           ),
         );
@@ -131,18 +102,19 @@ class WatchNowHandler {
       debugPrint(stack.toString());
       if (context.mounted) {
         Navigator.pop(context);
-        _showError(context);
+        _showError(context, isTvShow);
       }
     }
   }
 
-  static void _showError(BuildContext context) {
+  static void _showError(BuildContext context, bool isTvShow) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Film not available now"),
-          backgroundColor: Colors.red,
-        ),
+      CustomSnackBar.show(
+        context,
+        message: isTvShow
+            ? 'TV Show not available now'
+            : 'Film not available now',
+        isError: true,
       );
     }
   }

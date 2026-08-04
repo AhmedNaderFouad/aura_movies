@@ -16,10 +16,10 @@ import 'package:aura_movies/features/home/domain/usecases/get_upcoming_movies_us
 import 'package:aura_movies/features/home/domain/usecases/get_upcoming_tv_shows_usecase.dart';
 import 'package:aura_movies/features/home/domain/usecases/get_popular_tv_shows_usecase.dart';
 import 'package:aura_movies/features/home/presentation/cubit/home_cubit.dart';
-import 'package:aura_movies/features/browse/data/services/search_api_service.dart';
-import 'package:aura_movies/features/browse/data/repositories/search_repository_impl.dart';
-import 'package:aura_movies/features/browse/domain/usecases/search_movies_usecase.dart';
-import 'package:aura_movies/features/browse/presentation/cubit/search_cubit.dart';
+import 'package:aura_movies/features/search/data/services/search_api_service.dart';
+import 'package:aura_movies/features/search/data/repositories/search_repository_impl.dart';
+import 'package:aura_movies/features/search/domain/usecases/search_movies_usecase.dart';
+import 'package:aura_movies/features/search/presentation/cubit/search_cubit.dart';
 import 'package:aura_movies/features/movie_details/data/services/movie_details_api_service.dart';
 import 'package:aura_movies/features/movie_details/data/repositories/movie_details_repository_impl.dart';
 import 'package:aura_movies/features/movie_details/domain/usecases/get_movie_details_usecase.dart';
@@ -29,18 +29,12 @@ import 'package:aura_movies/features/tv_show_details/data/repositories/tv_show_d
 import 'package:aura_movies/features/tv_show_details/presentation/cubit/tv_show_details_cubit.dart';
 import 'package:aura_movies/features/watchlist/presentation/cubit/watchlist_cubit.dart';
 import 'package:dio/dio.dart';
-import 'package:media_kit/media_kit.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
   // Initialize Auth Service
   await AuthService.initialize();
   // Initialize Watchlist Service
@@ -64,16 +58,30 @@ class AuraMoviesApp extends StatelessWidget {
       builder: (context, child) {
         // Initialize repositories and use cases for home
         final movieApiService = MovieApiService();
-        final movieRepository = MovieRepositoryImpl(apiService: movieApiService);
-        final getPopularMoviesUseCase = GetPopularMoviesUseCase(movieRepository);
-        final getTopRatedMoviesUseCase = GetTopRatedMoviesUseCase(movieRepository);
-        final getUpcomingMoviesUseCase = GetUpcomingMoviesUseCase(movieRepository);
-        final getPopularTvShowsUseCase = GetPopularTvShowsUseCase(movieRepository);
-        final getUpcomingTvShowsUseCase = GetUpcomingTvShowsUseCase(movieRepository);
+        final movieRepository = MovieRepositoryImpl(
+          apiService: movieApiService,
+        );
+        final getPopularMoviesUseCase = GetPopularMoviesUseCase(
+          movieRepository,
+        );
+        final getTopRatedMoviesUseCase = GetTopRatedMoviesUseCase(
+          movieRepository,
+        );
+        final getUpcomingMoviesUseCase = GetUpcomingMoviesUseCase(
+          movieRepository,
+        );
+        final getPopularTvShowsUseCase = GetPopularTvShowsUseCase(
+          movieRepository,
+        );
+        final getUpcomingTvShowsUseCase = GetUpcomingTvShowsUseCase(
+          movieRepository,
+        );
 
-        // Initialize repositories and use cases for browse/search
+        // Initialize repositories and use cases for search
         final searchApiService = SearchApiService();
-        final searchRepository = SearchRepositoryImpl(apiService: searchApiService);
+        final searchRepository = SearchRepositoryImpl(
+          apiService: searchApiService,
+        );
         final searchMoviesUseCase = SearchMoviesUseCase(searchRepository);
 
         // Initialize repositories and use cases for movie details
@@ -81,7 +89,8 @@ class AuraMoviesApp extends StatelessWidget {
           BaseOptions(
             baseUrl: 'https://api.themoviedb.org/3',
             headers: {
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMTk0ZGQzZGI3YjJmYmRjODdjZmMyMGNiZGEzYjBkMiIsIm5iZiI6MTc3Nzk5Mjg1NC42Niwic3ViIjoiNjlmYTA0OTYwM2MyZTMwNjA1ZGFhZGQ0Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.96PELO8smmCnMik2dZjn2DRaM2Z6Edw4LkcO9Ut4soM',
+              'Authorization':
+                  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMTk0ZGQzZGI3YjJmYmRjODdjZmMyMGNiZGEzYjBkMiIsIm5iZiI6MTc3Nzk5Mjg1NC42Niwic3ViIjoiNjlmYTA0OTYwM2MyZTMwNjA1ZGFhZGQ0Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.96PELO8smmCnMik2dZjn2DRaM2Z6Edw4LkcO9Ut4soM',
               'Content-Type': 'application/json',
             },
             receiveTimeout: const Duration(seconds: 30),
@@ -90,12 +99,20 @@ class AuraMoviesApp extends StatelessWidget {
           ),
         );
         final movieDetailsApiService = MovieDetailsApiService(dioClient);
-        final movieDetailsRepository = MovieDetailsRepositoryImpl(apiService: movieDetailsApiService);
-        final getMovieDetailsUseCase = GetMovieDetailsUseCase(movieDetailsRepository);
-        final getMovieCreditsUseCase = GetMovieCreditsUseCase(movieDetailsRepository);
+        final movieDetailsRepository = MovieDetailsRepositoryImpl(
+          apiService: movieDetailsApiService,
+        );
+        final getMovieDetailsUseCase = GetMovieDetailsUseCase(
+          movieDetailsRepository,
+        );
+        final getMovieCreditsUseCase = GetMovieCreditsUseCase(
+          movieDetailsRepository,
+        );
 
         // Initialize TV Show Details
-        final tvShowDetailsRepository = TVShowDetailsRepositoryImpl(apiService: movieApiService);
+        final tvShowDetailsRepository = TVShowDetailsRepositoryImpl(
+          apiService: movieApiService,
+        );
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -122,9 +139,8 @@ class AuraMoviesApp extends StatelessWidget {
                   ),
                 ),
                 BlocProvider(
-                  create: (context) => SearchCubit(
-                    searchMoviesUseCase: searchMoviesUseCase,
-                  ),
+                  create: (context) =>
+                      SearchCubit(searchMoviesUseCase: searchMoviesUseCase),
                 ),
                 BlocProvider(
                   create: (context) => MovieDetailsCubit(
@@ -133,14 +149,15 @@ class AuraMoviesApp extends StatelessWidget {
                   ),
                 ),
                 BlocProvider(
-                  create: (context) => TVShowDetailsCubit(
-                    repository: tvShowDetailsRepository,
-                  ),
+                  create: (context) =>
+                      TVShowDetailsCubit(repository: tvShowDetailsRepository),
                 ),
                 BlocProvider(
                   create: (context) => WatchlistCubit(
-                    addToWatchlistUseCase: WatchlistService.addToWatchlistUseCase,
-                    removeFromWatchlistUseCase: WatchlistService.removeFromWatchlistUseCase,
+                    addToWatchlistUseCase:
+                        WatchlistService.addToWatchlistUseCase,
+                    removeFromWatchlistUseCase:
+                        WatchlistService.removeFromWatchlistUseCase,
                     getWatchlistUseCase: WatchlistService.getWatchlistUseCase,
                     isInWatchlistUseCase: WatchlistService.isInWatchlistUseCase,
                   ),
