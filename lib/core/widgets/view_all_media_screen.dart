@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/routing/routes.dart';
-import '../../domain/entities/movie.dart';
-import '../../domain/entities/tv_show.dart';
-import '../widgets/trending_movie_card.dart';
-import '../widgets/trending_tv_show_card.dart';
+import '../theme/app_colors.dart';
+import '../routing/routes.dart';
+import '../../features/home/domain/entities/movie.dart';
+import '../../features/home/domain/entities/tv_show.dart';
+import '../../features/home/presentation/widgets/trending_movie_card.dart';
+import '../../features/home/presentation/widgets/trending_tv_show_card.dart';
 
 class ViewAllMediaScreen extends StatelessWidget {
   final String sectionTitle;
@@ -51,6 +51,8 @@ class ViewAllMediaScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
           sectionTitle,

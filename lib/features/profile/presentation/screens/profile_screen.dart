@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
@@ -80,6 +81,8 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         leading: const AppBackButton(),
         title: const CustomAppBar(),
@@ -159,17 +162,97 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
+              SizedBox(height: 32.h),
+
+              // 4. Divider
+              const Divider(
+                color: Colors.white10,
+                thickness: 1,
+                indent: 20,
+                endIndent: 20,
+              ),
+
+              SizedBox(height: 32.h),
+
+              // 5. Developer Info Section
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(24.r),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(24.r),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'App Version',
+                          style: TextStyle(
+                            color: Colors.white38,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 6.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Text(
+                            'v1.0.0',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 24.h),
+                    _buildInfoRow(
+                      Icons.code_rounded,
+                      'Dev. : ',
+                      'Ahmed Nader Fouad El-Sefy',
+                      Colors.white,
+                    ),
+                    SizedBox(height: 16.h),
+                    _buildInfoRow(
+                      Icons.mail_outline_rounded,
+                      'E-mail : ',
+                      'an8038723@gmail.com',
+                      Colors.blue,
+                      onTap: () async {
+                        final Uri emailLaunchUri = Uri(
+                          scheme: 'mailto',
+                          path: 'an8038723@gmail.com',
+                        );
+                        if (await canLaunchUrl(emailLaunchUri)) {
+                          await launchUrl(emailLaunchUri);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
               const Spacer(),
-              // 4. Footer (Copyright Text)
+              // 6. Footer (Copyright Text)
               Padding(
                 padding: EdgeInsets.only(bottom: 25.h),
                 child: Text(
                   '© 2026 Ahmed Nader Elsefy. All rights of printing, publishing, and modification are reserved.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppColors.textSecondary.withOpacity(0.7),
+                    color: Colors.white24,
                     fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -179,4 +262,46 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildInfoRow(
+    IconData icon,
+    String label,
+    String value,
+    Color valueColor, {
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8.r),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 22.r),
+          SizedBox(width: 16.w),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: label,
+                  style: TextStyle(
+                    color: Colors.white38,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                TextSpan(
+                  text: value,
+                  style: TextStyle(
+                    color: valueColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+

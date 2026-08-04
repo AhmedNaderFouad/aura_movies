@@ -10,7 +10,7 @@ import '../../features/movie_details/presentation/screens/movie_details_screen.d
 import '../../features/tv_show_details/presentation/screens/tv_show_details_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/watchlist/presentation/screens/watchlist_screen.dart';
-import '../../features/home/presentation/screens/view_all_media_screen.dart';
+import '../widgets/view_all_media_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import 'routes.dart';
 

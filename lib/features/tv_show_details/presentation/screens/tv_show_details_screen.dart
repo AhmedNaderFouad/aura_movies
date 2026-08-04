@@ -64,6 +64,8 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         leading: const AppBackButton(),
         title: const CustomAppBar(),

@@ -106,6 +106,8 @@ class _SearchScreenState extends State<SearchScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: AppColors.background,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
       elevation: 0,
       title: Text(
         'Search',
