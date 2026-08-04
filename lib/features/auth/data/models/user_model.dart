@@ -9,13 +9,13 @@ class UserModel extends UserEntity {
     required bool emailVerified,
     required DateTime createdAt,
   }) : super(
-    uid: uid,
-    email: email,
-    displayName: displayName,
-    photoUrl: photoUrl,
-    emailVerified: emailVerified,
-    createdAt: createdAt,
-  );
+         uid: uid,
+         email: email,
+         displayName: displayName,
+         photoUrl: photoUrl,
+         emailVerified: emailVerified,
+         createdAt: createdAt,
+       );
 
   /// Create UserModel from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -72,4 +72,3 @@ class UserModel extends UserEntity {
     );
   }
 }
-

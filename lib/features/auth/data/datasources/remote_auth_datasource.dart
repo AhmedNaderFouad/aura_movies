@@ -104,7 +104,9 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
       );
 
       // Sign in to Firebase with the Google credential
-      final userCredential = await _firebaseAuth.signInWithCredential(credential);
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
+      );
 
       return UserModel.fromFirebaseUser(userCredential.user!);
     } on FirebaseAuthException catch (e) {
@@ -127,12 +129,15 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
         accessToken: credential.authorizationCode,
       );
 
-      final userCredential = await _firebaseAuth.signInWithCredential(oauthCredential);
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        oauthCredential,
+      );
 
       // Update display name if provided
       if (credential.givenName != null || credential.familyName != null) {
         final fullName =
-            '${credential.givenName ?? ''} ${credential.familyName ?? ''}'.trim();
+            '${credential.givenName ?? ''} ${credential.familyName ?? ''}'
+                .trim();
         if (fullName.isNotEmpty) {
           await userCredential.user?.updateDisplayName(fullName);
           await userCredential.user?.reload();
@@ -232,4 +237,3 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
     }
   }
 }
-

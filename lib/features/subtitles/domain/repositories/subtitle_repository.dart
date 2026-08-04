@@ -1,4 +1,4 @@
-import '../../../../core/models/video_source_model.dart';
+import '../../data/models/subtitle_model.dart';
 
 abstract class SubtitleRepository {
   Future<List<SubtitleModel>> getWyzieSubtitles({

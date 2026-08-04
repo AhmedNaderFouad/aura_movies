@@ -66,6 +66,3 @@ class _ShimmerLoadingWidgetState extends State<ShimmerLoadingWidget>
     );
   }
 }
-
-
-

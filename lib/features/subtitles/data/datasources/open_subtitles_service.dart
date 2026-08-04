@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../models/video_source_model.dart';
+import '../models/subtitle_model.dart';
 
 class OpenSubtitlesService {
   final Dio _dio = Dio();

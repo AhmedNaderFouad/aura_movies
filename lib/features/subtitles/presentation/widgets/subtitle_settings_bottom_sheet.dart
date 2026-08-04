@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/subtitle_style_options.dart';
+import '../../domain/entities/subtitle_style_options.dart';
 
 class SubtitleSettingsBottomSheet extends StatefulWidget {
   final SubtitleStyleOptions initialOptions;

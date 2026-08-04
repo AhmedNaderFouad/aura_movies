@@ -15,8 +15,14 @@ class TVShowDetailsRepositoryImpl implements TVShowDetailsRepository {
   }
 
   @override
-  Future<List<Episode>> getSeasonEpisodes(int tvShowId, int seasonNumber) async {
-    final data = await apiService.getTvShowSeasonDetails(tvShowId, seasonNumber);
+  Future<List<Episode>> getSeasonEpisodes(
+    int tvShowId,
+    int seasonNumber,
+  ) async {
+    final data = await apiService.getTvShowSeasonDetails(
+      tvShowId,
+      seasonNumber,
+    );
     final episodesJson = data['episodes'] as List? ?? [];
     return episodesJson.map((e) => EpisodeModel.fromJson(e)).toList();
   }

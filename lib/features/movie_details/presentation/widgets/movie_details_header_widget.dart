@@ -7,10 +7,7 @@ import '../../domain/entities/movie_details.dart';
 class MovieDetailsHeaderWidget extends StatelessWidget {
   final MovieDetails movieDetails;
 
-  const MovieDetailsHeaderWidget({
-    super.key,
-    required this.movieDetails,
-  });
+  const MovieDetailsHeaderWidget({super.key, required this.movieDetails});
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +24,20 @@ class MovieDetailsHeaderWidget extends StatelessWidget {
                   errorWidget: Container(
                     color: AppColors.surface,
                     child: const Center(
-                      child: Icon(Icons.image_not_supported,
-                          color: AppColors.textSecondary),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ),
                 )
               : Container(
                   color: AppColors.surface,
                   child: const Center(
-                    child: Icon(Icons.image_not_supported, color: AppColors.textSecondary),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
         ),

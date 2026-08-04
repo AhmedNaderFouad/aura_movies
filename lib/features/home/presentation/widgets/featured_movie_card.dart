@@ -69,7 +69,10 @@ class FeaturedMovieCard extends StatelessWidget {
                   child: InkWell(
                     onTap: onWatchlistPressed,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 12.h,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(40.r),
@@ -108,8 +111,3 @@ class FeaturedMovieCard extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

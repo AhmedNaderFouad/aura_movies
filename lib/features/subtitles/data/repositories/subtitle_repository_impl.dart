@@ -1,7 +1,7 @@
 import '../../domain/repositories/subtitle_repository.dart';
-import '../../../../core/models/video_source_model.dart';
-import '../../../../core/services/subtitle_service.dart';
-import '../../../../core/services/open_subtitles_service.dart';
+import '../models/subtitle_model.dart';
+import '../datasources/wyzie_subtitle_service.dart';
+import '../datasources/open_subtitles_service.dart';
 
 class SubtitleRepositoryImpl implements SubtitleRepository {
   final SubtitleService _wyzieService;

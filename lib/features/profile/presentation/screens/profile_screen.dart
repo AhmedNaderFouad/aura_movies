@@ -250,10 +250,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Text(
                   '© 2026 Ahmed Nader Elsefy. All rights of printing, publishing, and modification are reserved.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white24,
-                    fontSize: 12.sp,
-                  ),
+                  style: TextStyle(color: Colors.white24, fontSize: 12.sp),
                 ),
               ),
             ],
@@ -304,4 +301,3 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
-

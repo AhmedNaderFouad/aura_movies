@@ -6,10 +6,7 @@ import '../../domain/entities/movie_details.dart';
 class MovieInfoSectionWidget extends StatelessWidget {
   final MovieDetails movieDetails;
 
-  const MovieInfoSectionWidget({
-    super.key,
-    required this.movieDetails,
-  });
+  const MovieInfoSectionWidget({super.key, required this.movieDetails});
 
   String _formatDate(String? releaseDate) {
     if (releaseDate == null || releaseDate.isEmpty) return 'N/A';
@@ -22,7 +19,21 @@ class MovieInfoSectionWidget extends StatelessWidget {
   }
 
   String _getMonthName(int month) {
-    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return months[month];
   }
 
@@ -57,11 +68,7 @@ class MovieInfoSectionWidget extends StatelessWidget {
               // Rating Badge
               Row(
                 children: [
-                  Icon(
-                    Icons.star,
-                    size: 14.sp,
-                    color: AppColors.primary,
-                  ),
+                  Icon(Icons.star, size: 14.sp, color: AppColors.primary),
                   SizedBox(width: 4.w),
                   Text(
                     movieDetails.voteAverage.toStringAsFixed(1),

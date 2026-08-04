@@ -10,7 +10,8 @@ class WatchHistoryService {
   factory WatchHistoryService() => _instance;
   WatchHistoryService._internal();
 
-  final _historyController = StreamController<List<WatchMediaModel>>.broadcast();
+  final _historyController =
+      StreamController<List<WatchMediaModel>>.broadcast();
   Stream<List<WatchMediaModel>> get historyStream => _historyController.stream;
 
   Database? _db;
@@ -61,7 +62,10 @@ class WatchHistoryService {
     _historyController.add(list);
   }
 
-  Future<List<WatchMediaModel>> getWatchHistory({int limit = 100, int offset = 0}) async {
+  Future<List<WatchMediaModel>> getWatchHistory({
+    int limit = 100,
+    int offset = 0,
+  }) async {
     final db = await _database;
     final rows = await db.query(
       'watch_history',
@@ -70,15 +74,18 @@ class WatchHistoryService {
       offset: offset,
     );
 
-    final list = rows.map((r) {
-      try {
-        final Map<String, dynamic> json = jsonDecode(r['data'] as String);
-        return WatchMediaModel.fromJson(json);
-      } catch (e) {
-        debugPrint('Failed parsing watch history row: $e');
-        return null;
-      }
-    }).whereType<WatchMediaModel>().toList();
+    final list = rows
+        .map((r) {
+          try {
+            final Map<String, dynamic> json = jsonDecode(r['data'] as String);
+            return WatchMediaModel.fromJson(json);
+          } catch (e) {
+            debugPrint('Failed parsing watch history row: $e');
+            return null;
+          }
+        })
+        .whereType<WatchMediaModel>()
+        .toList();
 
     _historyController.add(list);
     return list;
@@ -86,7 +93,11 @@ class WatchHistoryService {
 
   Future<void> removeFromHistory(int id, String mediaType) async {
     final db = await _database;
-    await db.delete('watch_history', where: 'tmdb_id = ? AND media_type = ?', whereArgs: [id, mediaType]);
+    await db.delete(
+      'watch_history',
+      where: 'tmdb_id = ? AND media_type = ?',
+      whereArgs: [id, mediaType],
+    );
     final list = await getWatchHistory();
     _historyController.add(list);
   }

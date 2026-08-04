@@ -29,9 +29,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
     case Routes.checkEmail:
       final email = settings.arguments as String? ?? '';
-      return MaterialPageRoute(
-        builder: (_) => CheckEmailScreen(email: email),
-      );
+      return MaterialPageRoute(builder: (_) => CheckEmailScreen(email: email));
     case Routes.home:
       return MaterialPageRoute(builder: (_) => const HomeScreen());
     case Routes.search:
@@ -44,9 +42,8 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       final movieId = settings.arguments as int?;
       if (movieId == null) {
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Movie ID is required')),
-          ),
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text('Movie ID is required'))),
         );
       }
       return MaterialPageRoute(

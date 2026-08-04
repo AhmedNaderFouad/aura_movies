@@ -10,4 +10,3 @@ class GoogleSignInUseCase {
     return await repository.signInWithGoogle(rememberMe: rememberMe);
   }
 }
-

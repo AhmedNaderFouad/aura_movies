@@ -12,4 +12,3 @@ class HomeService {
     return await AuthService.logoutUseCase.call();
   }
 }
-

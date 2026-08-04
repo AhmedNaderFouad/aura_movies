@@ -37,5 +37,3 @@ class MovieDetailsCubit extends Cubit<MovieDetailsState> {
     }
   }
 }
-
-

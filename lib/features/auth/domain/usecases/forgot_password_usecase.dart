@@ -13,4 +13,3 @@ class ForgotPasswordUseCase {
     return await repository.resetPassword(email: email);
   }
 }
-

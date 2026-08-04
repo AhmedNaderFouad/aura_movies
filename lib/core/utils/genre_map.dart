@@ -32,7 +32,7 @@ const Map<int, String> genreMap = {
 };
 
 /// Convert genre IDs to their string names
-/// 
+///
 /// [genreIds] - List of genre IDs from TMDB API
 /// [fallback] - Text to show if genres are empty or null (default: 'General')
 /// Returns a formatted string like "Action • Sci-Fi"
@@ -41,9 +41,7 @@ String getGenreString(List<int>? genreIds, {String fallback = 'General'}) {
     return fallback;
   }
 
-  final genreNames = genreIds
-      .map((id) => genreMap[id] ?? 'Unknown')
-      .toList();
+  final genreNames = genreIds.map((id) => genreMap[id] ?? 'Unknown').toList();
 
   return genreNames.join(' • ');
 }

@@ -25,8 +25,9 @@ class SubtitleState extends Equatable {
     return SubtitleState(
       wyzieSubtitles: wyzieSubtitles ?? this.wyzieSubtitles,
       openSubtitles: openSubtitles ?? this.openSubtitles,
-      selectedSubtitle:
-          selectedSubtitle != null ? selectedSubtitle() : this.selectedSubtitle,
+      selectedSubtitle: selectedSubtitle != null
+          ? selectedSubtitle()
+          : this.selectedSubtitle,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );

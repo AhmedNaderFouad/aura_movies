@@ -54,10 +54,10 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       // 3. Safe Firebase Registration Trigger
       context.read<SignupCubit>().signUp(
-            fullName: _nameController.text.trim(),
-            email: email,
-            password: _passwordController.text,
-          );
+        fullName: _nameController.text.trim(),
+        email: email,
+        password: _passwordController.text,
+      );
     }
   }
 

@@ -19,4 +19,3 @@ class SearchError extends SearchState {
 }
 
 class SearchNoInternet extends SearchState {}
-

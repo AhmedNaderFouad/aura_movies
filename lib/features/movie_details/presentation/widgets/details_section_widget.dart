@@ -6,10 +6,7 @@ import '../../domain/entities/movie_details.dart';
 class DetailsSectionWidget extends StatelessWidget {
   final MovieDetails movieDetails;
 
-  const DetailsSectionWidget({
-    super.key,
-    required this.movieDetails,
-  });
+  const DetailsSectionWidget({super.key, required this.movieDetails});
 
   String _formatCurrency(int? value) {
     if (value == null || value == 0) return 'N/A';
@@ -68,7 +65,10 @@ class DetailsSectionWidget extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 4.h,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4.r),
@@ -116,7 +116,10 @@ class DetailsSectionWidget extends StatelessWidget {
                   runSpacing: 8.h,
                   children: movieDetails.genres.map((genre) {
                     return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 8.h,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF2C2C2C),
                         borderRadius: BorderRadius.circular(10.r),
@@ -144,10 +147,7 @@ class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _DetailRow({
-    required this.label,
-    required this.value,
-  });
+  const _DetailRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -156,10 +156,7 @@ class _DetailRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 13.sp, color: AppColors.textSecondary),
         ),
         Text(
           value,

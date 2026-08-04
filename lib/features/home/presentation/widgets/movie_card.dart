@@ -72,7 +72,10 @@ class MovieCard extends StatelessWidget {
                   top: 8.h,
                   left: 8.w,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(8.r),
@@ -109,5 +112,3 @@ class MovieCard extends StatelessWidget {
     );
   }
 }
-
-

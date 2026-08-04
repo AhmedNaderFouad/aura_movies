@@ -10,4 +10,3 @@ class GetPopularMoviesUseCase {
     return await repository.getPopularMovies(page: page);
   }
 }
-

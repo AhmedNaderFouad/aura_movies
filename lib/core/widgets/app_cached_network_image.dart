@@ -28,8 +28,10 @@ class AppCachedNetworkImage extends StatelessWidget {
       fit: fit,
       width: width,
       height: height,
-      placeholder: (context, url) => placeholder ?? const Center(child: CircularProgressIndicator()),
-      errorWidget: (context, url, error) => errorWidget ?? const Icon(Icons.error),
+      placeholder: (context, url) =>
+          placeholder ?? const Center(child: CircularProgressIndicator()),
+      errorWidget: (context, url, error) =>
+          errorWidget ?? const Icon(Icons.error),
     );
   }
 }

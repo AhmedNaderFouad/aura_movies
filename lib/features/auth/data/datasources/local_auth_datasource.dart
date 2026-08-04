@@ -33,7 +33,10 @@ class LocalAuthDataSourceImpl implements LocalAuthDataSource {
   Future<void> saveUser(UserModel user, {bool rememberMe = true}) async {
     final userJson = jsonEncode(user.toJson());
     await _secureStorage.write(key: _userKey, value: userJson);
-    await _secureStorage.write(key: _rememberMeKey, value: rememberMe.toString());
+    await _secureStorage.write(
+      key: _rememberMeKey,
+      value: rememberMe.toString(),
+    );
   }
 
   @override
@@ -73,4 +76,3 @@ class LocalAuthDataSourceImpl implements LocalAuthDataSource {
     return rememberMeStr == null || rememberMeStr == 'true';
   }
 }
-

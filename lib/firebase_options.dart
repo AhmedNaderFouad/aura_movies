@@ -65,5 +65,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'auramovies-ef737.firebasestorage.app',
     iosBundleId: 'com.example.auraMovies',
   );
-
 }

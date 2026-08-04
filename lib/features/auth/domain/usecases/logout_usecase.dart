@@ -9,4 +9,3 @@ class LogoutUseCase {
     return await repository.signOut();
   }
 }
-

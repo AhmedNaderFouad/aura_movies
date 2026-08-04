@@ -52,10 +52,10 @@ class AuthService {
   static LoginUseCase get loginUseCase => _loginUseCase;
   static SignupUseCase get signupUseCase => _signupUseCase;
   static LogoutUseCase get logoutUseCase => _logoutUseCase;
-  static ForgotPasswordUseCase get forgotPasswordUseCase => _forgotPasswordUseCase;
+  static ForgotPasswordUseCase get forgotPasswordUseCase =>
+      _forgotPasswordUseCase;
   static GoogleSignInUseCase get googleSignInUseCase => _googleSignInUseCase;
   static AppleSignInUseCase get appleSignInUseCase => _appleSignInUseCase;
-  static GetCurrentUserUseCase get getCurrentUserUseCase => _getCurrentUserUseCase;
+  static GetCurrentUserUseCase get getCurrentUserUseCase =>
+      _getCurrentUserUseCase;
 }
-
-

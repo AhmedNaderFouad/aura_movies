@@ -99,8 +99,9 @@ class CheckEmailScreen extends StatelessWidget {
                       _buildAppBar(context),
                       Expanded(
                         child: SingleChildScrollView(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: AppSizes.s24),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppSizes.s24,
+                          ),
                           child: Column(
                             children: [
                               SizedBox(height: 60.h),
@@ -166,10 +167,7 @@ class CheckEmailScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
           ),
           SizedBox(width: AppSpacing.s),
-          Text(
-            'AuraMovies',
-            style: AppTextStyles.appBarTitle,
-          ),
+          Text('AuraMovies', style: AppTextStyles.appBarTitle),
         ],
       ),
     );

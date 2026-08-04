@@ -10,4 +10,3 @@ class GetCurrentUserUseCase {
     return await repository.getCurrentUser();
   }
 }
-

@@ -13,17 +13,17 @@ class MovieModel extends Movie {
     required List<int> genreIds,
     bool isTvShow = false,
   }) : super(
-    id: id,
-    title: title,
-    backdropPath: backdropPath,
-    posterPath: posterPath,
-    overview: overview,
-    voteAverage: voteAverage,
-    voteCount: voteCount,
-    releaseDate: releaseDate,
-    genreIds: genreIds,
-    isTvShow: isTvShow,
-  );
+         id: id,
+         title: title,
+         backdropPath: backdropPath,
+         posterPath: posterPath,
+         overview: overview,
+         voteAverage: voteAverage,
+         voteCount: voteCount,
+         releaseDate: releaseDate,
+         genreIds: genreIds,
+         isTvShow: isTvShow,
+       );
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
@@ -55,4 +55,3 @@ class MovieModel extends Movie {
     };
   }
 }
-

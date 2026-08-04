@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/video_source_model.dart';
+import '../../data/models/subtitle_model.dart';
 
 class SubtitlesBottomSheet extends StatefulWidget {
   final List<SubtitleModel> wyzieSubtitles;

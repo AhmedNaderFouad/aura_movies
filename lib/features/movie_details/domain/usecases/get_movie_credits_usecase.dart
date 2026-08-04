@@ -10,4 +10,3 @@ class GetMovieCreditsUseCase {
     return repository.getMovieCredits(movieId);
   }
 }
-

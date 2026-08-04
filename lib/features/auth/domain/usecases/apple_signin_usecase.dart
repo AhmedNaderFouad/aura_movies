@@ -10,4 +10,3 @@ class AppleSignInUseCase {
     return await repository.signInWithApple(rememberMe: rememberMe);
   }
 }
-

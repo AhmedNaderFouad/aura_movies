@@ -10,4 +10,3 @@ class GetUpcomingMoviesUseCase {
     return await repository.getUpcomingMovies(page: page);
   }
 }
-

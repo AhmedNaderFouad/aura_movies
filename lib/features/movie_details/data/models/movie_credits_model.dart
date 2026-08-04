@@ -74,19 +74,20 @@ class MovieCredits {
   final List<CastMember> cast;
   final List<CrewMember> crew;
 
-  MovieCredits({
-    required this.cast,
-    required this.crew,
-  });
+  MovieCredits({required this.cast, required this.crew});
 
   factory MovieCredits.fromJson(Map<String, dynamic> json) {
     return MovieCredits(
-      cast: (json['cast'] as List<dynamic>?)
-          ?.map((c) => CastMember.fromJson(c as Map<String, dynamic>))
-          .toList() ?? [],
-      crew: (json['crew'] as List<dynamic>?)
-          ?.map((c) => CrewMember.fromJson(c as Map<String, dynamic>))
-          .toList() ?? [],
+      cast:
+          (json['cast'] as List<dynamic>?)
+              ?.map((c) => CastMember.fromJson(c as Map<String, dynamic>))
+              .toList() ??
+          [],
+      crew:
+          (json['crew'] as List<dynamic>?)
+              ?.map((c) => CrewMember.fromJson(c as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -97,4 +98,3 @@ class MovieCredits {
     };
   }
 }
-

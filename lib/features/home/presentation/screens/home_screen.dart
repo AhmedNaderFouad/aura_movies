@@ -78,10 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (state is HomeError) {
       return Center(
-        child: Text(
-          state.message,
-          style: const TextStyle(color: Colors.white),
-        ),
+        child: Text(state.message, style: const TextStyle(color: Colors.white)),
       );
     }
     if (state is HomeNoInternet) {

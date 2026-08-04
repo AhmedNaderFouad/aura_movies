@@ -16,7 +16,7 @@ class SearchRepositoryImpl implements SearchRepository {
     try {
       final data = await apiService.multiSearch(query: query, page: page);
       final results = data['results'] as List? ?? [];
-      
+
       final List<dynamic> parsedResults = [];
       for (var item in results) {
         final mediaType = item['media_type'];
@@ -32,4 +32,3 @@ class SearchRepositoryImpl implements SearchRepository {
     }
   }
 }
-

@@ -27,7 +27,8 @@ class TVShowDetailsLoaded extends TVShowDetailsState {
   }) {
     return TVShowDetailsLoaded(
       details: details ?? this.details,
-      currentSeasonEpisodes: currentSeasonEpisodes ?? this.currentSeasonEpisodes,
+      currentSeasonEpisodes:
+          currentSeasonEpisodes ?? this.currentSeasonEpisodes,
       selectedSeasonNumber: selectedSeasonNumber ?? this.selectedSeasonNumber,
       isEpisodesLoading: isEpisodesLoading ?? this.isEpisodesLoading,
     );

@@ -61,7 +61,3 @@ class SearchCubit extends Cubit<SearchState> {
     return super.close();
   }
 }
-
-
-
-

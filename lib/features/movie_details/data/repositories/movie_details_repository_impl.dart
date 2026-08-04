@@ -28,22 +28,26 @@ class MovieDetailsRepositoryImpl implements MovieDetailsRepository {
       final creditsModel = MovieCredits.fromJson(data);
       return MovieCreditsEntity(
         cast: creditsModel.cast
-            .map((c) => CastMemberEntity(
-                  id: c.id,
-                  name: c.name,
-                  character: c.character,
-                  profilePath: c.profilePath,
-                  order: c.order,
-                ))
+            .map(
+              (c) => CastMemberEntity(
+                id: c.id,
+                name: c.name,
+                character: c.character,
+                profilePath: c.profilePath,
+                order: c.order,
+              ),
+            )
             .toList(),
         crew: creditsModel.crew
-            .map((c) => CrewMemberEntity(
-                  id: c.id,
-                  name: c.name,
-                  job: c.job,
-                  department: c.department,
-                  profilePath: c.profilePath,
-                ))
+            .map(
+              (c) => CrewMemberEntity(
+                id: c.id,
+                name: c.name,
+                job: c.job,
+                department: c.department,
+                profilePath: c.profilePath,
+              ),
+            )
             .toList(),
       );
     } catch (e) {
@@ -51,5 +55,3 @@ class MovieDetailsRepositoryImpl implements MovieDetailsRepository {
     }
   }
 }
-
-

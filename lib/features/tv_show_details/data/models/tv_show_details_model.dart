@@ -11,15 +11,15 @@ class TVShowDetailsModel extends TVShowDetails {
     String? firstAirDate,
     required List<SeasonModel> seasons,
   }) : super(
-          id: id,
-          name: name,
-          overview: overview,
-          posterPath: posterPath,
-          backdropPath: backdropPath,
-          voteAverage: voteAverage,
-          firstAirDate: firstAirDate,
-          seasons: seasons,
-        );
+         id: id,
+         name: name,
+         overview: overview,
+         posterPath: posterPath,
+         backdropPath: backdropPath,
+         voteAverage: voteAverage,
+         firstAirDate: firstAirDate,
+         seasons: seasons,
+       );
 
   factory TVShowDetailsModel.fromJson(Map<String, dynamic> json) {
     return TVShowDetailsModel(
@@ -30,7 +30,8 @@ class TVShowDetailsModel extends TVShowDetails {
       backdropPath: json['backdrop_path'],
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       firstAirDate: json['first_air_date'],
-      seasons: (json['seasons'] as List?)
+      seasons:
+          (json['seasons'] as List?)
               ?.map((s) => SeasonModel.fromJson(s))
               .toList() ??
           [],
@@ -45,11 +46,11 @@ class SeasonModel extends Season {
     required int seasonNumber,
     required int episodeCount,
   }) : super(
-          id: id,
-          name: name,
-          seasonNumber: seasonNumber,
-          episodeCount: episodeCount,
-        );
+         id: id,
+         name: name,
+         seasonNumber: seasonNumber,
+         episodeCount: episodeCount,
+       );
 
   factory SeasonModel.fromJson(Map<String, dynamic> json) {
     return SeasonModel(
@@ -69,12 +70,12 @@ class EpisodeModel extends Episode {
     required String overview,
     String? stillPath,
   }) : super(
-          id: id,
-          name: name,
-          episodeNumber: episodeNumber,
-          overview: overview,
-          stillPath: stillPath,
-        );
+         id: id,
+         name: name,
+         episodeNumber: episodeNumber,
+         overview: overview,
+         stillPath: stillPath,
+       );
 
   factory EpisodeModel.fromJson(Map<String, dynamic> json) {
     return EpisodeModel(

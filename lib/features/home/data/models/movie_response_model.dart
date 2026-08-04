@@ -15,8 +15,10 @@ class MovieResponseModel {
 
   factory MovieResponseModel.fromJson(Map<String, dynamic> json) {
     var resultsJson = json['results'] as List? ?? [];
-    var results = resultsJson.map((movie) => MovieModel.fromJson(movie as Map<String, dynamic>)).toList();
-    
+    var results = resultsJson
+        .map((movie) => MovieModel.fromJson(movie as Map<String, dynamic>))
+        .toList();
+
     return MovieResponseModel(
       page: json['page'] ?? 1,
       results: results,
@@ -34,4 +36,3 @@ class MovieResponseModel {
     };
   }
 }
-

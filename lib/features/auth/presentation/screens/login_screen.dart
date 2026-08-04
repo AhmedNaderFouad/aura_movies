@@ -59,7 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Please verify your email first. A verification link has been sent to your inbox/spam.',
               isError: true,
               actionLabel: 'Resend',
-              onAction: () => context.read<LoginCubit>().resendVerificationEmail(
+              onAction: () =>
+                  context.read<LoginCubit>().resendVerificationEmail(
                     _emailController.text.trim(),
                     _passwordController.text,
                   ),
@@ -268,7 +269,9 @@ class _LoginScreenState extends State<LoginScreen> {
               icon: Icon(Icons.apple, color: Colors.white, size: 28.r),
               text: 'Apple',
               onTap: () {
-                context.read<LoginCubit>().signInWithApple(rememberMe: _rememberMe);
+                context.read<LoginCubit>().signInWithApple(
+                  rememberMe: _rememberMe,
+                );
               },
             ),
             SocialButton(
@@ -279,7 +282,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               text: 'Google',
               onTap: () {
-                context.read<LoginCubit>().signInWithGoogle(rememberMe: _rememberMe);
+                context.read<LoginCubit>().signInWithGoogle(
+                  rememberMe: _rememberMe,
+                );
               },
             ),
           ],

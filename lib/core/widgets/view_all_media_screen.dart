@@ -26,15 +26,23 @@ class ViewAllMediaScreen extends StatelessWidget {
       DateTime? dateB;
 
       if (a is Movie) {
-        dateA = a.releaseDate != null ? DateTime.tryParse(a.releaseDate!) : null;
+        dateA = a.releaseDate != null
+            ? DateTime.tryParse(a.releaseDate!)
+            : null;
       } else if (a is TVShow) {
-        dateA = a.firstAirDate != null ? DateTime.tryParse(a.firstAirDate!) : null;
+        dateA = a.firstAirDate != null
+            ? DateTime.tryParse(a.firstAirDate!)
+            : null;
       }
 
       if (b is Movie) {
-        dateB = b.releaseDate != null ? DateTime.tryParse(b.releaseDate!) : null;
+        dateB = b.releaseDate != null
+            ? DateTime.tryParse(b.releaseDate!)
+            : null;
       } else if (b is TVShow) {
-        dateB = b.firstAirDate != null ? DateTime.tryParse(b.firstAirDate!) : null;
+        dateB = b.firstAirDate != null
+            ? DateTime.tryParse(b.firstAirDate!)
+            : null;
       }
 
       if (dateA == null && dateB == null) return 0;
@@ -80,12 +88,14 @@ class ViewAllMediaScreen extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) {
                   final item = displayList[index];
-                  // We pass a constant index or similar to avoid distracting background colors 
+                  // We pass a constant index or similar to avoid distracting background colors
                   // if desired, but here we'll use actual index for grid positioning.
                   if (item is Movie) {
                     return TrendingMovieCard(
                       movie: item,
-                      index: index + 10, // Offset to avoid special first-item color if unwanted
+                      index:
+                          index +
+                          10, // Offset to avoid special first-item color if unwanted
                       onTap: () => Navigator.pushNamed(
                         context,
                         Routes.movieDetails,
@@ -95,7 +105,9 @@ class ViewAllMediaScreen extends StatelessWidget {
                   } else {
                     return TrendingTVShowCard(
                       tvShow: item as TVShow,
-                      index: index + 10, // Offset to avoid special first-item color
+                      index:
+                          index +
+                          10, // Offset to avoid special first-item color
                       onTap: () => Navigator.pushNamed(
                         context,
                         Routes.tvShowDetails,
@@ -106,7 +118,7 @@ class ViewAllMediaScreen extends StatelessWidget {
                 },
               ),
             ),
-            
+
             // Custom Footer
             Padding(
               padding: EdgeInsets.symmetric(vertical: 40.h),
@@ -125,11 +137,17 @@ class ViewAllMediaScreen extends StatelessWidget {
                     onTap: () => Navigator.pushNamed(context, Routes.search),
                     borderRadius: BorderRadius.circular(12.r),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 12.h,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: AppColors.primary, width: 1.5),
+                        border: Border.all(
+                          color: AppColors.primary,
+                          width: 1.5,
+                        ),
                       ),
                       child: Text(
                         'Search More Content',

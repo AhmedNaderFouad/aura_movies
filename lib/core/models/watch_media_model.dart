@@ -7,7 +7,7 @@ class WatchMediaModel implements Media {
   final String title;
   @override
   final String? posterPath;
-  
+
   final String mediaType; // 'movie' or 'tv'
   final int lastPositionMs;
   final int totalDurationMs;

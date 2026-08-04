@@ -94,8 +94,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                             ? AppCachedNetworkImage(
                                 imageUrl:
                                     'https://image.tmdb.org/t/p/w500${details.backdropPath}',
-                                errorWidget:
-                                    Container(color: AppColors.surface),
+                                errorWidget: Container(
+                                  color: AppColors.surface,
+                                ),
                               )
                             : Container(color: AppColors.surface),
                       ),
@@ -168,8 +169,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     builder: (context, watchlistState) {
                       bool isInWatchlist = false;
                       if (watchlistState is WatchlistLoaded) {
-                        isInWatchlist = watchlistState.movies
-                            .any((m) => m.id == widget.tvShowId);
+                        isInWatchlist = watchlistState.movies.any(
+                          (m) => m.id == widget.tvShowId,
+                        );
                       }
 
                       return ActionButtonsWidget(
@@ -178,8 +180,8 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                         showWatchNow: false,
                         onAddToWatchlistPressed: () {
                           context.read<WatchlistCubit>().toggleWatchlist(
-                                _convertToMovie(details),
-                              );
+                            _convertToMovie(details),
+                          );
                         },
                       );
                     },
@@ -256,7 +258,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                                     child: DropdownButton<int>(
                                       value: state.selectedSeasonNumber,
                                       dropdownColor: AppColors.surface,
-                                      style: const TextStyle(color: Colors.white),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
                                       underline: Container(
                                         height: 2,
                                         color: AppColors.primary,
@@ -433,11 +437,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       ),
       child: Row(
         children: [
-          ShimmerLoadingWidget(
-            width: 120.w,
-            height: 80.h,
-            borderRadius: 8.r,
-          ),
+          ShimmerLoadingWidget(width: 120.w, height: 80.h, borderRadius: 8.r),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(

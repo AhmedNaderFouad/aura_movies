@@ -10,4 +10,3 @@ class GetTopRatedMoviesUseCase {
     return await repository.getTopRatedMovies(page: page);
   }
 }
-

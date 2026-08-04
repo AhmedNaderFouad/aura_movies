@@ -6,13 +6,14 @@ import 'tv_show_details_state.dart';
 class TVShowDetailsCubit extends Cubit<TVShowDetailsState> {
   final TVShowDetailsRepository repository;
 
-  TVShowDetailsCubit({required this.repository}) : super(TVShowDetailsInitial());
+  TVShowDetailsCubit({required this.repository})
+    : super(TVShowDetailsInitial());
 
   Future<void> loadTVShowDetails(int tvShowId) async {
     emit(TVShowDetailsLoading());
     try {
       final details = await repository.getTvShowDetails(tvShowId);
-      
+
       // Load first season by default if available
       int initialSeason = 1;
       if (details.seasons.isNotEmpty) {
@@ -22,13 +23,18 @@ class TVShowDetailsCubit extends Cubit<TVShowDetailsState> {
         initialSeason = hasSeasonOne ? 1 : details.seasons.first.seasonNumber;
       }
 
-      final episodes = await repository.getSeasonEpisodes(tvShowId, initialSeason);
-      
-      emit(TVShowDetailsLoaded(
-        details: details,
-        currentSeasonEpisodes: episodes,
-        selectedSeasonNumber: initialSeason,
-      ));
+      final episodes = await repository.getSeasonEpisodes(
+        tvShowId,
+        initialSeason,
+      );
+
+      emit(
+        TVShowDetailsLoaded(
+          details: details,
+          currentSeasonEpisodes: episodes,
+          selectedSeasonNumber: initialSeason,
+        ),
+      );
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout ||
@@ -46,14 +52,24 @@ class TVShowDetailsCubit extends Cubit<TVShowDetailsState> {
   Future<void> changeSeason(int seasonNumber) async {
     final currentState = state;
     if (currentState is TVShowDetailsLoaded) {
-      emit(currentState.copyWith(isEpisodesLoading: true, selectedSeasonNumber: seasonNumber));
-      try {
-        final episodes = await repository.getSeasonEpisodes(currentState.details.id, seasonNumber);
-        emit(currentState.copyWith(
-          currentSeasonEpisodes: episodes,
+      emit(
+        currentState.copyWith(
+          isEpisodesLoading: true,
           selectedSeasonNumber: seasonNumber,
-          isEpisodesLoading: false,
-        ));
+        ),
+      );
+      try {
+        final episodes = await repository.getSeasonEpisodes(
+          currentState.details.id,
+          seasonNumber,
+        );
+        emit(
+          currentState.copyWith(
+            currentSeasonEpisodes: episodes,
+            selectedSeasonNumber: seasonNumber,
+            isEpisodesLoading: false,
+          ),
+        );
       } on DioException catch (e) {
         if (e.type == DioExceptionType.connectionError ||
             e.type == DioExceptionType.connectionTimeout ||

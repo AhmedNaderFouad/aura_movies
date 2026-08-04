@@ -29,7 +29,10 @@ class AppSlidingToggleWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1D24), // Rounded dark background
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1,
+        ),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {

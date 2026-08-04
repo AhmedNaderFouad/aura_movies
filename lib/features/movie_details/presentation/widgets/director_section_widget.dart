@@ -7,10 +7,7 @@ import '../../domain/entities/movie_credits.dart';
 class DirectorSectionWidget extends StatelessWidget {
   final CrewMemberEntity? director;
 
-  const DirectorSectionWidget({
-    super.key,
-    this.director,
-  });
+  const DirectorSectionWidget({super.key, this.director});
 
   String _buildImageUrl(String? profilePath) {
     if (profilePath == null || profilePath.isEmpty) return '';
@@ -42,12 +39,12 @@ class DirectorSectionWidget extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.r),
-                child: _buildImageUrl(director!.profilePath).isNotEmpty
-                    ? AppCachedNetworkImage(
-                        imageUrl: _buildImageUrl(director!.profilePath),
-                        errorWidget: _buildFallbackAvatar(),
-                      )
-                    : _buildFallbackAvatar(),
+              child: _buildImageUrl(director!.profilePath).isNotEmpty
+                  ? AppCachedNetworkImage(
+                      imageUrl: _buildImageUrl(director!.profilePath),
+                      errorWidget: _buildFallbackAvatar(),
+                    )
+                  : _buildFallbackAvatar(),
             ),
           ),
           SizedBox(width: 16.w),
@@ -84,11 +81,7 @@ class DirectorSectionWidget extends StatelessWidget {
     return Container(
       color: const Color(0xFF333333),
       child: Center(
-        child: Icon(
-          Icons.person,
-          size: 24.sp,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.person, size: 24.sp, color: Colors.white),
       ),
     );
   }

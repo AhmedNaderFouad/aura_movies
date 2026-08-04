@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../../core/models/video_source_model.dart';
+import '../../data/models/subtitle_model.dart';
 import '../../domain/repositories/subtitle_repository.dart';
 
 part 'subtitle_state.dart';

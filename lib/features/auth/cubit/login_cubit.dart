@@ -108,8 +108,10 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> resendVerificationEmail(String email, String password) async {
     try {
       // Temporarily sign in to get the user object for resending
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       await credential.user?.sendEmailVerification();
       await FirebaseAuth.instance.signOut();
     } catch (_) {

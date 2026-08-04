@@ -7,10 +7,7 @@ import '../../domain/entities/movie_credits.dart';
 class CastSectionWidget extends StatelessWidget {
   final List<CastMemberEntity> cast;
 
-  const CastSectionWidget({
-    super.key,
-    required this.cast,
-  });
+  const CastSectionWidget({super.key, required this.cast});
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +23,7 @@ class CastSectionWidget extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Row(
             children: [
-              Icon(
-                Icons.group_outlined,
-                color: AppColors.primary,
-                size: 20.sp,
-              ),
+              Icon(Icons.group_outlined, color: AppColors.primary, size: 20.sp),
               SizedBox(width: 8.w),
               Text(
                 'Top Cast',
@@ -72,10 +65,7 @@ class CastSectionWidget extends StatelessWidget {
 class CastCardWidget extends StatelessWidget {
   final CastMemberEntity castMember;
 
-  const CastCardWidget({
-    super.key,
-    required this.castMember,
-  });
+  const CastCardWidget({super.key, required this.castMember});
 
   String _buildImageUrl(String? profilePath) {
     if (profilePath == null || profilePath.isEmpty) return '';
@@ -130,10 +120,7 @@ class CastCardWidget extends StatelessWidget {
             castMember.character,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 11.sp,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 11.sp, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -144,11 +131,7 @@ class CastCardWidget extends StatelessWidget {
     return Container(
       color: const Color(0xFF333333),
       child: Center(
-        child: Icon(
-          Icons.person,
-          size: 40.sp,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.person, size: 40.sp, color: Colors.white),
       ),
     );
   }

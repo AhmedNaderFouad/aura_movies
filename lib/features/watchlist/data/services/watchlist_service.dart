@@ -16,18 +16,26 @@ class WatchlistService {
 
   static Future<void> initialize() async {
     final preferences = await SharedPreferences.getInstance();
-    final localDataSource = WatchlistLocalDataSourceImpl(sharedPreferences: preferences);
-    _watchlistRepository = WatchlistRepositoryImpl(localDataSource: localDataSource);
+    final localDataSource = WatchlistLocalDataSourceImpl(
+      sharedPreferences: preferences,
+    );
+    _watchlistRepository = WatchlistRepositoryImpl(
+      localDataSource: localDataSource,
+    );
 
     _addToWatchlistUseCase = AddToWatchlistUseCase(_watchlistRepository);
-    _removeFromWatchlistUseCase = RemoveFromWatchlistUseCase(_watchlistRepository);
+    _removeFromWatchlistUseCase = RemoveFromWatchlistUseCase(
+      _watchlistRepository,
+    );
     _getWatchlistUseCase = GetWatchlistUseCase(_watchlistRepository);
     _isInWatchlistUseCase = IsInWatchlistUseCase(_watchlistRepository);
   }
 
   static WatchlistRepository get repository => _watchlistRepository;
-  static AddToWatchlistUseCase get addToWatchlistUseCase => _addToWatchlistUseCase;
-  static RemoveFromWatchlistUseCase get removeFromWatchlistUseCase => _removeFromWatchlistUseCase;
+  static AddToWatchlistUseCase get addToWatchlistUseCase =>
+      _addToWatchlistUseCase;
+  static RemoveFromWatchlistUseCase get removeFromWatchlistUseCase =>
+      _removeFromWatchlistUseCase;
   static GetWatchlistUseCase get getWatchlistUseCase => _getWatchlistUseCase;
   static IsInWatchlistUseCase get isInWatchlistUseCase => _isInWatchlistUseCase;
 }

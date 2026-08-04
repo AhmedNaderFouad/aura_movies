@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../models/video_source_model.dart';
+import '../models/subtitle_model.dart';
 
 class SubtitleService {
   final Dio _dio = Dio();
@@ -16,11 +16,8 @@ class SubtitleService {
   }) async {
     try {
       final String id = (imdbId != null && imdbId.isNotEmpty) ? imdbId : tmdbId;
-      
-      final Map<String, dynamic> queryParameters = {
-        'id': id,
-        'key': _apiKey,
-      };
+
+      final Map<String, dynamic> queryParameters = {'id': id, 'key': _apiKey};
 
       if (isTv) {
         if (season != null) queryParameters['season'] = season.toString();
@@ -36,7 +33,8 @@ class SubtitleService {
         options: Options(
           headers: {
             'x-api-key': _apiKey,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent':
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           },
           receiveTimeout: const Duration(seconds: 15),
           sendTimeout: const Duration(seconds: 15),
@@ -48,7 +46,7 @@ class SubtitleService {
       if (response.statusCode == 200) {
         final dynamic data = response.data;
         List<dynamic> results = [];
-        
+
         if (data is List) {
           results = data;
         } else if (data is Map) {
@@ -62,21 +60,26 @@ class SubtitleService {
         }
 
         if (results.isNotEmpty) {
-          final subs = results.map((e) {
-            try {
-              return SubtitleModel.fromJson(Map<String, dynamic>.from(e));
-            } catch (e) {
-              debugPrint('Error parsing individual subtitle: $e');
-              return null;
-            }
-          }).whereType<SubtitleModel>().toList();
-          
+          final subs = results
+              .map((e) {
+                try {
+                  return SubtitleModel.fromJson(Map<String, dynamic>.from(e));
+                } catch (e) {
+                  debugPrint('Error parsing individual subtitle: $e');
+                  return null;
+                }
+              })
+              .whereType<SubtitleModel>()
+              .toList();
+
           debugPrint('Found ${subs.length} external subtitles');
           return subs;
         }
       }
-      
-      debugPrint('No external subtitles found or error occurred. Response: ${response.data}');
+
+      debugPrint(
+        'No external subtitles found or error occurred. Response: ${response.data}',
+      );
       return [];
     } catch (e) {
       debugPrint('Subtitle Fetch Exception: $e');

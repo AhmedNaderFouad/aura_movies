@@ -10,11 +10,7 @@ class CustomAppBar extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.movie_filter_rounded,
-          color: AppColors.primary,
-          size: 24.r,
-        ),
+        Icon(Icons.movie_filter_rounded, color: AppColors.primary, size: 24.r),
         SizedBox(width: 8.w),
         RichText(
           text: TextSpan(

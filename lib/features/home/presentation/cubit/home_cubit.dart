@@ -47,13 +47,15 @@ class HomeCubit extends Cubit<HomeState> {
         (tvShow) => tvShow.firstAirDate,
       ).cast<TVShow>();
 
-      emit(HomeSuccess(
-        trendingMovies: trendingMovies,
-        topRatedMovies: topRatedMovies,
-        upcomingMovies: upcomingMovies,
-        trendingTvShows: trendingTvShows,
-        upcomingTvShows: upcomingTvShows,
-      ));
+      emit(
+        HomeSuccess(
+          trendingMovies: trendingMovies,
+          topRatedMovies: topRatedMovies,
+          upcomingMovies: upcomingMovies,
+          trendingTvShows: trendingTvShows,
+          upcomingTvShows: upcomingTvShows,
+        ),
+      );
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout ||
@@ -103,4 +105,3 @@ class HomeCubit extends Cubit<HomeState> {
     return filtered;
   }
 }
-

@@ -9,11 +9,7 @@ class UpcomingMovieCard extends StatelessWidget {
   final Movie movie;
   final VoidCallback? onTap;
 
-  const UpcomingMovieCard({
-    super.key,
-    required this.movie,
-    this.onTap,
-  });
+  const UpcomingMovieCard({super.key, required this.movie, this.onTap});
 
   String _formatReleaseDate(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return 'Coming Soon';

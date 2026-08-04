@@ -5,5 +5,3 @@ abstract class MovieDetailsRepository {
   Future<MovieDetails> getMovieDetails(int movieId);
   Future<MovieCreditsEntity> getMovieCredits(int movieId);
 }
-
-

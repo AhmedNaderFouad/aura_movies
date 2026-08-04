@@ -37,5 +37,3 @@ class MovieDetailsError extends MovieDetailsState {
 class MovieDetailsNoInternet extends MovieDetailsState {
   const MovieDetailsNoInternet();
 }
-
-

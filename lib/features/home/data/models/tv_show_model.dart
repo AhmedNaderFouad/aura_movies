@@ -11,15 +11,15 @@ class TVShowModel extends TVShow {
     String? firstAirDate,
     required List<int> genreIds,
   }) : super(
-          id: id,
-          name: name,
-          backdropPath: backdropPath,
-          posterPath: posterPath,
-          overview: overview,
-          voteAverage: voteAverage,
-          firstAirDate: firstAirDate,
-          genreIds: genreIds,
-        );
+         id: id,
+         name: name,
+         backdropPath: backdropPath,
+         posterPath: posterPath,
+         overview: overview,
+         voteAverage: voteAverage,
+         firstAirDate: firstAirDate,
+         genreIds: genreIds,
+       );
 
   factory TVShowModel.fromJson(Map<String, dynamic> json) {
     return TVShowModel(

@@ -70,7 +70,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       return _buildInitialState();
                     } else if (state is SearchLoading) {
                       return const Center(
-                        child: CircularProgressIndicator(color: AppColors.primary),
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
                       );
                     } else if (state is SearchSuccess) {
                       return _buildSearchResults(state.results);

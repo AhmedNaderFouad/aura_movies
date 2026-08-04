@@ -15,8 +15,10 @@ class TVShowResponseModel {
 
   factory TVShowResponseModel.fromJson(Map<String, dynamic> json) {
     var resultsJson = json['results'] as List? ?? [];
-    var results = resultsJson.map((tvShow) => TVShowModel.fromJson(tvShow as Map<String, dynamic>)).toList();
-    
+    var results = resultsJson
+        .map((tvShow) => TVShowModel.fromJson(tvShow as Map<String, dynamic>))
+        .toList();
+
     return TVShowResponseModel(
       page: json['page'] ?? 1,
       results: results,

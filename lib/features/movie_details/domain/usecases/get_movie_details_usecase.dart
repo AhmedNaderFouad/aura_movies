@@ -10,4 +10,3 @@ class GetMovieDetailsUseCase {
     return repository.getMovieDetails(movieId);
   }
 }
-

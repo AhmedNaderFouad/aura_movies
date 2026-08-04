@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../features/subtitles/data/datasources/wyzie_subtitle_service.dart';
+import '../../features/subtitles/data/models/subtitle_model.dart';
 import '../services/video_extractor_service.dart';
-import '../services/subtitle_service.dart';
 import '../models/video_source_model.dart';
 import '../widgets/native_video_player.dart';
 import '../widgets/custom_snackbar.dart';

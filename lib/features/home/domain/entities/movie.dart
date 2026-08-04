@@ -23,4 +23,3 @@ class Movie {
     this.isTvShow = false,
   });
 }
-

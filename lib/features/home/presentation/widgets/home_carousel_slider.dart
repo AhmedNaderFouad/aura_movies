@@ -120,10 +120,11 @@ class _HomeCarouselSliderState extends State<HomeCarouselSlider> {
                               children: [
                                 // Watchlist Button
                                 _buildCircularButton(
-                                  icon: widget.isInWatchlist(id, isMovie) 
-                                      ? Icons.check 
+                                  icon: widget.isInWatchlist(id, isMovie)
+                                      ? Icons.check
                                       : Icons.add,
-                                  onPressed: () => widget.onWatchlistPressed(item),
+                                  onPressed: () =>
+                                      widget.onWatchlistPressed(item),
                                 ),
                                 SizedBox(width: 30.w),
                                 // Play Button
@@ -135,7 +136,9 @@ class _HomeCarouselSliderState extends State<HomeCarouselSlider> {
                                   onPressed: () {
                                     Navigator.pushNamed(
                                       context,
-                                      isMovie ? Routes.movieDetails : Routes.tvShowDetails,
+                                      isMovie
+                                          ? Routes.movieDetails
+                                          : Routes.tvShowDetails,
                                       arguments: id,
                                     );
                                   },
@@ -236,15 +239,9 @@ class _HomeCarouselSliderState extends State<HomeCarouselSlider> {
       height: 60.r,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: AppColors.primaryGradient,
-        ),
+        gradient: LinearGradient(colors: AppColors.primaryGradient),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.primary,
-            blurRadius: 10,
-            spreadRadius: 1,
-          ),
+          BoxShadow(color: AppColors.primary, blurRadius: 10, spreadRadius: 1),
         ],
       ),
       child: IconButton(

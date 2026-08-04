@@ -7,18 +7,19 @@ import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/video_source_model.dart';
-import '../models/subtitle_style_options.dart';
 import '../models/watch_media_model.dart';
 import '../services/watch_history_service.dart';
-import '../services/subtitle_service.dart';
-import '../services/open_subtitles_service.dart';
-import '../utils/subtitle_parser.dart';
+import '../../features/subtitles/domain/entities/subtitle_style_options.dart';
+import '../../features/subtitles/data/datasources/wyzie_subtitle_service.dart';
+import '../../features/subtitles/data/datasources/open_subtitles_service.dart';
+import '../../features/subtitles/data/datasources/subtitle_parser.dart';
+import '../../features/subtitles/data/models/subtitle_model.dart';
 import '../../features/subtitles/presentation/cubit/subtitle_cubit.dart';
 import '../../features/subtitles/data/repositories/subtitle_repository_impl.dart';
+import '../../features/subtitles/presentation/widgets/subtitles_bottom_sheet.dart';
+import '../../features/subtitles/presentation/widgets/subtitle_settings_bottom_sheet.dart';
 import 'custom_snackbar.dart';
 import 'player_error_widget.dart';
-import 'subtitles_bottom_sheet.dart';
-import 'subtitle_settings_bottom_sheet.dart';
 import 'quality_selection_bottom_sheet.dart';
 import 'player_controls_overlay.dart';
 
@@ -116,7 +117,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
   Map<String, String> _getHeaders(String url) {
     final Map<String, String> headers = {
       'User-Agent':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     };
 
     final lowerUrl = url.toLowerCase();
@@ -174,7 +175,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
       // Handle initial subtitle
       if (widget.initialSubtitle != null) {
         final initialSub = widget.source.subtitles.firstWhere(
-              (s) => s.language == widget.initialSubtitle,
+          (s) => s.language == widget.initialSubtitle,
           orElse: () => SubtitleModel(),
         );
         if (initialSub.url != null) {
@@ -329,7 +330,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
     if (_subtitleCues.isNotEmpty) {
       final position = _videoPlayerController!.value.position;
       final currentCue = _subtitleCues.lastWhere(
-            (cue) => position >= cue.start && position <= cue.end,
+        (cue) => position >= cue.start && position <= cue.end,
         orElse: () =>
             SubtitleCue(start: Duration.zero, end: Duration.zero, text: ''),
       );

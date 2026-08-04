@@ -74,4 +74,3 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
     emit(const ForgotPasswordInitial());
   }
 }
-

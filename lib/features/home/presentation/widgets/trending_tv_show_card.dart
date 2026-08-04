@@ -69,16 +69,21 @@ class TrendingTVShowCard extends StatelessWidget {
                   top: 12.h,
                   right: 12.w,
                   child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.star_rounded,
-                            color: Colors.amber, size: 14.r),
+                        Icon(
+                          Icons.star_rounded,
+                          color: Colors.amber,
+                          size: 14.r,
+                        ),
                         SizedBox(width: 4.w),
                         Text(
                           tvShow.voteAverage?.toStringAsFixed(1) ?? 'N/A',

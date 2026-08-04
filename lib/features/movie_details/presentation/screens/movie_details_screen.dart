@@ -108,8 +108,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     builder: (context, watchlistState) {
                       bool isInWatchlist = false;
                       if (watchlistState is WatchlistLoaded) {
-                        isInWatchlist = watchlistState.movies
-                            .any((m) => m.id == widget.movieId);
+                        isInWatchlist = watchlistState.movies.any(
+                          (m) => m.id == widget.movieId,
+                        );
                       }
 
                       // Check if movie is upcoming
@@ -117,8 +118,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       if (movieDetails.releaseDate != null &&
                           movieDetails.releaseDate!.isNotEmpty) {
                         try {
-                          final releaseDate =
-                              DateTime.parse(movieDetails.releaseDate!);
+                          final releaseDate = DateTime.parse(
+                            movieDetails.releaseDate!,
+                          );
                           isComingSoon = releaseDate.isAfter(DateTime.now());
                         } catch (_) {
                           // Handle parse error if necessary
@@ -139,8 +141,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         },
                         onAddToWatchlistPressed: () {
                           context.read<WatchlistCubit>().toggleWatchlist(
-                                _convertToMovie(movieDetails),
-                              );
+                            _convertToMovie(movieDetails),
+                          );
                         },
                       );
                     },
