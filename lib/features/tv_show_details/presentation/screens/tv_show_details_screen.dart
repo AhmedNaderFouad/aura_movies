@@ -10,7 +10,8 @@ import '../../../../core/utils/watch_now_handler.dart';
 import '../cubit/tv_show_details_cubit.dart';
 import '../cubit/tv_show_details_state.dart';
 import '../../domain/entities/tv_show_details.dart';
-import 'package:aura_movies/features/movie_details/presentation/widgets/synopsis_section_widget.dart';
+import 'package:aura_movies/core/widgets/media_synopsis_widget.dart';
+import 'package:aura_movies/core/widgets/shimmer_loading_widget.dart';
 import 'package:aura_movies/features/watchlist/presentation/cubit/watchlist_cubit.dart';
 import 'package:aura_movies/features/watchlist/presentation/cubit/watchlist_state.dart';
 import 'package:aura_movies/features/movie_details/presentation/widgets/action_buttons_widget.dart';
@@ -74,9 +75,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       body: BlocBuilder<TVShowDetailsCubit, TVShowDetailsState>(
         builder: (context, state) {
           if (state is TVShowDetailsLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
+            return _buildLoadingWidget();
           } else if (state is TVShowDetailsLoaded) {
             final details = state.details;
             final isComingSoon = _isComingSoon(details.firstAirDate);
@@ -154,7 +153,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     ),
                   ),
 
-                  SynopsisSectionWidget(overview: details.overview),
+                  MediaSynopsisWidget(overview: details.overview),
 
                   BlocConsumer<WatchlistCubit, WatchlistState>(
                     listener: (context, state) {
@@ -335,6 +334,130 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           }
           return const SizedBox.shrink();
         },
+      ),
+    );
+  }
+
+  Widget _buildLoadingWidget() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header shimmer
+          ShimmerLoadingWidget(
+            width: double.infinity,
+            height: 280.h,
+            borderRadius: 0,
+          ),
+          SizedBox(height: 24.h),
+          // Info section shimmer
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerLoadingWidget(
+                  width: 250.w,
+                  height: 32.h,
+                  borderRadius: 4.0,
+                ),
+                SizedBox(height: 16.h),
+                ShimmerLoadingWidget(
+                  width: 100.w,
+                  height: 20.h,
+                  borderRadius: 4.0,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 24.h),
+          // Synopsis card shimmer
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: ShimmerLoadingWidget(
+              width: double.infinity,
+              height: 150.h,
+              borderRadius: 24.0,
+            ),
+          ),
+          SizedBox(height: 24.h),
+          // Buttons shimmer
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: ShimmerLoadingWidget(
+              width: double.infinity,
+              height: 56.h,
+              borderRadius: 30.0,
+            ),
+          ),
+          SizedBox(height: 32.h),
+          // Seasons & Episodes section shimmer
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ShimmerLoadingWidget(
+                      width: 100.w,
+                      height: 24.h,
+                      borderRadius: 4.0,
+                    ),
+                    ShimmerLoadingWidget(
+                      width: 120.w,
+                      height: 36.h,
+                      borderRadius: 8.0,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
+                // Shimmer Episode items
+                ...List.generate(3, (index) => _buildShimmerEpisodeItem()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerEpisodeItem() {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16.h),
+      padding: EdgeInsets.all(12.r),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Row(
+        children: [
+          ShimmerLoadingWidget(
+            width: 120.w,
+            height: 80.h,
+            borderRadius: 8.r,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerLoadingWidget(
+                  width: 150.w,
+                  height: 16.h,
+                  borderRadius: 4.r,
+                ),
+                SizedBox(height: 12.h),
+                ShimmerLoadingWidget(
+                  width: 80.w,
+                  height: 32.h,
+                  borderRadius: 12.r,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

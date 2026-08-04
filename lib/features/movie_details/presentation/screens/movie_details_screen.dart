@@ -5,7 +5,6 @@ import 'package:aura_movies/core/theme/app_colors.dart';
 import 'package:aura_movies/core/widgets/custom_app_bar.dart';
 import 'package:aura_movies/core/widgets/app_back_button.dart';
 import 'package:aura_movies/core/widgets/custom_snackbar.dart';
-import 'package:aura_movies/core/routing/routes.dart';
 import '../../domain/entities/movie_credits.dart';
 import '../../../home/domain/entities/movie.dart';
 import '../../domain/entities/movie_details.dart';
@@ -18,8 +17,8 @@ import '../widgets/details_section_widget.dart';
 import '../widgets/director_section_widget.dart';
 import '../widgets/movie_details_header_widget.dart';
 import '../widgets/movie_info_section_widget.dart';
-import '../widgets/shimmer_loading_widget.dart';
-import '../widgets/synopsis_section_widget.dart';
+import '../../../../core/widgets/shimmer_loading_widget.dart';
+import '../../../../core/widgets/media_synopsis_widget.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
 import '../../../../core/utils/watch_now_handler.dart';
 
@@ -148,7 +147,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   ),
                   SizedBox(height: 16.h),
                   // Synopsis Section
-                  SynopsisSectionWidget(
+                  MediaSynopsisWidget(
                     tagline: movieDetails.tagline,
                     overview: movieDetails.overview,
                   ),
