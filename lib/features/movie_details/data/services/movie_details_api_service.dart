@@ -24,4 +24,13 @@ class MovieDetailsApiService {
       rethrow;
     }
   }
+
+  Future<dynamic> getMovieRecommendations(int movieId) async {
+    try {
+      final response = await _dio.get('/movie/$movieId/recommendations');
+      return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

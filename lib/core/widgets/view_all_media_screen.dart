@@ -4,8 +4,7 @@ import '../theme/app_colors.dart';
 import '../routing/routes.dart';
 import '../../features/home/domain/entities/movie.dart';
 import '../../features/home/domain/entities/tv_show.dart';
-import '../../features/home/presentation/widgets/trending_movie_card.dart';
-import '../../features/home/presentation/widgets/trending_tv_show_card.dart';
+import '../../features/home/presentation/widgets/trending_card.dart';
 
 class ViewAllMediaScreen extends StatelessWidget {
   final String sectionTitle;
@@ -91,8 +90,11 @@ class ViewAllMediaScreen extends StatelessWidget {
                   // We pass a constant index or similar to avoid distracting background colors
                   // if desired, but here we'll use actual index for grid positioning.
                   if (item is Movie) {
-                    return TrendingMovieCard(
-                      movie: item,
+                    return TrendingCard(
+                      posterPath: item.posterPath,
+                      voteAverage: item.voteAverage,
+                      title: item.title,
+                      genreIds: item.genreIds,
                       index:
                           index +
                           10, // Offset to avoid special first-item color if unwanted
@@ -103,15 +105,19 @@ class ViewAllMediaScreen extends StatelessWidget {
                       ),
                     );
                   } else {
-                    return TrendingTVShowCard(
-                      tvShow: item as TVShow,
+                    final tvShow = item as TVShow;
+                    return TrendingCard(
+                      posterPath: tvShow.posterPath,
+                      voteAverage: tvShow.voteAverage,
+                      title: tvShow.name,
+                      genreIds: tvShow.genreIds,
                       index:
                           index +
                           10, // Offset to avoid special first-item color
                       onTap: () => Navigator.pushNamed(
                         context,
                         Routes.tvShowDetails,
-                        arguments: item.id,
+                        arguments: tvShow.id,
                       ),
                     );
                   }

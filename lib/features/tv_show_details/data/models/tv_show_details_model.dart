@@ -9,6 +9,7 @@ class TVShowDetailsModel extends TVShowDetails {
     String? backdropPath,
     required double voteAverage,
     String? firstAirDate,
+    required String originalLanguage,
     required List<SeasonModel> seasons,
   }) : super(
          id: id,
@@ -18,6 +19,7 @@ class TVShowDetailsModel extends TVShowDetails {
          backdropPath: backdropPath,
          voteAverage: voteAverage,
          firstAirDate: firstAirDate,
+         originalLanguage: originalLanguage,
          seasons: seasons,
        );
 
@@ -30,6 +32,7 @@ class TVShowDetailsModel extends TVShowDetails {
       backdropPath: json['backdrop_path'],
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       firstAirDate: json['first_air_date'],
+      originalLanguage: json['original_language'] ?? 'en',
       seasons:
           (json['seasons'] as List?)
               ?.map((s) => SeasonModel.fromJson(s))

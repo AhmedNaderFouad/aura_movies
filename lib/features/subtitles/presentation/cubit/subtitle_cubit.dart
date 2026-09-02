@@ -17,6 +17,12 @@ class SubtitleCubit extends Cubit<SubtitleState> {
     int? season,
     int? episode,
   }) async {
+    // Prevent duplicate calls if already loading or already has data
+    if (state.isLoading ||
+        (state.wyzieSubtitles.isNotEmpty && state.openSubtitles.isNotEmpty)) {
+      return;
+    }
+
     emit(
       state.copyWith(
         isLoading: true,

@@ -1,8 +1,10 @@
 import '../../domain/entities/movie_details.dart';
 import '../../domain/entities/movie_credits.dart';
+import '../../../home/domain/entities/movie.dart';
 import '../../domain/repositories/movie_details_repository.dart';
 import '../models/movie_details_model.dart';
 import '../models/movie_credits_model.dart';
+import '../../../home/data/models/movie_model.dart';
 import '../services/movie_details_api_service.dart';
 
 class MovieDetailsRepositoryImpl implements MovieDetailsRepository {
@@ -50,6 +52,17 @@ class MovieDetailsRepositoryImpl implements MovieDetailsRepository {
             )
             .toList(),
       );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Movie>> getMovieRecommendations(int movieId) async {
+    try {
+      final data = await apiService.getMovieRecommendations(movieId);
+      final List results = data['results'] ?? [];
+      return results.map((m) => MovieModel.fromJson(m)).toList();
     } catch (e) {
       rethrow;
     }

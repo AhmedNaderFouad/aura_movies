@@ -18,11 +18,16 @@ class MovieDetailsLoading extends MovieDetailsState {
 class MovieDetailsLoaded extends MovieDetailsState {
   final MovieDetails movieDetails;
   final MovieCreditsEntity? credits;
+  final List<Movie> recommendations;
 
-  const MovieDetailsLoaded(this.movieDetails, {this.credits});
+  const MovieDetailsLoaded(
+    this.movieDetails, {
+    this.credits,
+    this.recommendations = const [],
+  });
 
   @override
-  List<Object?> get props => [movieDetails, credits];
+  List<Object?> get props => [movieDetails, credits, recommendations];
 }
 
 class MovieDetailsError extends MovieDetailsState {

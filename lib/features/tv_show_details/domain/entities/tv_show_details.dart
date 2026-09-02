@@ -6,6 +6,7 @@ class TVShowDetails {
   final String? backdropPath;
   final double voteAverage;
   final String? firstAirDate;
+  final String originalLanguage;
   final List<Season> seasons;
 
   TVShowDetails({
@@ -16,6 +17,7 @@ class TVShowDetails {
     this.backdropPath,
     required this.voteAverage,
     this.firstAirDate,
+    required this.originalLanguage,
     required this.seasons,
   });
 }

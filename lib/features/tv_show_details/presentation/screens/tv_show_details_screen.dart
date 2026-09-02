@@ -307,6 +307,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                                     return _buildEpisodeItem(
                                       episode,
                                       state.selectedSeasonNumber,
+                                      details.originalLanguage,
                                     );
                                   },
                                 ),
@@ -462,7 +463,11 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     );
   }
 
-  Widget _buildEpisodeItem(Episode episode, int seasonNumber) {
+  Widget _buildEpisodeItem(
+    Episode episode,
+    int seasonNumber,
+    String originalLanguage,
+  ) {
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(12.r),
@@ -512,6 +517,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                       isTvShow: true,
                       season: seasonNumber,
                       episode: episode.episodeNumber,
+                      originalLanguage: originalLanguage,
                     );
                   },
                   icon: const Icon(Icons.play_arrow, size: 16),

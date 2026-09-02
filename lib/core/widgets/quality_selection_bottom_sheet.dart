@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
-
-class VideoQuality {
-  final String label;
-  final String url;
-  final bool isAuto;
-
-  VideoQuality({required this.label, required this.url, this.isAuto = false});
-}
+import '../models/video_source_model.dart';
 
 class QualitySelectionBottomSheet extends StatelessWidget {
   final List<VideoQuality> availableQualities;
@@ -55,7 +48,7 @@ class QualitySelectionBottomSheet extends StatelessWidget {
                   itemCount: availableQualities.length,
                   itemBuilder: (context, index) {
                     final quality = availableQualities[index];
-                    final isSelected = currentQuality?.url == quality.url;
+                    final isSelected = currentQuality == quality;
 
                     // Format "Auto (Recommended)" as "Auto"
                     final String displayLabel = quality.isAuto

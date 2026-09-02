@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../di/service_locator.dart';
 import '../../features/auth/presentation/screens/check_email_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 
@@ -7,7 +9,9 @@ import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/movie_details/presentation/screens/movie_details_screen.dart';
+import '../../features/movie_details/presentation/cubit/movie_details_cubit.dart';
 import '../../features/tv_show_details/presentation/screens/tv_show_details_screen.dart';
+import '../../features/tv_show_details/presentation/cubit/tv_show_details_cubit.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/watchlist/presentation/screens/watchlist_screen.dart';
 import '../widgets/view_all_media_screen.dart';
@@ -47,7 +51,14 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         );
       }
       return MaterialPageRoute(
-        builder: (_) => MovieDetailsScreen(movieId: movieId),
+        builder: (_) => BlocProvider(
+          create: (context) => MovieDetailsCubit(
+            getMovieDetailsUseCase: sl.getMovieDetailsUseCase,
+            getMovieCreditsUseCase: sl.getMovieCreditsUseCase,
+            getMovieRecommendationsUseCase: sl.getMovieRecommendationsUseCase,
+          ),
+          child: MovieDetailsScreen(movieId: movieId),
+        ),
       );
     case Routes.tvShowDetails:
       final tvShowId = settings.arguments as int?;
@@ -59,7 +70,11 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         );
       }
       return MaterialPageRoute(
-        builder: (_) => TVShowDetailsScreen(tvShowId: tvShowId),
+        builder: (_) => BlocProvider(
+          create: (context) =>
+              TVShowDetailsCubit(repository: sl.tvShowDetailsRepository),
+          child: TVShowDetailsScreen(tvShowId: tvShowId),
+        ),
       );
     case Routes.viewAllMedia:
       final args = settings.arguments as Map<String, dynamic>?;

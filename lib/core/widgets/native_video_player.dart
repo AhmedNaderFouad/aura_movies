@@ -1,14 +1,18 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:dio/dio.dart';
-import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/video_source_model.dart';
 import '../models/watch_media_model.dart';
+import '../services/media_playback_service.dart';
 import '../services/watch_history_service.dart';
+import '../services/hls_quality_parser.dart';
+import '../utils/video_header_utility.dart';
 import '../../features/subtitles/domain/entities/subtitle_style_options.dart';
 import '../../features/subtitles/data/datasources/wyzie_subtitle_service.dart';
 import '../../features/subtitles/data/datasources/open_subtitles_service.dart';
@@ -18,6 +22,7 @@ import '../../features/subtitles/presentation/cubit/subtitle_cubit.dart';
 import '../../features/subtitles/data/repositories/subtitle_repository_impl.dart';
 import '../../features/subtitles/presentation/widgets/subtitles_bottom_sheet.dart';
 import '../../features/subtitles/presentation/widgets/subtitle_settings_bottom_sheet.dart';
+import './player/subtitle_overlay.dart';
 import 'custom_snackbar.dart';
 import 'player_error_widget.dart';
 import 'quality_selection_bottom_sheet.dart';
@@ -33,6 +38,8 @@ class NativeVideoPlayer extends StatefulWidget {
   final int? episodeNumber;
   final Duration? startPosition;
   final String? initialSubtitle;
+  final VideoPlayerController? preInitializedController;
+  final SubtitleCubit? preInitializedSubtitleCubit;
 
   const NativeVideoPlayer({
     super.key,
@@ -45,6 +52,8 @@ class NativeVideoPlayer extends StatefulWidget {
     this.episodeNumber,
     this.startPosition,
     this.initialSubtitle,
+    this.preInitializedController,
+    this.preInitializedSubtitleCubit,
   });
 
   @override
@@ -52,22 +61,33 @@ class NativeVideoPlayer extends StatefulWidget {
 }
 
 class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
+  // Controllers
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
-  final WatchHistoryService _watchHistoryService = WatchHistoryService();
 
+  // Services
+  final WatchHistoryService _watchHistoryService = WatchHistoryService();
+  final HlsQualityParser _qualityParser = HlsQualityParser();
+  late SubtitleCubit _subtitleCubit;
+
+  // State
   bool _hasError = false;
   bool _isInitializing = true;
   bool _showControls = false;
   bool _isBuffering = false;
+  bool _hasFetchedSubtitles = false;
+  bool _playbackAuthorized = false;
+  bool _isTransitionListenerAttached = false;
+  bool _routeTransitionStarted = false;
+  bool _routeTransitionComplete = false;
+  bool _hasLoggedFirstPlay = false;
   Timer? _hideTimer;
+  Timer? _subtitleTimer;
 
   SubtitleModel? _currentSubtitle;
   List<SubtitleCue> _subtitleCues = [];
   String _currentSubtitleText = '';
   SubtitleStyleOptions _subtitleStyle = const SubtitleStyleOptions();
-
-  late SubtitleCubit _subtitleCubit;
 
   List<VideoQuality> _availableQualities = [];
   VideoQuality? _selectedQuality;
@@ -75,27 +95,152 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    _subtitleCubit = SubtitleCubit(
-      SubtitleRepositoryImpl(
-        wyzieService: SubtitleService(),
-        openSubtitlesService: OpenSubtitlesService(),
-      ),
-    );
+    debugPrint('[PLAYBACK] Playback screen mounted');
+    _subtitleCubit =
+        widget.preInitializedSubtitleCubit ??
+        SubtitleCubit(
+          SubtitleRepositoryImpl(
+            wyzieService: SubtitleService(),
+            openSubtitlesService: OpenSubtitlesService(),
+          ),
+        );
+
     WakelockPlus.enable();
     _setFullScreen();
     _loadSubtitleSettings();
-    _initializePlayer(startAt: widget.startPosition);
-    _fetchSubtitles();
+
+    // Immediate Player Initialization
+    if (widget.preInitializedController != null &&
+        widget.preInitializedController!.value.isInitialized) {
+      _videoPlayerController = widget.preInitializedController;
+      debugPrint(
+        '[PLAYBACK] Using pre-initialized controller. isPlaying: ${_videoPlayerController!.value.isPlaying}',
+      );
+
+      // Force PAUSED state until transition is done
+      _videoPlayerController!.pause();
+      debugPrint('[PLAYBACK] Force pause applied in initState');
+
+      // Handle saved position for pre-initialized controller
+      if (widget.startPosition != null) {
+        _videoPlayerController!.seekTo(widget.startPosition!);
+        debugPrint(
+          '[PLAYBACK] Resume position applied: ${widget.startPosition}',
+        );
+      }
+
+      _setupChewie();
+      _videoPlayerController!.addListener(_onControllerUpdate);
+      _isInitializing = false;
+
+      // Still need to trigger qualities load if not present
+      if (_availableQualities.isEmpty) {
+        _loadQualities(widget.source.hlsUrl ?? '');
+      }
+
+      // Ensure subtitles are being fetched if not already started
+      _fetchSubtitles();
+    } else {
+      _initializePlayer(startAt: widget.startPosition);
+    }
   }
 
-  void _fetchSubtitles() {
-    _subtitleCubit.fetchSubtitles(
-      tmdbId: widget.mediaId.toString(),
-      isTv: widget.mediaType == 'tv',
-      season: widget.seasonNumber,
-      episode: widget.episodeNumber,
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isTransitionListenerAttached) {
+      _isTransitionListenerAttached = true;
+      final route = ModalRoute.of(context);
+
+      debugPrint('[PLAYBACK] Route animation listener attached');
+
+      if (route != null && route.animation != null) {
+        debugPrint(
+          '[PLAYBACK] Initial route animation state: ${route.animation!.status}',
+        );
+        debugPrint(
+          '[PLAYBACK] Initial route animation value: ${route.animation!.value}',
+        );
+
+        final animation = route.animation!;
+
+        void listener(AnimationStatus status) {
+          debugPrint('[PLAYBACK] Route animation status changed: $status');
+
+          if (status == AnimationStatus.forward) {
+            _routeTransitionStarted = true;
+            debugPrint('[PLAYBACK] Real push transition started');
+          }
+
+          if (status == AnimationStatus.completed) {
+            if (_routeTransitionStarted) {
+              debugPrint('[PLAYBACK] Real route transition completed');
+              _routeTransitionComplete = true;
+              _authorizePlayback();
+              animation.removeStatusListener(listener);
+            } else {
+              debugPrint(
+                '[PLAYBACK] Ignoring initial completed status, waiting for forward',
+              );
+            }
+          }
+        }
+
+        animation.addStatusListener(listener);
+
+        debugPrint('[PLAYBACK] Waiting for real route transition to start');
+      } else {
+        debugPrint(
+          '[PLAYBACK] No route animation found, authorizing immediately',
+        );
+        _routeTransitionComplete = true;
+        _authorizePlayback();
+      }
+    }
+  }
+
+  void _authorizePlayback() {
+    if (_playbackAuthorized) return;
+
+    if (!_routeTransitionComplete) {
+      debugPrint('[PLAYBACK] Authorization deferred: transition not complete');
+      return;
+    }
+
+    if (!mounted ||
+        _videoPlayerController == null ||
+        !_videoPlayerController!.value.isInitialized) {
+      debugPrint('[PLAYBACK] Authorization deferred: controller not ready');
+      return;
+    }
+
+    debugPrint('[PLAYBACK] Playback authorized');
+    _playbackAuthorized = true;
+    _videoPlayerController!.play();
+    _startSubtitleTimer();
+    debugPrint('[PLAYBACK] play() called');
+  }
+
+  void _setupChewie() {
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController!,
+      autoPlay: false, // Strictly controlled by authorization logic
+      looping: false,
+      aspectRatio: _videoPlayerController!.value.aspectRatio,
+      allowFullScreen: true,
+      allowMuting: true,
+      showControls: false,
+      showOptions: false,
+      placeholder: const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      ),
+      errorBuilder: (context, errorMessage) => PlayerErrorWidget(
+        onRetry: () => _initializePlayer(startAt: widget.startPosition),
+      ),
     );
   }
+
+  // --- Initialization & Lifecycle ---
 
   void _setFullScreen() {
     SystemChrome.setPreferredOrientations([
@@ -108,31 +253,16 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
   Future<void> _loadSubtitleSettings() async {
     final savedOptions = await SubtitleStyleOptions.load();
     if (mounted) {
-      setState(() {
-        _subtitleStyle = savedOptions;
-      });
+      setState(() => _subtitleStyle = savedOptions);
     }
-  }
-
-  Map<String, String> _getHeaders(String url) {
-    final Map<String, String> headers = {
-      'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    };
-
-    final lowerUrl = url.toLowerCase();
-    if (lowerUrl.contains('vidsrc')) {
-      headers['Referer'] = 'https://vidsrc.pm/';
-      headers['Origin'] = 'https://vidsrc.pm';
-    }
-    return headers;
   }
 
   Future<void> _initializePlayer({
     String? specificUrl,
+    String? specificAudioUrl,
     Duration? startAt,
   }) async {
-    final url = specificUrl ?? widget.source.hlsUrl;
+    String? url = specificUrl ?? widget.source.hlsUrl;
 
     if (url == null || url.isEmpty) {
       setState(() {
@@ -142,74 +272,41 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
       return;
     }
 
-    // Load qualities if not already loaded (only for the initial master URL)
+    // Load qualities if not already loaded
     if (_availableQualities.isEmpty && specificUrl == null) {
       _loadQualities(url);
     }
 
     try {
-      // Clean up existing controllers if switching quality
-      if (specificUrl != null) {
-        final oldVideoController = _videoPlayerController;
-        final oldChewieController = _chewieController;
-
+      if (specificUrl != null || _videoPlayerController != null) {
         _videoPlayerController?.removeListener(_onControllerUpdate);
-
-        oldVideoController?.dispose();
-        oldChewieController?.dispose();
+        _videoPlayerController?.dispose();
+        _chewieController?.dispose();
       }
 
-      final headers = {...widget.source.headers, ..._getHeaders(url)};
-
-      _videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(url),
-        httpHeaders: headers,
+      _videoPlayerController = await MediaPlaybackService.initializeController(
+        source: widget.source,
+        specificUrl: specificUrl,
+        specificAudioUrl: specificAudioUrl,
       );
-
-      await _videoPlayerController!.initialize();
 
       if (startAt != null) {
         await _videoPlayerController!.seekTo(startAt);
       }
 
-      // Handle initial subtitle
-      if (widget.initialSubtitle != null) {
-        final initialSub = widget.source.subtitles.firstWhere(
-          (s) => s.language == widget.initialSubtitle,
-          orElse: () => SubtitleModel(),
-        );
-        if (initialSub.url != null) {
-          _onSubtitleSelected(initialSub);
-        }
-      }
-
-      _chewieController = ChewieController(
-        videoPlayerController: _videoPlayerController!,
-        autoPlay: true,
-        looping: false,
-        aspectRatio: _videoPlayerController!.value.aspectRatio,
-        allowFullScreen: true,
-        allowMuting: true,
-        showControls: false, // We build our own exact replica controls
-        showOptions: false, // Disable default popup menu
-        placeholder: const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
-        errorBuilder: (context, errorMessage) {
-          return PlayerErrorWidget(
-            onRetry: () {
-              _initializePlayer(specificUrl: specificUrl, startAt: startAt);
-            },
-          );
-        },
-      );
+      _setupChewie();
 
       _videoPlayerController!.addListener(_onControllerUpdate);
 
+      // Ensure subtitles are fetched
+      _fetchSubtitles();
+
       if (mounted) {
-        setState(() {
-          _isInitializing = false;
-        });
+        setState(() => _isInitializing = false);
+
+        // Since we are likely already on screen (quality change or fallback),
+        // we can authorize immediately.
+        _authorizePlayback();
       }
     } catch (e) {
       debugPrint('Error initializing player: $e');
@@ -223,64 +320,151 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
   }
 
   Future<void> _loadQualities(String masterUrl) async {
-    final List<VideoQuality> qualities = [
-      VideoQuality(label: 'Auto (Recommended)', url: masterUrl, isAuto: true),
-    ];
-
-    try {
-      final headers = _getHeaders(masterUrl);
-      final response = await Dio().get(
-        masterUrl,
-        options: Options(headers: headers),
-      );
-
-      if (response.statusCode == 200) {
-        final content = response.data.toString();
-        final lines = content.split('\n');
-        for (int i = 0; i < lines.length; i++) {
-          final line = lines[i].trim();
-          if (line.startsWith('#EXT-X-STREAM-INF:')) {
-            String label = 'Unknown';
-            final resMatch = RegExp(r'RESOLUTION=(\d+x\d+)').firstMatch(line);
-            if (resMatch != null) {
-              final res = resMatch.group(1)!;
-              final height = res.split('x')[1];
-              label = '${height}p';
-            }
-
-            // Find the next non-empty line that doesn't start with #
-            String? variantUrl;
-            for (int j = i + 1; j < lines.length; j++) {
-              final nextLine = lines[j].trim();
-              if (nextLine.isNotEmpty && !nextLine.startsWith('#')) {
-                variantUrl = nextLine;
-                break;
-              }
-            }
-
-            if (variantUrl != null) {
-              if (!variantUrl.startsWith('http')) {
-                final uri = Uri.parse(masterUrl);
-                variantUrl = uri.resolve(variantUrl).toString();
-              }
-
-              if (!qualities.any((q) => q.label == label)) {
-                qualities.add(VideoQuality(label: label, url: variantUrl));
-              }
-            }
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('Error loading qualities: $e');
-    }
-
+    final qualities = await _qualityParser.parseQualities(
+      masterUrl,
+      widget.source,
+    );
     if (mounted) {
       setState(() {
         _availableQualities = qualities;
         _selectedQuality ??= qualities.first;
       });
     }
+  }
+
+  // --- Subtitles ---
+
+  void _fetchSubtitles() {
+    if (_hasFetchedSubtitles) return;
+    _hasFetchedSubtitles = true;
+
+    _subtitleCubit.fetchSubtitles(
+      tmdbId: widget.mediaId.toString(),
+      isTv: widget.mediaType == 'tv',
+      season: widget.seasonNumber,
+      episode: widget.episodeNumber,
+    );
+  }
+
+  Future<void> _onSubtitleSelected(SubtitleModel? subtitle) async {
+    if (subtitle == null) {
+      setState(() {
+        _currentSubtitle = null;
+        _subtitleCues = [];
+        _currentSubtitleText = '';
+      });
+      _subtitleCubit.selectSubtitle(null);
+      _startHideTimer();
+      return;
+    }
+
+    try {
+      String? url = subtitle.url;
+      if (subtitle.server == SubtitleServer.openSubtitles &&
+          subtitle.fileId != null) {
+        url = await _subtitleCubit.getOpenSubtitlesUrl(subtitle.fileId!) ?? url;
+      }
+
+      if (url == null) return;
+
+      final response = await Dio().get(
+        url,
+        options: Options(headers: {'User-Agent': 'AuraMovies v1.0.0'}),
+      );
+      if (response.statusCode == 200) {
+        final cues = SubtitleParser.parse(response.data.toString());
+        setState(() {
+          _currentSubtitle = subtitle;
+          _subtitleCues = cues;
+        });
+        _subtitleCubit.selectSubtitle(subtitle);
+      }
+    } catch (e) {
+      debugPrint('Error loading subtitle: $e');
+    }
+    _startHideTimer();
+  }
+
+  // --- UI Logic & Interactions ---
+
+  void _onControllerUpdate() {
+    if (!mounted || _videoPlayerController == null) return;
+
+    if (_videoPlayerController!.value.hasError) {
+      setState(() => _hasError = true);
+      return;
+    }
+
+    final currentBuffering = _videoPlayerController!.value.isBuffering;
+    if (currentBuffering != _isBuffering) {
+      setState(() => _isBuffering = currentBuffering);
+      if (currentBuffering) {
+        _stopSubtitleTimer();
+      } else if (_videoPlayerController!.value.isPlaying) {
+        _startSubtitleTimer();
+      }
+    }
+
+    if (_videoPlayerController!.value.isPlaying) {
+      _startSubtitleTimer();
+    } else {
+      _stopSubtitleTimer();
+    }
+
+    if (_videoPlayerController!.value.isPlaying && !_hasLoggedFirstPlay) {
+      _hasLoggedFirstPlay = true;
+      debugPrint(
+        '[PLAYBACK] First playing state detected at: ${_videoPlayerController!.value.position}',
+      );
+    }
+
+    if (_showControls) {
+      setState(() {});
+    }
+  }
+
+  void _startSubtitleTimer() {
+    if (_subtitleTimer != null || !mounted) return;
+    _subtitleTimer = Timer.periodic(const Duration(milliseconds: 50), (_) {
+      _updateSubtitles();
+    });
+  }
+
+  void _stopSubtitleTimer() {
+    _subtitleTimer?.cancel();
+    _subtitleTimer = null;
+  }
+
+  void _updateSubtitles() {
+    if (!mounted || _videoPlayerController == null || _subtitleCues.isEmpty) {
+      return;
+    }
+
+    final rawPosition = _videoPlayerController!.value.position;
+    final offsetMs = (_subtitleStyle.syncOffset * 1000).toInt();
+    final position = rawPosition + Duration(milliseconds: offsetMs);
+
+    final currentCue = _subtitleCues.lastWhere(
+      (cue) => position >= cue.start && position <= cue.end,
+      orElse: () =>
+          SubtitleCue(start: Duration.zero, end: Duration.zero, text: ''),
+    );
+
+    if (_currentSubtitleText != currentCue.text) {
+      setState(() => _currentSubtitleText = currentCue.text);
+    }
+  }
+
+  void _startHideTimer() {
+    _hideTimer?.cancel();
+    _hideTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _showControls = false);
+    });
+  }
+
+  void _toggleControls() {
+    setState(() => _showControls = !_showControls);
+    if (_showControls) _startHideTimer();
   }
 
   void _showQualitySelection() {
@@ -301,144 +485,21 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
         availableQualities: _availableQualities,
         currentQuality: _selectedQuality,
         onQualitySelected: (quality) {
-          if (_selectedQuality?.url == quality.url) return;
-
+          if (_selectedQuality == quality) return;
           final currentPos =
               _videoPlayerController?.value.position ?? Duration.zero;
-
           setState(() {
             _selectedQuality = quality;
             _isInitializing = true;
           });
-
-          _initializePlayer(specificUrl: quality.url, startAt: currentPos);
+          _initializePlayer(
+            specificUrl: quality.url,
+            specificAudioUrl: quality.audioUrl,
+            startAt: currentPos,
+          );
         },
       ),
     ).then((_) => _startHideTimer());
-  }
-
-  void _onControllerUpdate() {
-    if (!mounted || _videoPlayerController == null) return;
-
-    if (_videoPlayerController!.value.hasError) {
-      setState(() {
-        _hasError = true;
-      });
-      return;
-    }
-
-    if (_subtitleCues.isNotEmpty) {
-      final position = _videoPlayerController!.value.position;
-      final currentCue = _subtitleCues.lastWhere(
-        (cue) => position >= cue.start && position <= cue.end,
-        orElse: () =>
-            SubtitleCue(start: Duration.zero, end: Duration.zero, text: ''),
-      );
-
-      if (_currentSubtitleText != currentCue.text) {
-        setState(() {
-          _currentSubtitleText = currentCue.text;
-        });
-      }
-    }
-
-    // Refresh UI for position/duration or buffering state changes
-    final currentBuffering = _videoPlayerController!.value.isBuffering;
-    if (_showControls || currentBuffering != _isBuffering) {
-      _isBuffering = currentBuffering;
-      setState(() {});
-    }
-  }
-
-  void _startHideTimer() {
-    _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _showControls = false;
-        });
-      }
-    });
-  }
-
-  void _toggleControls() {
-    setState(() {
-      _showControls = !_showControls;
-    });
-    if (_showControls) {
-      _startHideTimer();
-    }
-  }
-
-  Future<void> _onSubtitleSelected(SubtitleModel? subtitle) async {
-    if (subtitle == null) {
-      setState(() {
-        _currentSubtitle = null;
-        _subtitleCues = [];
-        _currentSubtitleText = '';
-      });
-      _subtitleCubit.selectSubtitle(null);
-      _startHideTimer();
-      return;
-    }
-
-    try {
-      String? url = subtitle.url;
-      if (subtitle.server == SubtitleServer.openSubtitles &&
-          subtitle.fileId != null) {
-        debugPrint(
-          'NativeVideoPlayer: Getting OpenSubtitles download link for fileId: ${subtitle.fileId}',
-        );
-        final downloadUrl = await _subtitleCubit.getOpenSubtitlesUrl(
-          subtitle.fileId!,
-        );
-
-        if (downloadUrl != null) {
-          url = downloadUrl;
-        } else if (url != null) {
-          debugPrint(
-            'NativeVideoPlayer: Download endpoint failed or quota reached, using search fallback URL: $url',
-          );
-        }
-      }
-
-      if (url == null) {
-        debugPrint('NativeVideoPlayer: Failed to obtain subtitle URL');
-        return;
-      }
-
-      debugPrint('NativeVideoPlayer: Downloading subtitle from: $url');
-      final response = await Dio().get(
-        url,
-        options: Options(headers: {'User-Agent': 'AuraMovies v1.0.0'}),
-      );
-
-      if (response.statusCode == 200) {
-        final content = response.data.toString();
-        debugPrint(
-          'NativeVideoPlayer: Subtitle downloaded, length: ${content.length}',
-        );
-        final cues = SubtitleParser.parse(content);
-
-        if (cues.isEmpty) {
-          debugPrint('NativeVideoPlayer: Failed to parse subtitle cues');
-          return;
-        }
-
-        setState(() {
-          _currentSubtitle = subtitle;
-          _subtitleCues = cues;
-        });
-        _subtitleCubit.selectSubtitle(subtitle);
-      } else {
-        debugPrint(
-          'NativeVideoPlayer: Failed to download subtitle. Status: ${response.statusCode}',
-        );
-      }
-    } catch (e) {
-      debugPrint('Error loading subtitle: $e');
-    }
-    _startHideTimer();
   }
 
   void _showSubtitleSelection() {
@@ -450,14 +511,11 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
         value: _subtitleCubit,
         child: BlocBuilder<SubtitleCubit, SubtitleState>(
           builder: (context, state) {
-            // Combine built-in subtitles with Wyzie
-            final allWyzie = [
-              ...widget.source.subtitles,
-              ...state.wyzieSubtitles,
-            ];
-
             return SubtitlesBottomSheet(
-              wyzieSubtitles: allWyzie,
+              wyzieSubtitles: [
+                ...widget.source.subtitles,
+                ...state.wyzieSubtitles,
+              ],
               openSubtitles: state.openSubtitles,
               currentSubtitle: _currentSubtitle,
               onSubtitleSelected: _onSubtitleSelected,
@@ -493,29 +551,31 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
     final position = _videoPlayerController!.value.position;
     final duration = _videoPlayerController!.value.duration;
 
-    // Only save if we watched at least 10 seconds or 1%
-    if (position.inSeconds < 10) return;
+    if (position.inSeconds < 10) {
+      return;
+    }
 
-    final media = WatchMediaModel(
-      id: widget.mediaId,
-      title: widget.title,
-      posterPath: widget.posterPath,
-      mediaType: widget.mediaType,
-      lastPositionMs: position.inMilliseconds,
-      totalDurationMs: duration.inMilliseconds,
-      seasonNumber: widget.seasonNumber,
-      episodeNumber: widget.episodeNumber,
-      subtitleLanguageCode: _currentSubtitle?.language,
-      updatedAt: DateTime.now(),
+    await _watchHistoryService.saveProgress(
+      WatchMediaModel(
+        id: widget.mediaId,
+        title: widget.title,
+        posterPath: widget.posterPath,
+        mediaType: widget.mediaType,
+        lastPositionMs: position.inMilliseconds,
+        totalDurationMs: duration.inMilliseconds,
+        seasonNumber: widget.seasonNumber,
+        episodeNumber: widget.episodeNumber,
+        subtitleLanguageCode: _currentSubtitle?.language,
+        updatedAt: DateTime.now(),
+      ),
     );
-
-    await _watchHistoryService.saveProgress(media);
   }
 
   @override
   void dispose() {
     _saveProgress();
     _hideTimer?.cancel();
+    _stopSubtitleTimer();
     _videoPlayerController?.removeListener(_onControllerUpdate);
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
@@ -530,9 +590,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          _saveProgress();
-        }
+        if (didPop) _saveProgress();
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -541,52 +599,35 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
           behavior: HitTestBehavior.opaque,
           child: Stack(
             children: [
-              // Video Player
+              // 1. Video Player Layer
               if (_chewieController != null &&
                   _videoPlayerController!.value.isInitialized)
-                Center(child: Chewie(controller: _chewieController!)),
+                Center(
+                  child: AspectRatio(
+                    aspectRatio: _videoPlayerController!.value.aspectRatio,
+                    child: Chewie(controller: _chewieController!),
+                  ),
+                ),
 
-              // Custom Subtitle Overlay
-              if (_currentSubtitleText.isNotEmpty)
-                Positioned(
-                  bottom: _subtitleStyle.bottomPadding,
-                  left: 40,
-                  right: 40,
-                  child: IgnorePointer(
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(
-                            alpha: _subtitleStyle.backgroundOpacity,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          _currentSubtitleText,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: _subtitleStyle.textColor,
-                            fontSize: _subtitleStyle.fontSize,
-                            fontWeight: FontWeight.bold,
-                            shadows: const [
-                              Shadow(
-                                blurRadius: 10.0,
-                                color: Colors.black,
-                                offset: Offset(2, 2),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+              // 2. Loading / Buffering Indicator Layer
+              if (_isInitializing || _isBuffering)
+                Container(
+                  color: _isInitializing ? Colors.black : Colors.transparent,
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
                     ),
                   ),
                 ),
 
-              // Unified Controls & Center Hub
+              // 3. Subtitle Overlay Layer
+              SubtitleOverlay(
+                subtitleText: _currentSubtitleText,
+                style: _subtitleStyle,
+              ),
+
+              // 4. Controls & Interaction Layer
               if (_videoPlayerController != null)
                 BlocProvider.value(
                   value: _subtitleCubit,
@@ -611,7 +652,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
                   ),
                 ),
 
-              // Main Error State
+              // 5. Error State Layer
               if (_hasError)
                 PlayerErrorWidget(
                   onRetry: () {

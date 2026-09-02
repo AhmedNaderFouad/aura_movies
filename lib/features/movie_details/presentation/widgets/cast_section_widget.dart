@@ -26,7 +26,7 @@ class CastSectionWidget extends StatelessWidget {
               Icon(Icons.group_outlined, color: AppColors.primary, size: 20.sp),
               SizedBox(width: 8.w),
               Text(
-                'Top Cast',
+                'Cast',
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
@@ -37,23 +37,19 @@ class CastSectionWidget extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16.h),
-        // Cast List - 2x2 Grid
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: GridView.builder(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.w,
-            ),
-            itemCount: cast.length > 4 ? 4 : cast.length,
+        // Cast List - Horizontal Scroll
+        SizedBox(
+          height: 200.h,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.only(left: 16.w),
+            itemCount: cast.length,
             itemBuilder: (context, index) {
               final member = cast[index];
-              return CastCardWidget(castMember: member);
+              return Padding(
+                padding: EdgeInsets.only(right: 12.w),
+                child: CastCardWidget(castMember: member),
+              );
             },
           ),
         ),
@@ -75,16 +71,20 @@ class CastCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 120.w,
       padding: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E1E),
         borderRadius: BorderRadius.circular(16.r),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
         children: [
-          // Avatar
-          Expanded(
+          // Avatar - 1:1 Square
+          AspectRatio(
+            aspectRatio: 1,
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -109,7 +109,7 @@ class CastCardWidget extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 13.sp,
+              fontSize: 14.sp,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -120,7 +120,7 @@ class CastCardWidget extends StatelessWidget {
             castMember.character,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 11.sp, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
           ),
         ],
       ),

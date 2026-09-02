@@ -17,6 +17,7 @@ import '../widgets/details_section_widget.dart';
 import '../widgets/director_section_widget.dart';
 import '../widgets/movie_details_header_widget.dart';
 import '../widgets/movie_info_section_widget.dart';
+import '../widgets/recommendations_section_widget.dart';
 import '../../../../core/widgets/shimmer_loading_widget.dart';
 import '../../../../core/widgets/media_synopsis_widget.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
@@ -137,6 +138,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             imdbId: movieDetails.imdbId,
                             title: movieDetails.title,
                             isTvShow: false,
+                            originalLanguage: movieDetails.originalLanguage,
                           );
                         },
                         onAddToWatchlistPressed: () {
@@ -157,6 +159,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   // Top Cast Section - Using real data from API
                   if (credits != null && credits.cast.isNotEmpty)
                     CastSectionWidget(cast: credits.cast),
+                  SizedBox(height: 16.h),
+                  // Recommendations Section
+                  RecommendationsSectionWidget(
+                    recommendations: state.recommendations,
+                  ),
                   SizedBox(height: 12.h),
                   // Details Section
                   DetailsSectionWidget(movieDetails: movieDetails),
