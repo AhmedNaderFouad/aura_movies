@@ -14,6 +14,7 @@ class WatchMediaModel implements Media {
   final int? seasonNumber;
   final int? episodeNumber;
   final String? subtitleLanguageCode;
+  final String? originalLanguage;
   final DateTime updatedAt;
 
   WatchMediaModel({
@@ -26,6 +27,7 @@ class WatchMediaModel implements Media {
     this.seasonNumber,
     this.episodeNumber,
     this.subtitleLanguageCode,
+    this.originalLanguage,
     required this.updatedAt,
   });
 
@@ -54,6 +56,7 @@ class WatchMediaModel implements Media {
     'seasonNumber': seasonNumber,
     'episodeNumber': episodeNumber,
     'subtitleLanguageCode': subtitleLanguageCode,
+    'originalLanguage': originalLanguage,
     'updatedAt': updatedAt.toIso8601String(),
   };
 
@@ -68,6 +71,7 @@ class WatchMediaModel implements Media {
         seasonNumber: json['seasonNumber'],
         episodeNumber: json['episodeNumber'],
         subtitleLanguageCode: json['subtitleLanguageCode'],
+        originalLanguage: json['originalLanguage'],
         updatedAt: DateTime.parse(json['updatedAt']),
       );
 

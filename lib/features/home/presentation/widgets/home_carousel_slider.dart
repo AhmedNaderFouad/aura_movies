@@ -251,6 +251,7 @@ class _HomeCarouselSliderState extends State<HomeCarouselSlider> {
             context: context,
             tmdbId: item.id.toString(),
             title: isMovie ? item.title : item.name,
+            posterPath: item.posterPath,
             isTvShow: !isMovie,
             season: isMovie ? null : 1,
             episode: isMovie ? null : 1,

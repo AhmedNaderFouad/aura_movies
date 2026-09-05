@@ -63,8 +63,10 @@ class MediaPlaybackService {
     final headers = VideoHeaderUtility.getHeaders(url, source);
     debugPrint('MediaPlaybackService: Initializing with URL: $url');
 
-    // 1. Resolve direct Media Playlist
+    bool isHls = false;
     String finalUrl = url;
+
+    // 1. Resolve direct Media Playlist and Detect HLS
     try {
       final response = await _dio.get(
         url,
@@ -75,17 +77,22 @@ class MediaPlaybackService {
         ),
       );
 
-      if (response.statusCode == 200 &&
-          response.data.toString().contains('#EXT-X-STREAM-INF')) {
-        final lines = response.data.toString().split('\n');
-        for (var line in lines) {
-          final trimmed = line.trim();
-          if (trimmed.isNotEmpty && !trimmed.startsWith('#')) {
-            finalUrl = Uri.parse(url).resolve(trimmed).toString();
-            debugPrint(
-              'MediaPlaybackService: Unwrapped Master Playlist to: $finalUrl',
-            );
-            break;
+      if (response.statusCode == 200) {
+        final content = response.data.toString();
+        if (content.contains('#EXTM3U')) {
+          isHls = true;
+          if (content.contains('#EXT-X-STREAM-INF')) {
+            final lines = content.split('\n');
+            for (var line in lines) {
+              final trimmed = line.trim();
+              if (trimmed.isNotEmpty && !trimmed.startsWith('#')) {
+                finalUrl = Uri.parse(url).resolve(trimmed).toString();
+                debugPrint(
+                  'MediaPlaybackService: Unwrapped Master Playlist to: $finalUrl',
+                );
+                break;
+              }
+            }
           }
         }
       }
@@ -97,6 +104,7 @@ class MediaPlaybackService {
 
     // 2. Handle side-loaded audio
     if (audioUrl != null && audioUrl.isNotEmpty) {
+      isHls = true; // Manifest we create below is HLS
       final unwrappedVideoUrl = await unwrapManifest(finalUrl, headers);
       final unwrappedAudioUrl = await unwrapManifest(audioUrl, headers);
 
@@ -115,7 +123,7 @@ $unwrappedVideoUrl
     }
 
     VideoFormat? hint =
-        (finalUrl.contains('.m3u8') || finalUrl.startsWith('data:'))
+        (isHls || finalUrl.contains('.m3u8') || finalUrl.startsWith('data:'))
         ? VideoFormat.hls
         : null;
 

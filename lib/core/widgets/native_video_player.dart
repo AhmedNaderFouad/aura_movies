@@ -36,6 +36,7 @@ class NativeVideoPlayer extends StatefulWidget {
   final String? posterPath;
   final int? seasonNumber;
   final int? episodeNumber;
+  final String? originalLanguage;
   final Duration? startPosition;
   final String? initialSubtitle;
   final VideoPlayerController? preInitializedController;
@@ -50,6 +51,7 @@ class NativeVideoPlayer extends StatefulWidget {
     this.posterPath,
     this.seasonNumber,
     this.episodeNumber,
+    this.originalLanguage,
     this.startPosition,
     this.initialSubtitle,
     this.preInitializedController,
@@ -566,6 +568,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
         seasonNumber: widget.seasonNumber,
         episodeNumber: widget.episodeNumber,
         subtitleLanguageCode: _currentSubtitle?.language,
+        originalLanguage: widget.originalLanguage,
         updatedAt: DateTime.now(),
       ),
     );

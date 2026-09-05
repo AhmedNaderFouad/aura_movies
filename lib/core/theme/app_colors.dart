@@ -8,7 +8,7 @@ class AppColors {
 
   // Backgrounds
   static const Color background = Color(0xFF0D0F14);
-  static const Color surface = Color(0xFF1E2128);
+  static const Color surface = Color(0xFF1E1E1E);
   static const Color darkGradientStart = Color(0xFF0D0F14);
   static const Color darkGradientEnd = Color(0xFF001F1A); // Dark green tint
 

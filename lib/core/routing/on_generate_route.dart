@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aura_movies/core/constants/media_type.dart';
 import '../di/service_locator.dart';
 import '../../features/auth/presentation/screens/check_email_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
-
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
-import '../../features/movie_details/presentation/screens/movie_details_screen.dart';
-import '../../features/movie_details/presentation/cubit/movie_details_cubit.dart';
-import '../../features/tv_show_details/presentation/screens/tv_show_details_screen.dart';
-import '../../features/tv_show_details/presentation/cubit/tv_show_details_cubit.dart';
+import '../../features/media_details/presentation/screens/media_details_screen.dart';
+import '../../features/media_details/presentation/cubit/media_details_cubit.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/watchlist/presentation/screens/watchlist_screen.dart';
 import '../widgets/view_all_media_screen.dart';
@@ -19,9 +17,6 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import 'routes.dart';
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
-  // Bonus: Handle arguments if needed
-  // final arguments = settings.arguments;
-
   switch (settings.name) {
     case Routes.splash:
       return MaterialPageRoute(builder: (_) => const SplashScreen());
@@ -43,37 +38,31 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     case Routes.profile:
       return MaterialPageRoute(builder: (_) => const ProfileScreen());
     case Routes.movieDetails:
-      final movieId = settings.arguments as int?;
-      if (movieId == null) {
-        return MaterialPageRoute(
-          builder: (_) =>
-              const Scaffold(body: Center(child: Text('Movie ID is required'))),
-        );
-      }
-      return MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (context) => MovieDetailsCubit(
-            getMovieDetailsUseCase: sl.getMovieDetailsUseCase,
-            getMovieCreditsUseCase: sl.getMovieCreditsUseCase,
-            getMovieRecommendationsUseCase: sl.getMovieRecommendationsUseCase,
-          ),
-          child: MovieDetailsScreen(movieId: movieId),
-        ),
-      );
     case Routes.tvShowDetails:
-      final tvShowId = settings.arguments as int?;
-      if (tvShowId == null) {
+      final id = settings.arguments as int?;
+      final type = settings.name == Routes.movieDetails
+          ? MediaType.movie
+          : MediaType.tv;
+      if (id == null) {
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('TV Show ID is required')),
+          builder: (_) => Scaffold(
+            body: Center(
+              child: Text(
+                '${type == MediaType.movie ? 'Movie' : 'TV Show'} ID is required',
+              ),
+            ),
           ),
         );
       }
       return MaterialPageRoute(
         builder: (_) => BlocProvider(
-          create: (context) =>
-              TVShowDetailsCubit(repository: sl.tvShowDetailsRepository),
-          child: TVShowDetailsScreen(tvShowId: tvShowId),
+          create: (context) => MediaDetailsCubit(
+            getMediaDetailsUseCase: sl.getMediaDetailsUseCase,
+            getMediaCreditsUseCase: sl.getMediaCreditsUseCase,
+            getMediaRecommendationsUseCase: sl.getMediaRecommendationsUseCase,
+            repository: sl.mediaDetailsRepository,
+          ),
+          child: MediaDetailsScreen(mediaId: id, mediaType: type),
         ),
       );
     case Routes.viewAllMedia:

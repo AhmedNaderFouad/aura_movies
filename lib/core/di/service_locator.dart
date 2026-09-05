@@ -9,12 +9,11 @@ import '../../../features/home/domain/usecases/get_popular_tv_shows_usecase.dart
 import '../../../features/search/data/services/search_api_service.dart';
 import '../../../features/search/data/repositories/search_repository_impl.dart';
 import '../../../features/search/domain/usecases/search_movies_usecase.dart';
-import '../../../features/movie_details/data/services/movie_details_api_service.dart';
-import '../../../features/movie_details/data/repositories/movie_details_repository_impl.dart';
-import '../../../features/movie_details/domain/usecases/get_movie_details_usecase.dart';
-import '../../../features/movie_details/domain/usecases/get_movie_credits_usecase.dart';
-import '../../../features/movie_details/domain/usecases/get_movie_recommendations_usecase.dart';
-import '../../../features/tv_show_details/data/repositories/tv_show_details_repository_impl.dart';
+import '../../../features/media_details/data/services/media_details_api_service.dart';
+import '../../../features/media_details/data/repositories/media_details_repository_impl.dart';
+import '../../../features/media_details/domain/usecases/get_media_details_usecase.dart';
+import '../../../features/media_details/domain/usecases/get_media_credits_usecase.dart';
+import '../../../features/media_details/domain/usecases/get_media_recommendations_usecase.dart';
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -33,13 +32,11 @@ class ServiceLocator {
   late final SearchRepositoryImpl searchRepository;
   late final SearchMoviesUseCase searchMoviesUseCase;
 
-  late final MovieDetailsApiService movieDetailsApiService;
-  late final MovieDetailsRepositoryImpl movieDetailsRepository;
-  late final GetMovieDetailsUseCase getMovieDetailsUseCase;
-  late final GetMovieCreditsUseCase getMovieCreditsUseCase;
-  late final GetMovieRecommendationsUseCase getMovieRecommendationsUseCase;
-
-  late final TVShowDetailsRepositoryImpl tvShowDetailsRepository;
+  late final MediaDetailsApiService mediaDetailsApiService;
+  late final MediaDetailsRepositoryImpl mediaDetailsRepository;
+  late final GetMediaDetailsUseCase getMediaDetailsUseCase;
+  late final GetMediaCreditsUseCase getMediaCreditsUseCase;
+  late final GetMediaRecommendationsUseCase getMediaRecommendationsUseCase;
 
   void init() {
     movieApiService = MovieApiService();
@@ -67,18 +64,14 @@ class ServiceLocator {
         sendTimeout: const Duration(seconds: 30),
       ),
     );
-    movieDetailsApiService = MovieDetailsApiService(dioClient);
-    movieDetailsRepository = MovieDetailsRepositoryImpl(
-      apiService: movieDetailsApiService,
+    mediaDetailsApiService = MediaDetailsApiService(dioClient);
+    mediaDetailsRepository = MediaDetailsRepositoryImpl(
+      apiService: mediaDetailsApiService,
     );
-    getMovieDetailsUseCase = GetMovieDetailsUseCase(movieDetailsRepository);
-    getMovieCreditsUseCase = GetMovieCreditsUseCase(movieDetailsRepository);
-    getMovieRecommendationsUseCase = GetMovieRecommendationsUseCase(
-      movieDetailsRepository,
-    );
-
-    tvShowDetailsRepository = TVShowDetailsRepositoryImpl(
-      apiService: movieApiService,
+    getMediaDetailsUseCase = GetMediaDetailsUseCase(mediaDetailsRepository);
+    getMediaCreditsUseCase = GetMediaCreditsUseCase(mediaDetailsRepository);
+    getMediaRecommendationsUseCase = GetMediaRecommendationsUseCase(
+      mediaDetailsRepository,
     );
   }
 }

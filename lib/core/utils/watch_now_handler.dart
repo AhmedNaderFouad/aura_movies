@@ -109,6 +109,7 @@ class WatchNowHandler {
               posterPath: posterPath,
               seasonNumber: season,
               episodeNumber: episode,
+              originalLanguage: originalLanguage,
               startPosition: startPosition,
               initialSubtitle: initialSubtitle,
               preInitializedController: controller,

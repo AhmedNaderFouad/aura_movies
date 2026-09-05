@@ -29,51 +29,64 @@ class HlsQualityParser {
     seenUrls.add(sourceAuto.url);
     seenLabels.add('auto');
 
-    if (!sourceAuto.url.contains('.m3u8')) return qualities;
+    // Attempt HLS Manifest parsing if it looks like HLS
+    if (sourceAuto.url.contains('.m3u8') ||
+        sourceAuto.isAuto ||
+        sourceAuto.label.toLowerCase().contains('auto')) {
+      try {
+        final headers = VideoHeaderUtility.getHeaders(sourceAuto.url, source);
+        final response = await _dio.get(
+          sourceAuto.url,
+          options: Options(
+            headers: headers,
+            followRedirects: true,
+            validateStatus: (status) => status! < 500,
+          ),
+        );
 
-    try {
-      final headers = VideoHeaderUtility.getHeaders(sourceAuto.url, source);
-      final response = await _dio.get(
-        sourceAuto.url,
-        options: Options(
-          headers: headers,
-          followRedirects: true,
-          validateStatus: (status) => status! < 500,
-        ),
-      );
+        if (response.statusCode == 200) {
+          final content = response.data.toString();
+          if (content.contains('#EXTM3U')) {
+            // Capture cookies for subsequent segment requests
+            final cookies = response.headers['set-cookie'];
+            if (cookies != null && cookies.isNotEmpty) {
+              final cookieString = cookies
+                  .map((c) => c.split(';')[0])
+                  .join('; ');
+              source.headers['Cookie'] = cookieString;
+              debugPrint('Captured CDN session cookies: $cookieString');
+            }
 
-      if (response.statusCode == 200) {
-        // Capture cookies for subsequent segment requests
-        final cookies = response.headers['set-cookie'];
-        if (cookies != null && cookies.isNotEmpty) {
-          final cookieString = cookies.map((c) => c.split(';')[0]).join('; ');
-          source.headers['Cookie'] = cookieString;
-          debugPrint('Captured CDN session cookies: $cookieString');
-        }
+            if (content.contains('#EXT-X-STREAM-INF:')) {
+              final lines = content.split('\n');
+              for (int i = 0; i < lines.length; i++) {
+                final line = lines[i].trim();
+                if (line.startsWith('#EXT-X-STREAM-INF:')) {
+                  String label = _extractLabelFromInf(line);
+                  String? variantUrl = _extractUrlFromInf(
+                    lines,
+                    i,
+                    sourceAuto.url,
+                  );
 
-        final content = response.data.toString();
-        if (content.contains('#EXT-X-STREAM-INF:')) {
-          final lines = content.split('\n');
-          for (int i = 0; i < lines.length; i++) {
-            final line = lines[i].trim();
-            if (line.startsWith('#EXT-X-STREAM-INF:')) {
-              String label = _extractLabelFromInf(line);
-              String? variantUrl = _extractUrlFromInf(lines, i, sourceAuto.url);
-
-              if (variantUrl != null) {
-                if (!seenUrls.contains(variantUrl) &&
-                    !seenLabels.contains(label.toLowerCase())) {
-                  qualities.add(VideoQuality(label: label, url: variantUrl));
-                  seenUrls.add(variantUrl);
-                  seenLabels.add(label.toLowerCase());
+                  if (variantUrl != null) {
+                    if (!seenUrls.contains(variantUrl) &&
+                        !seenLabels.contains(label.toLowerCase())) {
+                      qualities.add(
+                        VideoQuality(label: label, url: variantUrl),
+                      );
+                      seenUrls.add(variantUrl);
+                      seenLabels.add(label.toLowerCase());
+                    }
+                  }
                 }
               }
             }
           }
         }
+      } catch (e) {
+        debugPrint('HLS Quality Parsing Error: $e');
       }
-    } catch (e) {
-      debugPrint('HLS Quality Parsing Error: $e');
     }
 
     // Merge static qualities from source
@@ -104,8 +117,19 @@ class HlsQualityParser {
   String _extractLabelFromInf(String line) {
     final resMatch = RegExp(r'RESOLUTION=(\d+x\d+)').firstMatch(line);
     if (resMatch != null) {
-      return '${resMatch.group(1)!.split('x')[1]}p';
+      final int height = int.parse(resMatch.group(1)!.split('x')[1]);
+
+      // Map to standard resolution labels
+      if (height >= 2160) return '2160p';
+      if (height >= 1440) return '1440p';
+      if (height >= 1000) return '1080p'; // Captures 1080, 1072, etc.
+      if (height >= 700) return '720p'; // Captures 720, 800, etc.
+      if (height >= 450) return '480p'; // Captures 480, 534, etc.
+      if (height >= 340) return '360p'; // Captures 360, 400, etc.
+      if (height >= 200) return '240p';
+      return '${height}p';
     }
+
     final bwMatch = RegExp(r'BANDWIDTH=(\d+)').firstMatch(line);
     if (bwMatch != null) {
       final bw = int.parse(bwMatch.group(1)!);

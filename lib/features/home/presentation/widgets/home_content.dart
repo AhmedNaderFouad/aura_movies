@@ -8,6 +8,7 @@ import '../../domain/entities/movie.dart';
 import '../../domain/entities/tv_show.dart';
 import '../cubit/home_cubit.dart';
 import '../widgets/home_carousel_slider.dart';
+import '../widgets/continue_watching_section.dart';
 import '../widgets/trending_card.dart';
 import '../widgets/upcoming_movie_card.dart';
 import '../widgets/home_section_header.dart';
@@ -23,6 +24,7 @@ class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -69,7 +71,10 @@ class HomeContent extends StatelessWidget {
 
           SizedBox(height: 24.h),
 
-          // 2. Trending TV Shows Section
+          // 2. Continue Watching Section
+          const ContinueWatchingSection(),
+
+          // 3. Trending TV Shows Section
           HomeSectionHeader(
             title: 'Trending TV Shows',
             showViewAll: true,

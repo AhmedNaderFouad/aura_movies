@@ -32,75 +32,78 @@ class UpcomingMovieCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(24.r),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(24.r),
-              child: SizedBox(
-                height: 150.h,
-                width: double.infinity,
-                child: movie.backdropPath != null
-                    ? AppCachedNetworkImage(
-                        imageUrl:
-                            'https://image.tmdb.org/t/p/w500${movie.backdropPath}',
-                        placeholder: Image.asset(
-                          'assets/images/bg_img.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Container(color: Colors.grey[900]),
-              ),
-            ),
-            // Info
-            Padding(
-              padding: EdgeInsets.all(16.r),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          movie.title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24.r),
+                child: SizedBox(
+                  height: 150.h,
+                  width: double.infinity,
+                  child: movie.backdropPath != null
+                      ? AppCachedNetworkImage(
+                          imageUrl:
+                              'https://image.tmdb.org/t/p/w500${movie.backdropPath}',
+                          placeholder: Image.asset(
+                            'assets/images/bg_img.jpg',
+                            fit: BoxFit.cover,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          _formatReleaseDate(movie.releaseDate),
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 14.sp,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(8.r),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.notifications_none_rounded,
-                      color: Colors.white,
-                      size: 20.r,
-                    ),
-                  ),
-                ],
+                        )
+                      : Container(color: Colors.grey[900]),
+                ),
               ),
-            ),
-          ],
+              // Info
+              Padding(
+                padding: EdgeInsets.all(16.r),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            movie.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            _formatReleaseDate(movie.releaseDate),
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14.sp,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.notifications_none_rounded,
+                        color: Colors.white,
+                        size: 20.r,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

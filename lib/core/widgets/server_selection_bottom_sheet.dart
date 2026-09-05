@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
 import '../models/video_source_model.dart';
 import '../services/streaming_providers/vaplayer_provider.dart';
-import '../services/streaming_providers/hdghartv_provider.dart';
 import '../services/streaming_providers/onetouchtv_provider.dart';
 import '../services/streaming_providers/netmirror_provider.dart';
 import '../services/streaming_providers/showbox_provider.dart';
+import '../services/streaming_providers/zxcstreams_provider.dart';
 
 class ServerSelectionBottomSheet extends StatefulWidget {
   final String tmdbId;
@@ -37,7 +37,6 @@ class _ServerSelectionBottomSheetState
       'name': 'VaPlayer ok ',
       'icon': Icons.play_circle_filled_rounded,
     },
-    {'id': 'hdghartv', 'name': 'HDGharTV', 'icon': Icons.tv_rounded},
     {
       'id': 'onetouchtv',
       'name': 'OneTouchTV ok',
@@ -45,6 +44,7 @@ class _ServerSelectionBottomSheetState
     },
     {'id': 'netmirror', 'name': 'NetMirror ok', 'icon': Icons.layers_rounded},
     {'id': 'showbox', 'name': 'Showbox', 'icon': Icons.slideshow_rounded},
+    {'id': 'zxcstreams', 'name': 'ZXCStreams', 'icon': Icons.stream_rounded},
   ];
 
   bool _isLoading = false;
@@ -58,15 +58,6 @@ class _ServerSelectionBottomSheetState
       switch (providerId) {
         case 'vaplayer':
           sources = await VaPlayerProvider().fetchStreams(
-            tmdbId: widget.tmdbId,
-            type: widget.type,
-            season: widget.season,
-            episode: widget.episode,
-            originalLanguage: widget.originalLanguage,
-          );
-          break;
-        case 'hdghartv':
-          sources = await HDGharTVProvider().fetchStreams(
             tmdbId: widget.tmdbId,
             type: widget.type,
             season: widget.season,
@@ -94,6 +85,15 @@ class _ServerSelectionBottomSheetState
           break;
         case 'showbox':
           sources = await ShowboxProvider().fetchStreams(
+            tmdbId: widget.tmdbId,
+            type: widget.type,
+            season: widget.season,
+            episode: widget.episode,
+            originalLanguage: widget.originalLanguage,
+          );
+          break;
+        case 'zxcstreams':
+          sources = await ZXCStreamsProvider().fetchStreams(
             tmdbId: widget.tmdbId,
             type: widget.type,
             season: widget.season,
