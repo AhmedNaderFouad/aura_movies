@@ -44,16 +44,15 @@ class _ContinueWatchingSectionState extends State<ContinueWatchingSection> {
               title: 'Continue Watching',
               showViewAll: false,
             ),
-            SizedBox(
-              height: 300.h,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.only(left: 16.w),
-                itemCount: history.length,
-                itemBuilder: (context, index) {
-                  final item = history[index];
-                  return _buildContinueWatchingCard(context, item);
-                },
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.only(left: 16.w),
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: history
+                    .map((item) => _buildContinueWatchingCard(context, item))
+                    .toList(),
               ),
             ),
             SizedBox(height: 12.h),

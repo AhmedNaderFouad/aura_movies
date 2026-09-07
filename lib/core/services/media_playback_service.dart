@@ -3,12 +3,17 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 import '../models/video_source_model.dart';
-import '../utils/language_utils.dart';
 import '../utils/video_header_utility.dart';
 
 class MediaPlaybackService {
-  static final Dio _dio = Dio();
+  static final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 20),
+    ),
+  );
 
+  /// Resolves the final media URL, handling master playlist unwrapping for side-loaded audio
   static Future<String> unwrapManifest(
     String url,
     Map<String, String> headers,
@@ -25,11 +30,11 @@ class MediaPlaybackService {
 
       if (response.statusCode == 200) {
         final content = response.data.toString();
-        if (content.contains('#EXT-X-STREAM-INF:')) {
+        if (content.contains('#EXT-X-STREAM-INF')) {
           final lines = content.split('\n');
           for (int i = 0; i < lines.length; i++) {
             final line = lines[i].trim();
-            if (line.startsWith('#EXT-X-STREAM-INF:')) {
+            if (line.startsWith('#EXT-X-STREAM-INF')) {
               for (int j = i + 1; j < lines.length; j++) {
                 final nextLine = lines[j].trim();
                 if (nextLine.isNotEmpty && !nextLine.startsWith('#')) {
@@ -43,68 +48,63 @@ class MediaPlaybackService {
         }
       }
     } catch (e) {
-      debugPrint('Manifest unwrapping failed: $e');
+      debugPrint('[PLAYBACK] Manifest unwrapping failed: $e');
     }
     return url;
   }
 
+  /// Factory-like method to prepare a VideoPlayerController with optimized initialization
   static Future<VideoPlayerController> initializeController({
     required VideoSource source,
     String? specificUrl,
     String? specificAudioUrl,
   }) async {
-    String? url = specificUrl ?? source.hlsUrl;
+    final String url = specificUrl ?? source.hlsUrl ?? '';
     final String? audioUrl = specificAudioUrl ?? source.audioUrl;
 
-    if (url == null || url.isEmpty) {
-      throw Exception('URL is null or empty');
-    }
+    if (url.isEmpty) throw Exception('Media URL is missing');
 
     final headers = VideoHeaderUtility.getHeaders(url, source);
-    debugPrint('MediaPlaybackService: Initializing with URL: $url');
-
     bool isHls = false;
     String finalUrl = url;
 
-    // 1. Resolve direct Media Playlist and Detect HLS
-    try {
-      final response = await _dio.get(
-        url,
-        options: Options(
-          headers: headers,
-          followRedirects: true,
-          validateStatus: (status) => status! < 500,
-        ),
-      );
+    // 1. Optimized HLS Detection (only for 'Auto' or Master URLs)
+    // If specificUrl is provided, we assume it's already the desired quality
+    if (specificUrl == null) {
+      try {
+        final response = await _dio.head(
+          url,
+          options: Options(
+            headers: headers,
+            followRedirects: true,
+            validateStatus: (status) => status! < 500,
+          ),
+        );
 
-      if (response.statusCode == 200) {
-        final content = response.data.toString();
-        if (content.contains('#EXTM3U')) {
-          isHls = true;
-          if (content.contains('#EXT-X-STREAM-INF')) {
-            final lines = content.split('\n');
-            for (var line in lines) {
-              final trimmed = line.trim();
-              if (trimmed.isNotEmpty && !trimmed.startsWith('#')) {
-                finalUrl = Uri.parse(url).resolve(trimmed).toString();
-                debugPrint(
-                  'MediaPlaybackService: Unwrapped Master Playlist to: $finalUrl',
-                );
-                break;
-              }
-            }
+        if (response.statusCode == 200) {
+          final contentType =
+              response.headers.value('content-type')?.toLowerCase() ?? '';
+          if (contentType.contains('mpegurl') ||
+              contentType.contains('application/x-mpegurl') ||
+              url.contains('.m3u8')) {
+            isHls = true;
+          }
+
+          if (response.realUri.toString() != url) {
+            finalUrl = response.realUri.toString();
           }
         }
+      } catch (e) {
+        if (url.contains('.m3u8')) isHls = true;
       }
-    } catch (e) {
-      debugPrint(
-        'MediaPlaybackService: Pre-initialization unwrapping skipped/failed: $e',
-      );
+    } else {
+      // If we have a specific URL, it's likely a variant or direct link
+      if (url.contains('.m3u8')) isHls = true;
     }
 
-    // 2. Handle side-loaded audio
+    // 2. Handle Audio Track Mixing (requires manual manifest injection)
     if (audioUrl != null && audioUrl.isNotEmpty) {
-      isHls = true; // Manifest we create below is HLS
+      isHls = true;
       final unwrappedVideoUrl = await unwrapManifest(finalUrl, headers);
       final unwrappedAudioUrl = await unwrapManifest(audioUrl, headers);
 
@@ -118,32 +118,19 @@ $unwrappedVideoUrl
 ''';
       finalUrl =
           'data:application/x-mpegURL;base64,${base64Encode(utf8.encode(manifestContent))}';
-    } else if (finalUrl == url) {
-      finalUrl = await unwrapManifest(url, headers);
     }
 
-    VideoFormat? hint =
-        (isHls || finalUrl.contains('.m3u8') || finalUrl.startsWith('data:'))
+    final VideoFormat? formatHint = (isHls || finalUrl.startsWith('data:'))
         ? VideoFormat.hls
         : null;
 
     final controller = VideoPlayerController.networkUrl(
       Uri.parse(finalUrl),
-      httpHeaders: headers,
-      formatHint: hint,
+      httpHeaders: VideoHeaderUtility.getHeaders(finalUrl, source),
+      formatHint: formatHint,
     );
 
-    debugPrint('[PLAYBACK] Starting player initialization');
-    await controller.initialize();
-
-    debugPrint('[PLAYBACK] Player initialized. Forcing PAUSED state.');
-    await controller.pause(); // Explicitly ensure it's paused
-
-    final bool isActuallyPlaying = controller.value.isPlaying;
-    debugPrint(
-      '[PLAYBACK] Player initialization complete. isPlaying: $isActuallyPlaying',
-    );
-
+    debugPrint('[PLAYBACK] Prepared controller instance for: $finalUrl');
     return controller;
   }
 }

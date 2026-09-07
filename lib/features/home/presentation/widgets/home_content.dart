@@ -13,6 +13,8 @@ import '../widgets/trending_card.dart';
 import '../widgets/upcoming_movie_card.dart';
 import '../widgets/home_section_header.dart';
 import '../widgets/top_rated_section.dart';
+import '../widgets/brand_section.dart';
+import '../../domain/entities/brand_entity.dart';
 import '../../../watchlist/presentation/cubit/watchlist_cubit.dart';
 import '../../../watchlist/presentation/cubit/watchlist_state.dart';
 
@@ -166,7 +168,131 @@ class HomeContent extends StatelessWidget {
 
           SizedBox(height: 32.h),
 
-          // 5. Upcoming TV Shows Section
+          // 5. Popular Networks Section
+          BrandSection(
+            title: 'Popular Networks',
+            brands: const [
+              BrandEntity(
+                id: 213,
+                name: 'Netflix',
+                logoPath: 'assets/logos/netflix.png',
+                networkId: 213,
+                companyId: 213,
+                isNetwork: true,
+              ),
+              BrandEntity(
+                id: 1024,
+                name: 'Amazon Prime Video',
+                logoPath: 'assets/logos/amazon-prime-video.png',
+                networkId: 1024,
+                companyId: 20580,
+                isNetwork: true,
+              ),
+              BrandEntity(
+                id: 2739,
+                name: 'Disney+',
+                logoPath: 'assets/logos/disney.png',
+                networkId: 2739,
+                companyId: 6125,
+                isNetwork: true,
+              ),
+              BrandEntity(
+                id: 2552,
+                name: 'Apple TV+',
+                logoPath: 'assets/logos/apple-tv.png',
+                networkId: 2552,
+                companyId: 2552,
+                isNetwork: true,
+              ),
+              BrandEntity(
+                id: 49,
+                name: 'HBO',
+                logoPath: 'assets/logos/hbo.png',
+                networkId: 49,
+                companyId: 3268,
+                isNetwork: true,
+              ),
+              BrandEntity(
+                id: 453,
+                name: 'Hulu',
+                logoPath: 'assets/logos/hulu.png',
+                networkId: 453,
+                companyId: 453,
+                isNetwork: true,
+              ),
+              BrandEntity(
+                id: 67,
+                name: 'AMC',
+                logoPath: 'assets/logos/amc.png',
+                networkId: 67,
+                companyId: 67,
+                isNetwork: true,
+              ),
+            ],
+            onBrandTap: (brand) {
+              Navigator.pushNamed(
+                context,
+                Routes.discoverMedia,
+                arguments: brand,
+              );
+            },
+          ),
+
+          SizedBox(height: 32.h),
+
+          // 6. Popular Companies Section
+          BrandSection(
+            title: 'Popular Companies',
+            brands: const [
+              BrandEntity(
+                id: 420,
+                name: 'Marvel Studios',
+                logoPath: 'assets/logos/marvel-studios.png',
+                companyId: 420,
+              ),
+              BrandEntity(
+                id: 3,
+                name: 'Pixar Animation Studios',
+                logoPath: 'assets/logos/pixar.png',
+                companyId: 3,
+              ),
+              BrandEntity(
+                id: 2,
+                name: 'Walt Disney Pictures',
+                logoPath: 'assets/logos/walt-disney-pictures.png',
+                companyId: 2,
+              ),
+              BrandEntity(
+                id: 174,
+                name: 'Warner Bros.',
+                logoPath: 'assets/logos/wb-warner-bros.png',
+                companyId: 174,
+              ),
+              BrandEntity(
+                id: 4,
+                name: 'Paramount Pictures',
+                logoPath: 'assets/logos/paramount-pictures.png',
+                companyId: 4,
+              ),
+              BrandEntity(
+                id: 25,
+                name: '20th Century Fox',
+                logoPath: 'assets/logos/20th-century-fox.png',
+                companyId: 25,
+              ),
+            ],
+            onBrandTap: (brand) {
+              Navigator.pushNamed(
+                context,
+                Routes.discoverMedia,
+                arguments: brand,
+              );
+            },
+          ),
+
+          SizedBox(height: 32.h),
+
+          // 7. Upcoming TV Shows Section
           const HomeSectionHeader(title: 'Upcoming TV Shows'),
           SizedBox(
             height: 320.h,

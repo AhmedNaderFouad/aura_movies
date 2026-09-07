@@ -15,6 +15,7 @@ class VaPlayerProvider {
     int? season,
     int? episode,
     String? originalLanguage,
+    CancelToken? cancelToken,
   }) async {
     try {
       final Map<String, dynamic> queryParams = {
@@ -31,6 +32,7 @@ class VaPlayerProvider {
       final response = await _dio.get(
         '$_baseUrl/api/stream',
         queryParameters: queryParams,
+        cancelToken: cancelToken,
       );
 
       if (response.statusCode == 200 && response.data != null) {
@@ -56,18 +58,20 @@ class VaPlayerProvider {
               }
 
               nameToQualities.putIfAbsent(name, () => []);
-              final isDuplicate = nameToQualities[name]!.any(
-                (q) =>
-                    q.label.toLowerCase() == qualityLabel.toLowerCase() ||
-                    q.url == url,
+
+              // Only add if the URL is unique to prevent "fake" quality switching
+              final isDuplicateUrl = nameToQualities[name]!.any(
+                (q) => q.url == url,
               );
 
-              if (!isDuplicate) {
+              if (!isDuplicateUrl) {
                 nameToQualities[name]!.add(
                   VideoQuality(
                     label: qualityLabel,
                     url: url,
-                    isAuto: qualityLabel.toLowerCase().contains('auto'),
+                    isAuto:
+                        qualityLabel.toLowerCase().contains('auto') ||
+                        url.contains('master.m3u8'),
                   ),
                 );
               }

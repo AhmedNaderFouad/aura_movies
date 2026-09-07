@@ -12,6 +12,9 @@ import '../../features/media_details/presentation/screens/media_details_screen.d
 import '../../features/media_details/presentation/cubit/media_details_cubit.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/watchlist/presentation/screens/watchlist_screen.dart';
+import '../../features/home/presentation/screens/discover_media_screen.dart';
+import '../../features/home/presentation/cubit/discover_media_cubit.dart';
+import '../../features/home/domain/entities/brand_entity.dart';
 import '../widgets/view_all_media_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import 'routes.dart';
@@ -78,6 +81,23 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         builder: (_) => ViewAllMediaScreen(
           sectionTitle: args['title'] as String,
           mediaList: args['list'] as List<dynamic>,
+        ),
+      );
+    case Routes.discoverMedia:
+      final brand = settings.arguments as BrandEntity?;
+      if (brand == null) {
+        return MaterialPageRoute(
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text('Brand is required'))),
+        );
+      }
+      return MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (context) => DiscoverMediaCubit(
+            discoverMoviesUseCase: sl.discoverMoviesUseCase,
+            discoverTvShowsUseCase: sl.discoverTvShowsUseCase,
+          ),
+          child: DiscoverMediaScreen(brand: brand),
         ),
       );
     default:

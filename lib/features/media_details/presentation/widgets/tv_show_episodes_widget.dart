@@ -42,9 +42,8 @@ class TVShowEpisodesWidget extends StatelessWidget {
               final isSelected = season.seasonNumber == selectedSeasonNumber;
               return Padding(
                 padding: EdgeInsets.only(right: 12.w),
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () => onSeasonChanged(season.seasonNumber),
-                  borderRadius: BorderRadius.circular(20.r),
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     alignment: Alignment.center,

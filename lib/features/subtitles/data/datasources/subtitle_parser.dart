@@ -10,12 +10,16 @@ class SubtitleParser {
   static List<SubtitleCue> parse(String content) {
     if (content.isEmpty) return [];
 
-    // Detect format (very basic check)
+    List<SubtitleCue> cues;
     if (content.contains('WEBVTT')) {
-      return _parseVTT(content);
+      cues = _parseVTT(content);
     } else {
-      return _parseSRT(content);
+      cues = _parseSRT(content);
     }
+
+    // Ensure cues are sorted by start time for optimized binary search
+    cues.sort((a, b) => a.start.compareTo(b.start));
+    return cues;
   }
 
   static List<SubtitleCue> _parseSRT(String content) {

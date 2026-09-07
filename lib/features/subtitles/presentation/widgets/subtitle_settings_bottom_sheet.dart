@@ -140,25 +140,6 @@ class _SubtitleSettingsBottomSheetState
                   ),
                 ),
               ),
-
-              _buildSettingRow(
-                id: 'syncOffset',
-                label: 'Subtitle Sync',
-                value: '${_currentOptions.syncOffset.toStringAsFixed(1)}s',
-                slider: Slider(
-                  value: _currentOptions.syncOffset,
-                  min: -5,
-                  max: 5,
-                  divisions: 100,
-                  label: '${_currentOptions.syncOffset.toStringAsFixed(1)}s',
-                  onChangeStart: (_) =>
-                      setState(() => _activeDraggingSliderId = 'syncOffset'),
-                  onChangeEnd: (_) =>
-                      setState(() => _activeDraggingSliderId = null),
-                  onChanged: (val) =>
-                      _updateOptions(_currentOptions.copyWith(syncOffset: val)),
-                ),
-              ),
               const SizedBox(height: 16),
             ],
           ),

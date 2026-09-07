@@ -58,8 +58,11 @@ class AuraMoviesApp extends StatelessWidget {
                   ),
                 ),
                 BlocProvider(
-                  create: (context) =>
-                      SearchCubit(searchMoviesUseCase: sl.searchMoviesUseCase),
+                  create: (context) => SearchCubit(
+                    searchMoviesUseCase: sl.searchMoviesUseCase,
+                    discoverMoviesUseCase: sl.discoverMoviesUseCase,
+                    discoverTvShowsUseCase: sl.discoverTvShowsUseCase,
+                  ),
                 ),
                 BlocProvider(
                   create: (context) => WatchlistCubit(

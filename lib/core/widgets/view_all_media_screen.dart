@@ -18,40 +18,9 @@ class ViewAllMediaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Dynamic DateTime Sorting (Newest to Oldest)
     final sortedList = List.from(mediaList);
-    sortedList.sort((a, b) {
-      DateTime? dateA;
-      DateTime? dateB;
-
-      if (a is Movie) {
-        dateA = a.releaseDate != null
-            ? DateTime.tryParse(a.releaseDate!)
-            : null;
-      } else if (a is TVShow) {
-        dateA = a.firstAirDate != null
-            ? DateTime.tryParse(a.firstAirDate!)
-            : null;
-      }
-
-      if (b is Movie) {
-        dateB = b.releaseDate != null
-            ? DateTime.tryParse(b.releaseDate!)
-            : null;
-      } else if (b is TVShow) {
-        dateB = b.firstAirDate != null
-            ? DateTime.tryParse(b.firstAirDate!)
-            : null;
-      }
-
-      if (dateA == null && dateB == null) return 0;
-      if (dateA == null) return 1; // Nulls at the end
-      if (dateB == null) return -1;
-
-      return dateB.compareTo(dateA); // Newest to Oldest
-    });
-
-    // 2. Enforce 30-item maximum ceiling
+    // Remove the sorting logic to preserve the original search order from the API
+    // Enforce 30-item maximum ceiling
     final displayList = sortedList.take(30).toList();
 
     return Scaffold(
@@ -125,49 +94,49 @@ class ViewAllMediaScreen extends StatelessWidget {
               ),
             ),
 
-            // Custom Footer
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 40.h),
-              child: Column(
-                children: [
-                  Text(
-                    'See more ?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  InkWell(
-                    onTap: () => Navigator.pushNamed(context, Routes.search),
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24.w,
-                        vertical: 12.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: AppColors.primary,
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Text(
-                        'Search More Content',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+            if (sectionTitle != 'Search Results')
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 40.h),
+                child: Column(
+                  children: [
+                    Text(
+                      'See more ?',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 12.h),
+                    InkWell(
+                      onTap: () => Navigator.pushNamed(context, Routes.search),
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24.w,
+                          vertical: 12.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: AppColors.primary,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Text(
+                          'Search More Content',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
             SizedBox(height: 20.h),
           ],
         ),

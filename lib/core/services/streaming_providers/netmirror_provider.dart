@@ -15,6 +15,7 @@ class NetMirrorProvider {
     int? season,
     int? episode,
     String? originalLanguage,
+    CancelToken? cancelToken,
   }) async {
     try {
       final Map<String, dynamic> queryParams = {
@@ -31,6 +32,7 @@ class NetMirrorProvider {
       final response = await _dio.get(
         '$_baseUrl/api/stream',
         queryParameters: queryParams,
+        cancelToken: cancelToken,
       );
 
       if (response.statusCode == 200 && response.data != null) {
@@ -59,18 +61,20 @@ class NetMirrorProvider {
                   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
 
               nameToQualities.putIfAbsent(name, () => []);
-              final isDuplicate = nameToQualities[name]!.any(
-                (q) =>
-                    q.label.toLowerCase() == qualityLabel.toLowerCase() ||
-                    q.url == url,
+
+              // Filter by unique URL to avoid redundant master manifest labels
+              final isDuplicateUrl = nameToQualities[name]!.any(
+                (q) => q.url == url,
               );
 
-              if (!isDuplicate) {
+              if (!isDuplicateUrl) {
                 nameToQualities[name]!.add(
                   VideoQuality(
                     label: qualityLabel,
                     url: url,
-                    isAuto: qualityLabel.toLowerCase().contains('auto'),
+                    isAuto:
+                        qualityLabel.toLowerCase().contains('auto') ||
+                        url.contains('master.m3u8'),
                   ),
                 );
               }

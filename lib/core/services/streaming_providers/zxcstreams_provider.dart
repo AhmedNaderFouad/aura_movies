@@ -15,6 +15,7 @@ class ZXCStreamsProvider {
     int? season,
     int? episode,
     String? originalLanguage,
+    CancelToken? cancelToken,
   }) async {
     try {
       final Map<String, dynamic> queryParams = {
@@ -31,6 +32,7 @@ class ZXCStreamsProvider {
       final response = await _dio.get(
         '$_baseUrl/api/stream',
         queryParameters: queryParams,
+        cancelToken: cancelToken,
       );
 
       if (response.statusCode == 200 && response.data != null) {

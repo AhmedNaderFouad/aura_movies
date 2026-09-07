@@ -31,4 +31,56 @@ class SearchRepositoryImpl implements SearchRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<List<dynamic>> discoverMovies({
+    int page = 1,
+    int? genreId,
+    String? language,
+    int? year,
+    String sortBy = 'popularity.desc',
+    int? companyId,
+  }) async {
+    try {
+      final data = await apiService.discoverMovies(
+        page: page,
+        genreId: genreId,
+        language: language,
+        year: year,
+        sortBy: sortBy,
+        companyId: companyId,
+      );
+      final results = data['results'] as List? ?? [];
+      return results.map((item) => MovieModel.fromJson(item)).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<dynamic>> discoverTvShows({
+    int page = 1,
+    int? genreId,
+    String? language,
+    int? year,
+    String sortBy = 'popularity.desc',
+    int? networkId,
+    int? companyId,
+  }) async {
+    try {
+      final data = await apiService.discoverTvShows(
+        page: page,
+        genreId: genreId,
+        language: language,
+        year: year,
+        sortBy: sortBy,
+        networkId: networkId,
+        companyId: companyId,
+      );
+      final results = data['results'] as List? ?? [];
+      return results.map((item) => TVShowModel.fromJson(item)).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

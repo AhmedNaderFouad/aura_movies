@@ -4,8 +4,14 @@ import '../models/video_source_model.dart';
 import '../utils/video_header_utility.dart';
 
 class HlsQualityParser {
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
+  /// Parses a Master HLS playlist to extract variant stream URLs for different qualities
   Future<List<VideoQuality>> parseQualities(
     String masterUrl,
     VideoSource source,
@@ -14,7 +20,7 @@ class HlsQualityParser {
     final Set<String> seenUrls = {};
     final Set<String> seenLabels = {};
 
-    // 1. Determine the "Auto" entry
+    // 1. Identify the primary "Auto" (Master) URL
     VideoQuality? sourceAuto = source.qualities.firstWhere(
       (q) =>
           q.isAuto ||
@@ -23,13 +29,14 @@ class HlsQualityParser {
       orElse: () => VideoQuality(label: 'Auto', url: masterUrl, isAuto: true),
     );
 
+    // Always keep the master URL as 'Auto'
     qualities.add(
       VideoQuality(label: 'Auto', url: sourceAuto.url, isAuto: true),
     );
     seenUrls.add(sourceAuto.url);
     seenLabels.add('auto');
 
-    // Attempt HLS Manifest parsing if it looks like HLS
+    // 2. Parse Manifest if it looks like an HLS Master Playlist
     if (sourceAuto.url.contains('.m3u8') ||
         sourceAuto.isAuto ||
         sourceAuto.label.toLowerCase().contains('auto')) {
@@ -44,19 +51,10 @@ class HlsQualityParser {
           ),
         );
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 200 && response.data != null) {
           final content = response.data.toString();
           if (content.contains('#EXTM3U')) {
-            // Capture cookies for subsequent segment requests
-            final cookies = response.headers['set-cookie'];
-            if (cookies != null && cookies.isNotEmpty) {
-              final cookieString = cookies
-                  .map((c) => c.split(';')[0])
-                  .join('; ');
-              source.headers['Cookie'] = cookieString;
-              debugPrint('Captured CDN session cookies: $cookieString');
-            }
-
+            // Logic to parse variant playlists
             if (content.contains('#EXT-X-STREAM-INF:')) {
               final lines = content.split('\n');
               for (int i = 0; i < lines.length; i++) {
@@ -69,15 +67,20 @@ class HlsQualityParser {
                     sourceAuto.url,
                   );
 
-                  if (variantUrl != null) {
-                    if (!seenUrls.contains(variantUrl) &&
-                        !seenLabels.contains(label.toLowerCase())) {
-                      qualities.add(
-                        VideoQuality(label: label, url: variantUrl),
-                      );
-                      seenUrls.add(variantUrl);
-                      seenLabels.add(label.toLowerCase());
+                  if (variantUrl != null &&
+                      variantUrl != sourceAuto.url &&
+                      !seenUrls.contains(variantUrl)) {
+                    // Prevent label collision by adding bitrate if resolution is same
+                    String finalLabel = label;
+                    if (seenLabels.contains(label.toLowerCase())) {
+                      finalLabel = '$label (Alt)';
                     }
+
+                    qualities.add(
+                      VideoQuality(label: finalLabel, url: variantUrl),
+                    );
+                    seenUrls.add(variantUrl);
+                    seenLabels.add(finalLabel.toLowerCase());
                   }
                 }
               }
@@ -85,61 +88,65 @@ class HlsQualityParser {
           }
         }
       } catch (e) {
-        debugPrint('HLS Quality Parsing Error: $e');
+        debugPrint('[HLS_PARSER] Failed to parse manifest qualities: $e');
       }
     }
 
-    // Merge static qualities from source
+    // 3. Add static qualities from source that weren't found in manifest
+    // This is critical for providers like NetMirror/ZXC that provide direct links already
     for (var q in source.qualities) {
-      if (!q.isAuto && !seenLabels.contains(q.label.toLowerCase())) {
+      if (!q.isAuto && !seenUrls.contains(q.url)) {
         qualities.add(q);
         seenUrls.add(q.url);
         seenLabels.add(q.label.toLowerCase());
       }
     }
 
-    // Sorting
+    // 4. Sort: Auto first, then descending by resolution
     if (qualities.length > 1) {
       final auto = qualities.firstWhere((q) => q.isAuto);
-      final staticQuals = qualities.where((q) => !q.isAuto).toList();
-      staticQuals.sort(
-        (a, b) =>
-            _extractResolution(b.label).compareTo(_extractResolution(a.label)),
-      );
+      final rest = qualities.where((q) => !q.isAuto).toList();
+
+      rest.sort((a, b) {
+        final resA = _extractResolution(a.label);
+        final resB = _extractResolution(b.label);
+        if (resA != resB) return resB.compareTo(resA);
+        return a.label.compareTo(b.label);
+      });
+
       qualities.clear();
       qualities.add(auto);
-      qualities.addAll(staticQuals);
+      qualities.addAll(rest);
     }
 
     return qualities;
   }
 
   String _extractLabelFromInf(String line) {
+    // Attempt resolution first
     final resMatch = RegExp(r'RESOLUTION=(\d+x\d+)').firstMatch(line);
     if (resMatch != null) {
       final int height = int.parse(resMatch.group(1)!.split('x')[1]);
-
-      // Map to standard resolution labels
       if (height >= 2160) return '2160p';
       if (height >= 1440) return '1440p';
-      if (height >= 1000) return '1080p'; // Captures 1080, 1072, etc.
-      if (height >= 700) return '720p'; // Captures 720, 800, etc.
-      if (height >= 450) return '480p'; // Captures 480, 534, etc.
-      if (height >= 340) return '360p'; // Captures 360, 400, etc.
-      if (height >= 200) return '240p';
+      if (height >= 1040) return '1080p';
+      if (height >= 700) return '720p';
+      if (height >= 450) return '480p';
+      if (height >= 340) return '360p';
       return '${height}p';
     }
 
+    // Fallback to bandwidth
     final bwMatch = RegExp(r'BANDWIDTH=(\d+)').firstMatch(line);
     if (bwMatch != null) {
       final bw = int.parse(bwMatch.group(1)!);
-      if (bw > 5000000) return '2160p';
-      if (bw > 2500000) return '1080p';
-      if (bw > 1000000) return '720p';
+      if (bw > 5000000) return '4K';
+      if (bw > 2800000) return '1080p';
+      if (bw > 1200000) return '720p';
       if (bw > 600000) return '480p';
       return '360p';
     }
-    return 'Unknown';
+    return 'SD';
   }
 
   String? _extractUrlFromInf(List<String> lines, int index, String masterUrl) {

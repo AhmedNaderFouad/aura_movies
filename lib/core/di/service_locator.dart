@@ -9,6 +9,8 @@ import '../../../features/home/domain/usecases/get_popular_tv_shows_usecase.dart
 import '../../../features/search/data/services/search_api_service.dart';
 import '../../../features/search/data/repositories/search_repository_impl.dart';
 import '../../../features/search/domain/usecases/search_movies_usecase.dart';
+import '../../../features/search/domain/usecases/discover_movies_usecase.dart';
+import '../../../features/search/domain/usecases/discover_tv_shows_usecase.dart';
 import '../../../features/media_details/data/services/media_details_api_service.dart';
 import '../../../features/media_details/data/repositories/media_details_repository_impl.dart';
 import '../../../features/media_details/domain/usecases/get_media_details_usecase.dart';
@@ -31,6 +33,8 @@ class ServiceLocator {
   late final SearchApiService searchApiService;
   late final SearchRepositoryImpl searchRepository;
   late final SearchMoviesUseCase searchMoviesUseCase;
+  late final DiscoverMoviesUseCase discoverMoviesUseCase;
+  late final DiscoverTvShowsUseCase discoverTvShowsUseCase;
 
   late final MediaDetailsApiService mediaDetailsApiService;
   late final MediaDetailsRepositoryImpl mediaDetailsRepository;
@@ -50,6 +54,10 @@ class ServiceLocator {
     searchApiService = SearchApiService();
     searchRepository = SearchRepositoryImpl(apiService: searchApiService);
     searchMoviesUseCase = SearchMoviesUseCase(searchRepository);
+
+    // Initialize discovery use cases
+    discoverMoviesUseCase = DiscoverMoviesUseCase(searchRepository);
+    discoverTvShowsUseCase = DiscoverTvShowsUseCase(searchRepository);
 
     final dioClient = Dio(
       BaseOptions(

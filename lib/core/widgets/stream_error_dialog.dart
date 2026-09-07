@@ -2,25 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
 
-class PlayerErrorWidget extends StatelessWidget {
-  final VoidCallback onRetry;
-  final String errorMessage;
+class StreamErrorDialog extends StatelessWidget {
+  const StreamErrorDialog({super.key});
 
-  const PlayerErrorWidget({
-    super.key,
-    required this.onRetry,
-    this.errorMessage =
-        'This content is not available on the selected server right now. The server is working, but this content is unavailable there. Please try another server or choose something else.',
-  });
+  static void show(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.8),
+      builder: (context) => const StreamErrorDialog(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black.withOpacity(0.95),
-      padding: EdgeInsets.symmetric(horizontal: 40.w),
-      child: Center(
+    return Dialog(
+      backgroundColor: AppColors.surface,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: 45.w),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: EdgeInsets.all(8.w),
@@ -31,12 +34,12 @@ class PlayerErrorWidget extends StatelessWidget {
               child: Icon(
                 Icons.info_outline_rounded,
                 color: Colors.redAccent,
-                size: 40.sp,
+                size: 30.sp,
               ),
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 20.h),
             Text(
-              errorMessage,
+              'This content is not available on the selected server right now. The server is working, but this content is unavailable there. Please try another server or choose something else.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -45,15 +48,15 @@ class PlayerErrorWidget extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            SizedBox(height: 32.h),
+            SizedBox(height: 28.h),
             TextButton(
-              onPressed: onRetry,
+              onPressed: () => Navigator.pop(context),
               style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
                 foregroundColor: AppColors.primary,
+                padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.h),
               ),
               child: Text(
-                'RETRY',
+                'GOT IT',
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,

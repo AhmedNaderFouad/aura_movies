@@ -8,7 +8,8 @@ class SearchLoading extends SearchState {}
 
 class SearchSuccess extends SearchState {
   final List<dynamic> results;
-  SearchSuccess(this.results);
+  final bool isDiscover;
+  SearchSuccess(this.results, {this.isDiscover = false});
 }
 
 class SearchEmpty extends SearchState {}

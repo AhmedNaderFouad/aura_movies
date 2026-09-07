@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../theme/app_colors.dart';
 
 class PlayerControlsOverlay extends StatelessWidget {
-  final VideoPlayerController controller;
+  final VideoPlayerController? controller;
   final String title;
   final bool isVisible;
   final bool isInitializing;
@@ -14,7 +16,7 @@ class PlayerControlsOverlay extends StatelessWidget {
 
   const PlayerControlsOverlay({
     super.key,
-    required this.controller,
+    this.controller,
     required this.title,
     required this.isVisible,
     required this.isInitializing,
@@ -37,7 +39,10 @@ class PlayerControlsOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isBuffering = controller.value.isBuffering || isInitializing;
+    final bool isControllerReady =
+        controller != null && controller!.value.isInitialized;
+    final bool isBuffering =
+        isInitializing || (isControllerReady && controller!.value.isBuffering);
 
     return Stack(
       children: [
@@ -126,14 +131,14 @@ class PlayerControlsOverlay extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Replay 10s - Hidden during initial load
-                      if (!isInitializing)
+                      // Replay 10s
+                      if (isControllerReady)
                         IconButton(
                           onPressed: () {
                             final newPos =
-                                controller.value.position -
+                                controller!.value.position -
                                 const Duration(seconds: 10);
-                            controller.seekTo(
+                            controller!.seekTo(
                               newPos < Duration.zero ? Duration.zero : newPos,
                             );
                             onActionUserTap();
@@ -144,26 +149,26 @@ class PlayerControlsOverlay extends StatelessWidget {
                             size: 48,
                           ),
                         ),
-                      if (!isInitializing) const SizedBox(width: 48),
+                      if (isControllerReady) const SizedBox(width: 48),
 
-                      // Center Action: Play/Pause (Hidden if buffering to show spinner instead)
+                      // Center Action: Play/Pause
                       SizedBox(
                         width: 64,
                         height: 64,
-                        child: isBuffering
+                        child: !isControllerReady || isBuffering
                             ? const SizedBox.shrink()
                             : IconButton(
                                 onPressed: () {
-                                  if (controller.value.isPlaying) {
-                                    controller.pause();
+                                  if (controller!.value.isPlaying) {
+                                    controller!.pause();
                                   } else {
-                                    controller.play();
+                                    controller!.play();
                                   }
                                   onActionUserTap();
                                 },
                                 padding: EdgeInsets.zero,
                                 icon: Icon(
-                                  controller.value.isPlaying
+                                  controller!.value.isPlaying
                                       ? Icons.pause
                                       : Icons.play_arrow,
                                   color: Colors.white,
@@ -171,16 +176,16 @@ class PlayerControlsOverlay extends StatelessWidget {
                                 ),
                               ),
                       ),
-                      if (!isInitializing) const SizedBox(width: 48),
+                      if (isControllerReady) const SizedBox(width: 48),
 
-                      // Forward 10s - Hidden during initial load
-                      if (!isInitializing)
+                      // Forward 10s
+                      if (isControllerReady)
                         IconButton(
                           onPressed: () {
                             final newPos =
-                                controller.value.position +
+                                controller!.value.position +
                                 const Duration(seconds: 10);
-                            controller.seekTo(newPos);
+                            controller!.seekTo(newPos);
                             onActionUserTap();
                           },
                           icon: const Icon(
@@ -227,8 +232,8 @@ class PlayerControlsOverlay extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              controller.value.isInitialized
-                                  ? "${_formatDuration(controller.value.position)} / ${_formatDuration(controller.value.duration)}"
+                              isControllerReady
+                                  ? "${_formatDuration(controller!.value.position)} / ${_formatDuration(controller!.value.duration)}"
                                   : "00:00 / 00:00",
                               style: const TextStyle(
                                 color: Colors.white,
@@ -255,23 +260,23 @@ class PlayerControlsOverlay extends StatelessWidget {
                           trackShape: const RectangularSliderTrackShape(),
                         ),
                         child: Slider(
-                          value: controller.value.isInitialized
-                              ? controller.value.position.inMilliseconds
+                          value: isControllerReady
+                              ? controller!.value.position.inMilliseconds
                                     .toDouble()
                                     .clamp(
                                       0,
-                                      controller.value.duration.inMilliseconds
+                                      controller!.value.duration.inMilliseconds
                                           .toDouble(),
                                     )
                               : 0.0,
                           min: 0.0,
-                          max: controller.value.isInitialized
-                              ? controller.value.duration.inMilliseconds
+                          max: isControllerReady
+                              ? controller!.value.duration.inMilliseconds
                                     .toDouble()
                               : 0.0,
-                          onChanged: controller.value.isInitialized
+                          onChanged: isControllerReady
                               ? (value) {
-                                  controller.seekTo(
+                                  controller!.seekTo(
                                     Duration(milliseconds: value.toInt()),
                                   );
                                   onActionUserTap();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:dio/dio.dart';
 import '../theme/app_colors.dart';
 import '../models/video_source_model.dart';
 import '../services/streaming_providers/vaplayer_provider.dart';
@@ -7,6 +8,7 @@ import '../services/streaming_providers/onetouchtv_provider.dart';
 import '../services/streaming_providers/netmirror_provider.dart';
 import '../services/streaming_providers/showbox_provider.dart';
 import '../services/streaming_providers/zxcstreams_provider.dart';
+import 'stream_error_dialog.dart';
 
 class ServerSelectionBottomSheet extends StatefulWidget {
   final String tmdbId;
@@ -32,25 +34,30 @@ class ServerSelectionBottomSheet extends StatefulWidget {
 class _ServerSelectionBottomSheetState
     extends State<ServerSelectionBottomSheet> {
   final List<Map<String, dynamic>> _providers = [
-    {
-      'id': 'vaplayer',
-      'name': 'VaPlayer ok ',
-      'icon': Icons.play_circle_filled_rounded,
-    },
-    {
-      'id': 'onetouchtv',
-      'name': 'OneTouchTV ok',
-      'icon': Icons.touch_app_rounded,
-    },
-    {'id': 'netmirror', 'name': 'NetMirror ok', 'icon': Icons.layers_rounded},
-    {'id': 'showbox', 'name': 'Showbox', 'icon': Icons.slideshow_rounded},
-    {'id': 'zxcstreams', 'name': 'ZXCStreams', 'icon': Icons.stream_rounded},
+    {'id': 'vaplayer', 'name': 'NovaStream'},
+    {'id': 'zxcstreams', 'name': 'PulseStream'},
+    {'id': 'showbox', 'name': 'FluxStream'},
+    {'id': 'netmirror', 'name': 'LumaStream'},
+    {'id': 'onetouchtv', 'name': 'OneTouchTV'},
   ];
 
   bool _isLoading = false;
+  String? _selectedProviderId;
+  final CancelToken _cancelToken = CancelToken();
+
+  @override
+  void dispose() {
+    _cancelToken.cancel('User dismissed server selection');
+    super.dispose();
+  }
 
   Future<void> _handleProviderSelection(String providerId) async {
-    setState(() => _isLoading = true);
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+      _selectedProviderId = providerId;
+    });
 
     List<VideoSource> sources = [];
 
@@ -63,6 +70,7 @@ class _ServerSelectionBottomSheetState
             season: widget.season,
             episode: widget.episode,
             originalLanguage: widget.originalLanguage,
+            cancelToken: _cancelToken,
           );
           break;
         case 'onetouchtv':
@@ -72,6 +80,7 @@ class _ServerSelectionBottomSheetState
             season: widget.season,
             episode: widget.episode,
             originalLanguage: widget.originalLanguage,
+            cancelToken: _cancelToken,
           );
           break;
         case 'netmirror':
@@ -81,6 +90,7 @@ class _ServerSelectionBottomSheetState
             season: widget.season,
             episode: widget.episode,
             originalLanguage: widget.originalLanguage,
+            cancelToken: _cancelToken,
           );
           break;
         case 'showbox':
@@ -90,6 +100,7 @@ class _ServerSelectionBottomSheetState
             season: widget.season,
             episode: widget.episode,
             originalLanguage: widget.originalLanguage,
+            cancelToken: _cancelToken,
           );
           break;
         case 'zxcstreams':
@@ -99,141 +110,121 @@ class _ServerSelectionBottomSheetState
             season: widget.season,
             episode: widget.episode,
             originalLanguage: widget.originalLanguage,
+            cancelToken: _cancelToken,
           );
           break;
       }
     } catch (e) {
-      debugPrint('Error fetching from $providerId: $e');
+      if (e is DioException && e.type == DioExceptionType.cancel) return;
+      debugPrint('Error: $e');
     }
 
     if (mounted) {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _selectedProviderId = null;
+      });
       if (sources.isNotEmpty) {
-        // Return the first matching source (sorted by language matching logic in providers)
         Navigator.pop(context, sources.first);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('No streams found for $providerId'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+        StreamErrorDialog.show(context);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24.r),
-          topRight: Radius.circular(24.r),
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+    return Dialog(
+      backgroundColor: AppColors.surface,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32.r)),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(20.w, 32.h, 20.w, 24.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Select Streaming Server',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.sp,
-                  ),
-                ),
-                if (_isLoading)
-                  SizedBox(
-                    width: 20.w,
-                    height: 20.w,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primary,
-                    ),
-                  ),
-              ],
-            ),
-            SizedBox(height: 8.h),
             Text(
-              'Choose a provider to start watching',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                fontSize: 14.sp,
+              "If the selected server isn't working, try another one below.",
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 18.sp,
+                height: 1.3,
               ),
             ),
-            SizedBox(height: 24.h),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _providers.length,
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
-              itemBuilder: (context, index) {
-                final provider = _providers[index];
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _isLoading
-                        ? null
-                        : () => _handleProviderSelection(provider['id']),
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: Container(
-                      padding: EdgeInsets.all(16.w),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.border.withValues(alpha: 0.1),
-                          width: 1,
+            SizedBox(height: 28.h),
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(),
+                itemCount: _providers.length,
+                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                itemBuilder: (context, index) {
+                  final provider = _providers[index];
+                  final isSelected = _selectedProviderId == provider['id'];
+
+                  return Material(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(30.r),
+                    child: InkWell(
+                      onTap: _isLoading
+                          ? null
+                          : () => _handleProviderSelection(provider['id']),
+                      borderRadius: BorderRadius.circular(30.r),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 14.h,
                         ),
-                        borderRadius: BorderRadius.circular(16.r),
-                        color: AppColors.surface.withValues(alpha: 0.5),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(10.w),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              provider['icon'],
-                              color: AppColors.primary,
-                              size: 24.sp,
-                            ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30.r),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.primary
+                                : Colors.transparent,
+                            width: 1.5,
                           ),
-                          SizedBox(width: 16.w),
-                          Expanded(
-                            child: Text(
-                              provider['name'],
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16.sp,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                provider['name'],
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15.sp,
+                                ),
                               ),
                             ),
-                          ),
-                          Icon(
-                            Icons.chevron_right_rounded,
-                            color: AppColors.textSecondary,
-                            size: 24.sp,
-                          ),
-                        ],
+                            if (isSelected)
+                              SizedBox(
+                                width: 16.w,
+                                height: 16.w,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.primary,
+                                ),
+                              )
+                            else
+                              Icon(
+                                Icons.dns_rounded,
+                                color: AppColors.textSecondary,
+                                size: 18.sp,
+                              ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-            SizedBox(height: 20.h),
           ],
         ),
       ),

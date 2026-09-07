@@ -10,5 +10,6 @@ class Routes {
   static const String movieDetails = '/movieDetails';
   static const String tvShowDetails = '/tvShowDetails';
   static const String viewAllMedia = '/viewAllMedia';
+  static const String discoverMedia = '/discoverMedia';
   static const String profile = '/profile';
 }

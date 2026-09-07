@@ -24,7 +24,7 @@ class TrendingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
       child: SizedBox(
         width: 150.w,
@@ -41,9 +41,7 @@ class TrendingCard extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(24.r),
-                        color: index == 0
-                            ? const Color(0xFFFF5722)
-                            : const Color(0xFFF5F5DC),
+                        color: AppColors.surface,
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24.r),
@@ -56,18 +54,11 @@ class TrendingCard extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 ),
                               )
-                            : Center(
-                                child: Text(
-                                  '${index + 1}',
-                                  style: TextStyle(
-                                    fontSize: 60.sp,
-                                    fontWeight: FontWeight.w900,
-                                    color: index == 0
-                                        ? Colors.red[900]?.withValues(
-                                            alpha: 0.5,
-                                          )
-                                        : Colors.black.withValues(alpha: 0.2),
-                                  ),
+                            : const Center(
+                                child: Icon(
+                                  Icons.movie_rounded,
+                                  color: Colors.white24,
+                                  size: 40,
                                 ),
                               ),
                       ),
