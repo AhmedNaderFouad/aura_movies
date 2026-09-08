@@ -95,10 +95,13 @@ class HlsQualityParser {
     // 3. Add static qualities from source that weren't found in manifest
     // This is critical for providers like NetMirror/ZXC that provide direct links already
     for (var q in source.qualities) {
-      if (!q.isAuto && !seenUrls.contains(q.url)) {
+      final labelLower = q.label.toLowerCase();
+      if (!q.isAuto && 
+          !seenUrls.contains(q.url) && 
+          !seenLabels.contains(labelLower)) {
         qualities.add(q);
         seenUrls.add(q.url);
-        seenLabels.add(q.label.toLowerCase());
+        seenLabels.add(labelLower);
       }
     }
 

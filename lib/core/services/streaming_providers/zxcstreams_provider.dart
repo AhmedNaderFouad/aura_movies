@@ -66,9 +66,9 @@ class ZXCStreamsProvider {
 
               nameToQualities.putIfAbsent(name, () => []);
 
-              // Check for duplicates based on URL
+              // Check for duplicates based on URL OR Label to avoid confusing UI
               final isDuplicate = nameToQualities[name]!.any(
-                (q) => q.url == url,
+                (q) => q.url == url || q.label == qualityLabel,
               );
 
               if (!isDuplicate) {

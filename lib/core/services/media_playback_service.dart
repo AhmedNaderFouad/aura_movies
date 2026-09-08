@@ -68,48 +68,51 @@ class MediaPlaybackService {
     bool isHls = false;
     String finalUrl = url;
 
-    // 1. Optimized HLS Detection (only for 'Auto' or Master URLs)
-    // If specificUrl is provided, we assume it's already the desired quality
-    if (specificUrl == null) {
-      try {
-        final response = await _dio.head(
-          url,
-          options: Options(
-            headers: headers,
-            followRedirects: true,
-            validateStatus: (status) => status! < 500,
-          ),
-        );
+    // 1. Robust HLS Detection
+    // Use case-insensitive check and also check the master source hint
+    final bool urlHasM3u8 = url.toLowerCase().contains('m3u8');
+    final bool masterHasM3u8 =
+        source.hlsUrl?.toLowerCase().contains('m3u8') ?? false;
 
-        if (response.statusCode == 200) {
-          final contentType =
-              response.headers.value('content-type')?.toLowerCase() ?? '';
-          if (contentType.contains('mpegurl') ||
-              contentType.contains('application/x-mpegurl') ||
-              url.contains('.m3u8')) {
-            isHls = true;
-          }
-
-          if (response.realUri.toString() != url) {
-            finalUrl = response.realUri.toString();
-          }
-        }
-      } catch (e) {
-        if (url.contains('.m3u8')) isHls = true;
-      }
-    } else {
-      // If we have a specific URL, it's likely a variant or direct link
-      if (url.contains('.m3u8')) isHls = true;
+    if (urlHasM3u8 || (specificUrl != null && masterHasM3u8)) {
+      isHls = true;
     }
 
-    // 2. Handle Audio Track Mixing (requires manual manifest injection)
+    // 2. Network-based detection for confirmation or if string check is inconclusive
+    try {
+      final response = await _dio.head(
+        url,
+        options: Options(
+          headers: headers,
+          followRedirects: true,
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final contentType =
+            response.headers.value('content-type')?.toLowerCase() ?? '';
+        if (contentType.contains('mpegurl') ||
+            contentType.contains('application/x-mpegurl')) {
+          isHls = true;
+        }
+
+        if (response.realUri.toString() != url) {
+          finalUrl = response.realUri.toString();
+          if (finalUrl.toLowerCase().contains('m3u8')) isHls = true;
+        }
+      }
+    } catch (e) {
+      // Fallback to initial isHls value
+    }
+
+    // 3. Handle Audio Track Mixing (requires manual manifest injection)
     if (audioUrl != null && audioUrl.isNotEmpty) {
       isHls = true;
       final unwrappedVideoUrl = await unwrapManifest(finalUrl, headers);
       final unwrappedAudioUrl = await unwrapManifest(audioUrl, headers);
 
-      final manifestContent =
-          '''
+      final manifestContent = '''
 #EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="Default",DEFAULT=YES,AUTOSELECT=YES,URI="$unwrappedAudioUrl"
@@ -120,9 +123,8 @@ $unwrappedVideoUrl
           'data:application/x-mpegURL;base64,${base64Encode(utf8.encode(manifestContent))}';
     }
 
-    final VideoFormat? formatHint = (isHls || finalUrl.startsWith('data:'))
-        ? VideoFormat.hls
-        : null;
+    final VideoFormat? formatHint =
+        (isHls || finalUrl.startsWith('data:')) ? VideoFormat.hls : null;
 
     final controller = VideoPlayerController.networkUrl(
       Uri.parse(finalUrl),

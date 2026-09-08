@@ -96,6 +96,9 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
     WakelockPlus.enable();
     _setFullScreen();
 
+    // 1. Start fetching subtitles immediately (Parallel with video init)
+    _fetchSubtitles();
+
     if (widget.preInitializedController?.value.isInitialized ?? false) {
       _videoPlayerController = widget.preInitializedController;
       _videoPlayerController!.pause();
@@ -113,7 +116,6 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
         _loadQualities(widget.source.hlsUrl ?? '');
       }
 
-      _fetchSubtitles();
       _startHideTimer();
     } else {
       _showControls = false;
@@ -144,12 +146,19 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
     if (_playbackAuthorized || !_routeTransitionComplete) return;
     if (!mounted ||
         _videoPlayerController == null ||
-        !_videoPlayerController!.value.isInitialized)
+        !_videoPlayerController!.value.isInitialized) {
       return;
+    }
 
     _playbackAuthorized = true;
     _videoPlayerController!.play();
     startSubtitleTimer(_videoPlayerController);
+  }
+
+  void _resetOrientation() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    WakelockPlus.disable();
   }
 
   void _setupChewie() {
@@ -216,7 +225,6 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
 
       _setupChewie();
       _videoPlayerController!.addListener(_onControllerUpdate);
-      _fetchSubtitles();
 
       if (mounted) {
         setState(() {
@@ -378,9 +386,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
     subtitleCubit.close();
-    WakelockPlus.disable();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _resetOrientation();
     super.dispose();
   }
 
@@ -388,7 +394,10 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) _saveProgress();
+        if (didPop) {
+          _saveProgress();
+          _resetOrientation();
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.black,
