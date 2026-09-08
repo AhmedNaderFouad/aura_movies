@@ -96,12 +96,20 @@ class HlsQualityParser {
     // This is critical for providers like NetMirror/ZXC that provide direct links already
     for (var q in source.qualities) {
       final labelLower = q.label.toLowerCase();
-      if (!q.isAuto && 
-          !seenUrls.contains(q.url) && 
-          !seenLabels.contains(labelLower)) {
-        qualities.add(q);
+      final bool isDuplicateUrl = seenUrls.contains(q.url);
+      final bool isDuplicateLabel = seenLabels.contains(labelLower);
+
+      if (!q.isAuto && !isDuplicateUrl) {
+        String finalLabel = q.label;
+        if (isDuplicateLabel) {
+          finalLabel = '${q.label} (${source.name})';
+        }
+
+        qualities.add(
+          VideoQuality(label: finalLabel, url: q.url, audioUrl: q.audioUrl),
+        );
         seenUrls.add(q.url);
-        seenLabels.add(labelLower);
+        seenLabels.add(finalLabel.toLowerCase());
       }
     }
 

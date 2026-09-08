@@ -88,7 +88,7 @@ class CheckEmailScreen extends StatelessWidget {
                     'assets/images/bg_img.jpg',
                     fit: BoxFit.cover,
                     alignment: const Alignment(0, 0.3),
-                    color: Colors.black.withOpacity(0.75),
+                    color: Colors.black.withValues(alpha: 0.75),
                     colorBlendMode: BlendMode.darken,
                   ),
                 ),
@@ -182,7 +182,7 @@ class CheckEmailScreen extends StatelessWidget {
         color: const Color(0xFF1A1D21),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.15),
+            color: AppColors.primary.withValues(alpha: 0.15),
             blurRadius: 50,
             spreadRadius: 5,
           ),

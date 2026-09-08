@@ -16,17 +16,25 @@ class PlayerBottomSheetsHelper {
     required Function(VideoQuality) onQualitySelected,
     required VoidCallback onDismiss,
   }) {
-    if (availableQualities.isEmpty) return;
+    // If no qualities are available, we at least show an "Auto" option
+    // so the user knows the player is in automatic mode or no other options exist.
+    final List<VideoQuality> displayQualities = availableQualities.isNotEmpty
+        ? availableQualities
+        : [VideoQuality(label: 'Auto', url: '', isAuto: true)];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => QualitySelectionBottomSheet(
-        availableQualities: availableQualities,
-        currentQuality: selectedQuality,
+        availableQualities: displayQualities,
+        currentQuality:
+            selectedQuality ??
+            (availableQualities.isEmpty ? displayQualities.first : null),
         onQualitySelected: (quality) {
-          onQualitySelected(quality);
+          if (quality.url.isNotEmpty) {
+            onQualitySelected(quality);
+          }
         },
       ),
     ).then((_) => onDismiss());

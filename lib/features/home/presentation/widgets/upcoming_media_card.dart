@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
-import '../../domain/entities/movie.dart';
+import '../../../../core/models/media.dart';
 
-class UpcomingMovieCard extends StatelessWidget {
-  final Movie movie;
+class UpcomingMediaCard extends StatelessWidget {
+  final Media media;
   final VoidCallback? onTap;
 
-  const UpcomingMovieCard({super.key, required this.movie, this.onTap});
+  const UpcomingMediaCard({super.key, required this.media, this.onTap});
 
   String _formatReleaseDate(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return 'Coming Soon';
@@ -43,10 +43,10 @@ class UpcomingMovieCard extends StatelessWidget {
                 child: SizedBox(
                   height: 150.h,
                   width: double.infinity,
-                  child: movie.backdropPath != null
+                  child: media.backdropPath != null
                       ? AppCachedNetworkImage(
                           imageUrl:
-                              'https://image.tmdb.org/t/p/w500${movie.backdropPath}',
+                              'https://image.tmdb.org/t/p/w500${media.backdropPath}',
                           placeholder: Image.asset(
                             'assets/images/bg_img.jpg',
                             fit: BoxFit.cover,
@@ -65,7 +65,7 @@ class UpcomingMovieCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            movie.title,
+                            media.title,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.sp,
@@ -76,7 +76,7 @@ class UpcomingMovieCard extends StatelessWidget {
                           ),
                           SizedBox(height: 4.h),
                           Text(
-                            _formatReleaseDate(movie.releaseDate),
+                            _formatReleaseDate(media.releaseDate),
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 14.sp,
@@ -84,13 +84,36 @@ class UpcomingMovieCard extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          SizedBox(height: 8.h),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 2.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: media.isTvShow
+                                  ? Colors.orange.withValues(alpha: 0.2)
+                                  : Colors.blue.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                            child: Text(
+                              media.isTvShow ? 'TV Series' : 'Movie',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                color: media.isTvShow
+                                    ? Colors.orange
+                                    : Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Container(
                       padding: EdgeInsets.all(8.r),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(

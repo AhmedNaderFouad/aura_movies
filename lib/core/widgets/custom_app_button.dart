@@ -9,12 +9,12 @@ class CustomSignInButton extends StatelessWidget {
   final List<Color>? gradientColors;
 
   const CustomSignInButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
     this.gradientColors,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -47,8 +47,19 @@ class NetMirrorProvider {
 
             for (var stream in streamsList) {
               final String name = stream['name'] ?? 'NetMirror';
-              final String qualityLabel = stream['quality'] ?? 'Auto';
+              String qualityLabel = stream['quality'] ?? 'Auto';
               final String url = stream['url'] ?? '';
+
+              // Ensure quality label is present and formatted
+              if (qualityLabel == 'Auto' && url.contains('master.m3u8')) {
+                qualityLabel = 'Auto';
+              } else if (qualityLabel == 'Auto') {
+                // If it's not a master link but says Auto, try to infer from name
+                final match = RegExp(r'(\d+p)').firstMatch(name);
+                if (match != null) {
+                  qualityLabel = match.group(1)!;
+                }
+              }
 
               final Map<String, String> headers = {};
               if (stream['headers'] != null) {

@@ -1,10 +1,5 @@
 import 'package:dio/dio.dart';
-
-class MovieDioConstants {
-  static const String baseUrl = 'https://api.themoviedb.org/3';
-  static const String bearerToken =
-      'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMTk0ZGQzZGI3YjJmYmRjODdjZmMyMGNiZGEzYjBkMiIsIm5iZiI6MTc3Nzk5Mjg1NC42Niwic3ViIjoiNjlmYTA0OTYwM2MyZTMwNjA1ZGFhZGQ0Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.96PELO8smmCnMik2dZjn2DRaM2Z6Edw4LkcO9Ut4soM';
-}
+import 'package:aura_movies/core/constants/tmdb_api_constants.dart';
 
 class MovieApiService {
   late final Dio _dio;
@@ -12,14 +7,14 @@ class MovieApiService {
   MovieApiService() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: MovieDioConstants.baseUrl,
+        baseUrl: TmdbApiConstants.baseUrl,
         headers: {
-          'Authorization': 'Bearer ${MovieDioConstants.bearerToken}',
+          'Authorization': 'Bearer ${TmdbApiConstants.bearerToken}',
           'Content-Type': 'application/json',
         },
-        receiveTimeout: const Duration(seconds: 30),
-        connectTimeout: const Duration(seconds: 30),
-        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: TmdbApiConstants.receiveTimeout,
+        connectTimeout: TmdbApiConstants.connectTimeout,
+        sendTimeout: TmdbApiConstants.sendTimeout,
       ),
     );
   }

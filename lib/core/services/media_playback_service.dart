@@ -112,7 +112,8 @@ class MediaPlaybackService {
       final unwrappedVideoUrl = await unwrapManifest(finalUrl, headers);
       final unwrappedAudioUrl = await unwrapManifest(audioUrl, headers);
 
-      final manifestContent = '''
+      final manifestContent =
+          '''
 #EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="Default",DEFAULT=YES,AUTOSELECT=YES,URI="$unwrappedAudioUrl"
@@ -123,8 +124,9 @@ $unwrappedVideoUrl
           'data:application/x-mpegURL;base64,${base64Encode(utf8.encode(manifestContent))}';
     }
 
-    final VideoFormat? formatHint =
-        (isHls || finalUrl.startsWith('data:')) ? VideoFormat.hls : null;
+    final VideoFormat? formatHint = (isHls || finalUrl.startsWith('data:'))
+        ? VideoFormat.hls
+        : null;
 
     final controller = VideoPlayerController.networkUrl(
       Uri.parse(finalUrl),

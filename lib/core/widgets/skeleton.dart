@@ -52,7 +52,7 @@ class _SkeletonState extends State<Skeleton>
               end: Alignment.bottomRight,
               colors: [
                 AppColors.surface,
-                AppColors.surface.withOpacity(0.5),
+                AppColors.surface.withValues(alpha: 0.5),
                 AppColors.surface,
               ],
               stops: [0.0, (_animation.value + 1) / 2, 1.0],

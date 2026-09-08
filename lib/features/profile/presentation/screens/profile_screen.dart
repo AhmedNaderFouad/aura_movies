@@ -144,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent.withOpacity(0.1),
+                    backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
                     foregroundColor: Colors.redAccent,
                     side: const BorderSide(color: Colors.redAccent, width: 1),
                     padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -202,7 +202,7 @@ class ProfileScreen extends StatelessWidget {
                             vertical: 6.h,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Text(

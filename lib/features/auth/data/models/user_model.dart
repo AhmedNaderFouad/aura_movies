@@ -2,20 +2,13 @@ import '../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
   const UserModel({
-    required String uid,
-    required String email,
-    String? displayName,
-    String? photoUrl,
-    required bool emailVerified,
-    required DateTime createdAt,
-  }) : super(
-         uid: uid,
-         email: email,
-         displayName: displayName,
-         photoUrl: photoUrl,
-         emailVerified: emailVerified,
-         createdAt: createdAt,
-       );
+    required super.uid,
+    required super.email,
+    super.displayName,
+    super.photoUrl,
+    required super.emailVerified,
+    required super.createdAt,
+  });
 
   /// Create UserModel from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {

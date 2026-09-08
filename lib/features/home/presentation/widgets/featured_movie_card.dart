@@ -49,7 +49,7 @@ class FeaturedMovieCard extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withOpacity(0.2),
+                      Colors.black.withValues(alpha: 0.2),
                       Colors.transparent,
                       AppColors.background,
                     ],
@@ -74,10 +74,10 @@ class FeaturedMovieCard extends StatelessWidget {
                         vertical: 12.h,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(40.r),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           width: 1.5,
                         ),
                       ),

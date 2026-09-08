@@ -29,6 +29,8 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         centerTitle: true,
         title: const CustomAppBar(),
@@ -78,7 +80,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
           Icon(
             Icons.bookmark_border_rounded,
             size: 80.r,
-            color: AppColors.textSecondary.withOpacity(0.5),
+            color: AppColors.textSecondary.withValues(alpha: 0.5),
           ),
           SizedBox(height: 16.h),
           Text(
@@ -129,7 +131,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
               color: AppColors.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -160,7 +162,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.9),
+                          Colors.black.withValues(alpha: 0.9),
                         ],
                         stops: const [0.5, 1.0],
                       ),
@@ -221,7 +223,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                       child: Container(
                         padding: EdgeInsets.all(8.r),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.95),
+                          color: AppColors.primary.withValues(alpha: 0.95),
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(

@@ -4,6 +4,7 @@ import 'dart:async';
 import '../../domain/usecases/search_movies_usecase.dart';
 import '../../domain/usecases/discover_movies_usecase.dart';
 import '../../domain/usecases/discover_tv_shows_usecase.dart';
+import '../utils/search_constants.dart';
 
 part 'search_state.dart';
 
@@ -60,6 +61,16 @@ class SearchCubit extends Cubit<SearchState> {
     performDiscover();
   }
 
+  /// Determine if a studio/platform ID is a production company.
+  bool _isProductionCompany(int id) {
+    return SearchConstants.productionCompanies.containsKey(id);
+  }
+
+  /// Determine if a studio/platform ID is a streaming platform.
+  bool _isStreamingPlatform(int id) {
+    return SearchConstants.streamingPlatforms.containsKey(id);
+  }
+
   Future<void> performDiscover() async {
     await discover(
       type: selectedMediaType,
@@ -85,10 +96,16 @@ class SearchCubit extends Cubit<SearchState> {
     emit(SearchLoading());
     try {
       final results = await _searchMoviesUseCase(query: query, page: 1);
-      if (results.isEmpty) {
+
+      // Filter out items without poster images
+      final filteredResults = results.where((item) {
+        return item.posterPath != null && item.posterPath!.isNotEmpty;
+      }).toList();
+
+      if (filteredResults.isEmpty) {
         emit(SearchEmpty());
       } else {
-        emit(SearchSuccess(results));
+        emit(SearchSuccess(filteredResults));
       }
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionError ||
@@ -104,6 +121,41 @@ class SearchCubit extends Cubit<SearchState> {
     }
   }
 
+  /// Normalize and sort results by release date (newest first).
+  /// Also filters out items without poster images.
+  List<dynamic> _normalizeAndSort(List<dynamic> results) {
+    // Filter out items without poster images
+    results = results.where((item) {
+      return item.posterPath != null && item.posterPath!.isNotEmpty;
+    }).toList();
+
+    // Sort by release date descending (newest first)
+    results.sort((a, b) {
+      DateTime? dateA = _parseReleaseDate(a.releaseDate);
+      DateTime? dateB = _parseReleaseDate(b.releaseDate);
+
+      // Handle null dates - put them at the end
+      if (dateA == null && dateB == null) return 0;
+      if (dateA == null) return 1;
+      if (dateB == null) return -1;
+
+      // Sort descending (newest first)
+      return dateB.compareTo(dateA);
+    });
+
+    return results;
+  }
+
+  /// Parse release date string to DateTime.
+  DateTime? _parseReleaseDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return null;
+    try {
+      return DateTime.parse(dateStr);
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<void> discover({
     required String type,
     int? genreId,
@@ -114,38 +166,83 @@ class SearchCubit extends Cubit<SearchState> {
     emit(SearchLoading());
     try {
       List<dynamic> results = [];
+
       if (type == 'all') {
+        // Determine if companyId is a production company or streaming platform
+        int? resolvedCompanyId;
+        String? resolvedWatchProviderIds;
+
+        if (companyId != null) {
+          if (_isProductionCompany(companyId)) {
+            resolvedCompanyId = companyId;
+          } else if (_isStreamingPlatform(companyId)) {
+            resolvedWatchProviderIds = companyId.toString();
+          }
+        }
+
         final responses = await Future.wait([
           _discoverMoviesUseCase.execute(
             genreId: genreId,
             language: language,
             year: year,
-            companyId: companyId,
+            companyId: resolvedCompanyId,
+            watchProviderIds: resolvedWatchProviderIds,
+            sortBy: 'primary_release_date.desc',
           ),
           _discoverTvShowsUseCase.execute(
             genreId: genreId,
             language: language,
             year: year,
-            networkId: companyId,
+            companyId: resolvedCompanyId,
+            watchProviderIds: resolvedWatchProviderIds,
+            sortBy: 'first_air_date.desc',
           ),
         ]);
+
         results = [...responses[0], ...responses[1]];
-        results.sort(
-          (a, b) => (b.voteAverage ?? 0).compareTo(a.voteAverage ?? 0),
-        );
+        // Normalize and sort by release date (newest first)
+        results = _normalizeAndSort(results);
       } else if (type == 'movie') {
+        // Determine if companyId is a production company or streaming platform
+        int? resolvedCompanyId;
+        String? resolvedWatchProviderIds;
+
+        if (companyId != null) {
+          if (_isProductionCompany(companyId)) {
+            resolvedCompanyId = companyId;
+          } else if (_isStreamingPlatform(companyId)) {
+            resolvedWatchProviderIds = companyId.toString();
+          }
+        }
+
         results = await _discoverMoviesUseCase.execute(
           genreId: genreId,
           language: language,
           year: year,
-          companyId: companyId,
+          companyId: resolvedCompanyId,
+          watchProviderIds: resolvedWatchProviderIds,
+          sortBy: 'primary_release_date.desc',
         );
-      } else {
+      } else if (type == 'tv') {
+        // Determine if companyId is a production company or streaming platform
+        int? resolvedCompanyId;
+        String? resolvedWatchProviderIds;
+
+        if (companyId != null) {
+          if (_isProductionCompany(companyId)) {
+            resolvedCompanyId = companyId;
+          } else if (_isStreamingPlatform(companyId)) {
+            resolvedWatchProviderIds = companyId.toString();
+          }
+        }
+
         results = await _discoverTvShowsUseCase.execute(
           genreId: genreId,
           language: language,
           year: year,
-          networkId: companyId,
+          companyId: resolvedCompanyId,
+          watchProviderIds: resolvedWatchProviderIds,
+          sortBy: 'first_air_date.desc',
         );
       }
 

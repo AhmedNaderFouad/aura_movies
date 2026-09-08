@@ -2,24 +2,15 @@ import '../../domain/entities/tv_show.dart';
 
 class TVShowModel extends TVShow {
   TVShowModel({
-    required int id,
-    required String name,
-    String? backdropPath,
-    String? posterPath,
-    required String overview,
-    double? voteAverage,
-    String? firstAirDate,
-    required List<int> genreIds,
-  }) : super(
-         id: id,
-         name: name,
-         backdropPath: backdropPath,
-         posterPath: posterPath,
-         overview: overview,
-         voteAverage: voteAverage,
-         firstAirDate: firstAirDate,
-         genreIds: genreIds,
-       );
+    required super.id,
+    required super.name,
+    super.backdropPath,
+    super.posterPath,
+    required super.overview,
+    super.voteAverage,
+    super.firstAirDate,
+    required super.genreIds,
+  });
 
   factory TVShowModel.fromJson(Map<String, dynamic> json) {
     return TVShowModel(

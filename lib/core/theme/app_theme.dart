@@ -14,6 +14,8 @@ class AppTheme {
       backgroundColor: AppColors.background,
       elevation: 0,
       centerTitle: false,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
       titleTextStyle: TextStyle(
         fontSize: 24.sp,
         fontWeight: FontWeight.bold,
@@ -54,7 +56,6 @@ class AppTheme {
       primary: AppColors.primary,
       secondary: AppColors.secondary,
       surface: AppColors.surface,
-      background: AppColors.background,
       onPrimary: Colors.black,
       onSecondary: Colors.white,
       onSurface: Colors.white,

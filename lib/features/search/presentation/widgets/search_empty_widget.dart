@@ -14,7 +14,7 @@ class SearchEmptyWidget extends StatelessWidget {
           Icon(
             Icons.search_off_rounded,
             size: 80.r,
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
           ),
           SizedBox(height: 16.h),
           Text(

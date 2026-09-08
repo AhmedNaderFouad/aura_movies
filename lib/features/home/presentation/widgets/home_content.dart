@@ -10,7 +10,7 @@ import '../cubit/home_cubit.dart';
 import '../widgets/home_carousel_slider.dart';
 import '../widgets/continue_watching_section.dart';
 import '../widgets/trending_card.dart';
-import '../widgets/upcoming_movie_card.dart';
+import '../widgets/upcoming_media_card.dart';
 import '../widgets/home_section_header.dart';
 import '../widgets/top_rated_section.dart';
 import '../widgets/brand_section.dart';
@@ -168,64 +168,57 @@ class HomeContent extends StatelessWidget {
 
           SizedBox(height: 32.h),
 
-          // 5. Popular Networks Section
+          // 5. Popular Networks Section (Streaming Platforms)
           BrandSection(
             title: 'Popular Networks',
             brands: const [
               BrandEntity(
-                id: 213,
+                id: 8,
                 name: 'Netflix',
                 logoPath: 'assets/logos/netflix.png',
                 networkId: 213,
-                companyId: 213,
                 isNetwork: true,
               ),
               BrandEntity(
-                id: 1024,
+                id: 9,
                 name: 'Amazon Prime Video',
                 logoPath: 'assets/logos/amazon-prime-video.png',
                 networkId: 1024,
-                companyId: 20580,
                 isNetwork: true,
               ),
               BrandEntity(
-                id: 2739,
+                id: 337,
                 name: 'Disney+',
                 logoPath: 'assets/logos/disney.png',
                 networkId: 2739,
-                companyId: 6125,
                 isNetwork: true,
               ),
               BrandEntity(
-                id: 2552,
+                id: 350,
                 name: 'Apple TV+',
                 logoPath: 'assets/logos/apple-tv.png',
                 networkId: 2552,
-                companyId: 2552,
                 isNetwork: true,
               ),
               BrandEntity(
-                id: 49,
+                id: 1899,
                 name: 'HBO',
                 logoPath: 'assets/logos/hbo.png',
                 networkId: 49,
-                companyId: 3268,
                 isNetwork: true,
               ),
               BrandEntity(
-                id: 453,
+                id: 15,
                 name: 'Hulu',
                 logoPath: 'assets/logos/hulu.png',
                 networkId: 453,
-                companyId: 453,
                 isNetwork: true,
               ),
               BrandEntity(
-                id: 67,
+                id: 80,
                 name: 'AMC',
                 logoPath: 'assets/logos/amc.png',
                 networkId: 67,
-                companyId: 67,
                 isNetwork: true,
               ),
             ],
@@ -292,56 +285,14 @@ class HomeContent extends StatelessWidget {
 
           SizedBox(height: 32.h),
 
-          // 7. Upcoming TV Shows Section
-          const HomeSectionHeader(title: 'Upcoming TV Shows'),
-          SizedBox(
-            height: 320.h,
-            child: state.upcomingTvShows.isEmpty
-                ? Center(
-                    child: Text(
-                      'No upcoming TV shows',
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.only(left: 16.w),
-                    itemCount: state.upcomingTvShows.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.only(right: 20.w),
-                        child: TrendingCard(
-                          posterPath: state.upcomingTvShows[index].posterPath,
-                          voteAverage: state.upcomingTvShows[index].voteAverage,
-                          title: state.upcomingTvShows[index].name,
-                          genreIds: state.upcomingTvShows[index].genreIds,
-                          index: index,
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              Routes.tvShowDetails,
-                              arguments: state.upcomingTvShows[index].id,
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-          ),
-
-          SizedBox(height: 24.h),
-
-          // 6. Upcoming Movies Section
-          const HomeSectionHeader(title: 'Upcoming Movies'),
+          // 7. Upcoming Releases Section
+          const HomeSectionHeader(title: 'Upcoming Releases'),
           SizedBox(
             height: 265.h,
-            child: state.upcomingMovies.isEmpty
+            child: state.upcomingReleases.isEmpty
                 ? Center(
                     child: Text(
-                      'No upcoming movies',
+                      'No upcoming releases',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14.sp,
@@ -351,15 +302,18 @@ class HomeContent extends StatelessWidget {
                 : ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.only(left: 16.w),
-                    itemCount: state.upcomingMovies.length,
+                    itemCount: state.upcomingReleases.length,
                     itemBuilder: (context, index) {
-                      return UpcomingMovieCard(
-                        movie: state.upcomingMovies[index],
+                      final media = state.upcomingReleases[index];
+                      return UpcomingMediaCard(
+                        media: media,
                         onTap: () {
                           Navigator.pushNamed(
                             context,
-                            Routes.movieDetails,
-                            arguments: state.upcomingMovies[index].id,
+                            media.isTvShow
+                                ? Routes.tvShowDetails
+                                : Routes.movieDetails,
+                            arguments: media.id,
                           );
                         },
                       );

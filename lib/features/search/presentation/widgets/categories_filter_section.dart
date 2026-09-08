@@ -81,7 +81,11 @@ class CategoriesFilterSection extends StatelessWidget {
         _buildFilterSection(
           title: 'Production Companies / Studios',
           child: _buildHorizontalChipList<int?>(
-            items: {null: 'All Studios', ...SearchConstants.companies},
+            items: {
+              null: 'All Studios',
+              ...SearchConstants.productionCompanies,
+              ...SearchConstants.streamingPlatforms,
+            },
             selectedValue: selectedCompanyId,
             onSelected: onCompanyChanged,
           ),

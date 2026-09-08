@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'search_result_card.dart';
 
 class SearchResultsList extends StatelessWidget {
@@ -21,7 +20,7 @@ class SearchResultsList extends StatelessWidget {
         ...results.map(
           (item) => SearchResultCard(item: item, showMediaType: showMediaType),
         ),
-        if (bottomWidget != null) bottomWidget!,
+        if (bottomWidget != null) ...[bottomWidget!],
       ],
     );
   }

@@ -18,21 +18,44 @@ class SearchConstants {
     'ko': 'Korean',
   };
 
-  static const Map<int, String> companies = {
-    213: 'Netflix',
-    2552: 'Apple TV+',
-    1024: 'Amazon Prime Videos',
-    2739: 'Disney+',
-    49: 'HBO / Max',
-    453: 'Hulu',
-    4338: 'Paramount+',
-    174: 'AMC',
-    420: 'Marvel Studios',
-    3: 'Pixar',
-    1741: 'Warner Bros.',
-    2: 'Walt Disney Pictures',
-    4: 'Paramount Pictures',
+  /// Production Companies / Studios - these use with_companies parameter
+  static const Map<int, String> productionCompanies = {
     25: '20th Century Fox',
+    420: 'Marvel Studios',
+    4: 'Paramount Pictures',
+    3: 'Pixar Animation Studios',
+    2: 'Walt Disney Pictures',
+    174: 'Warner Bros. Pictures',
+  };
+
+  /// Streaming Platforms - these use with_watch_providers or with_networks parameters
+  static const Map<int, String> streamingPlatforms = {
+    9: 'Amazon Prime Video',
+    80: 'AMC',
+    350: 'Apple TV+',
+    337: 'Disney+',
+    1899: 'HBO',
+    15: 'Hulu',
+    8: 'Netflix',
+  };
+
+  /// Combined companies and platforms for backward compatibility with UI
+  /// Maps display names to (id, isCompany) tuples
+  /// isCompany=true means it's a production company, false means it's a streaming platform
+  static const Map<String, (int, bool)> allStudiosAndPlatforms = {
+    '20th Century Fox': (25, true),
+    'Marvel Studios': (420, true),
+    'Paramount Pictures': (4, true),
+    'Pixar Animation Studios': (3, true),
+    'Walt Disney Pictures': (2, true),
+    'Warner Bros. Pictures': (174, true),
+    'Amazon Prime Video': (9, false),
+    'AMC': (80, false),
+    'Apple TV+': (350, false),
+    'Disney+': (337, false),
+    'HBO': (1899, false),
+    'Hulu': (15, false),
+    'Netflix': (8, false),
   };
 
   static const Map<int, String> movieGenres = {

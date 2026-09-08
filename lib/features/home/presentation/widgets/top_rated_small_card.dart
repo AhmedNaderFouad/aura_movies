@@ -76,7 +76,7 @@ class TopRatedSmallCard extends StatelessWidget {
                       Icon(Icons.star_rounded, color: Colors.amber, size: 14.r),
                       SizedBox(width: 4.w),
                       Text(
-                        '${movie.voteAverage}',
+                        movie.voteAverage?.toStringAsFixed(1) ?? '0.0',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.sp,
@@ -86,18 +86,6 @@ class TopRatedSmallCard extends StatelessWidget {
                     ],
                   ),
                 ],
-              ),
-            ),
-            Positioned(
-              top: 8.h,
-              left: 8.w,
-              child: Text(
-                'TOP RATED $rank',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                ),
               ),
             ),
           ],

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class SubtitleCue {
   final Duration start;
   final Duration end;
@@ -24,20 +26,49 @@ class SubtitleParser {
 
   static List<SubtitleCue> _parseSRT(String content) {
     final List<SubtitleCue> cues = [];
-    final blocks = content.trim().split(RegExp(r'\n\s*\n'));
+    // Normalize newlines and split into blocks
+    final normalized = content.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+    final blocks = normalized.trim().split(RegExp(r'\n\n+'));
 
     for (var block in blocks) {
-      final lines = block.split('\n');
-      if (lines.length >= 3) {
-        final times = lines[1].split(' --> ');
+      final lines = block.trim().split('\n');
+      if (lines.isEmpty) continue;
+
+      String timeLine = '';
+      int textStartLine = -1;
+
+      // Find the line containing "-->"
+      for (int i = 0; i < lines.length; i++) {
+        if (lines[i].contains('-->')) {
+          timeLine = lines[i];
+          textStartLine = i + 1;
+          break;
+        }
+      }
+
+      if (timeLine.isNotEmpty &&
+          textStartLine != -1 &&
+          textStartLine < lines.length) {
+        final times = timeLine.split('-->');
         if (times.length == 2) {
-          final start = _parseDuration(times[0].replaceAll(',', '.'));
-          final end = _parseDuration(times[1].replaceAll(',', '.'));
-          final text = lines
-              .sublist(2)
-              .join('\n')
-              .replaceAll(RegExp(r'<[^>]*>'), '');
-          cues.add(SubtitleCue(start: start, end: end, text: text));
+          try {
+            final start = _parseDuration(times[0].trim().replaceAll(',', '.'));
+            final end = _parseDuration(
+              times[1].trim().split(RegExp(r'\s+')).first.replaceAll(',', '.'),
+            );
+
+            final text = lines
+                .sublist(textStartLine)
+                .join('\n')
+                .replaceAll(RegExp(r'<[^>]*>'), '')
+                .trim();
+
+            if (text.isNotEmpty) {
+              cues.add(SubtitleCue(start: start, end: end, text: text));
+            }
+          } catch (e) {
+            debugPrint('[SubtitleParser] Error parsing SRT block: $e');
+          }
         }
       }
     }

@@ -10,8 +10,11 @@ class DiscoverMoviesUseCase {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'primary_release_date.desc',
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   }) async {
     return await repository.discoverMovies(
       page: page,
@@ -20,6 +23,9 @@ class DiscoverMoviesUseCase {
       year: year,
       sortBy: sortBy,
       companyId: companyId,
+      watchProviderIds: watchProviderIds,
+      watchRegion: watchRegion,
+      watchMonetizationType: watchMonetizationType,
     );
   }
 }

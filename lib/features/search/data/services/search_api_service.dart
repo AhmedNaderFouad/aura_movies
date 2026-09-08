@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:aura_movies/core/constants/tmdb_api_constants.dart';
 
 class SearchApiService {
   late final Dio _dio;
@@ -6,15 +7,14 @@ class SearchApiService {
   SearchApiService() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'https://api.themoviedb.org/3',
+        baseUrl: TmdbApiConstants.baseUrl,
         headers: {
-          'Authorization':
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMTk0ZGQzZGI3YjJmYmRjODdjZmMyMGNiZGEzYjBkMiIsIm5iZiI6MTc3Nzk5Mjg1NC42Niwic3ViIjoiNjlmYTA0OTYwM2MyZTMwNjA1ZGFhZGQ0Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.96PELO8smmCnMik2dZjn2DRaM2Z6Edw4LkcO9Ut4soM',
+          'Authorization': 'Bearer ${TmdbApiConstants.bearerToken}',
           'Content-Type': 'application/json',
         },
-        receiveTimeout: const Duration(seconds: 30),
-        connectTimeout: const Duration(seconds: 30),
-        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: TmdbApiConstants.receiveTimeout,
+        connectTimeout: TmdbApiConstants.connectTimeout,
+        sendTimeout: TmdbApiConstants.sendTimeout,
       ),
     );
   }
@@ -36,17 +36,28 @@ class SearchApiService {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'primary_release_date.desc',
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   }) async {
     try {
       final Map<String, dynamic> params = {
         'page': page,
+        'language': 'en-US',
         'sort_by': sortBy,
+        'include_adult': false,
+        'include_video': false,
         'with_genres': genreId,
         'with_original_language': language,
         'primary_release_year': year,
         'with_companies': companyId,
+        'with_watch_providers': watchProviderIds,
+        'watch_region': watchProviderIds != null ? watchRegion : null,
+        'with_watch_monetization_types': watchProviderIds != null
+            ? watchMonetizationType
+            : null,
       };
       params.removeWhere((key, value) => value == null);
 
@@ -65,19 +76,29 @@ class SearchApiService {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'first_air_date.desc',
     int? networkId,
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   }) async {
     try {
       final Map<String, dynamic> params = {
         'page': page,
+        'language': 'en-US',
         'sort_by': sortBy,
+        'include_adult': false,
         'with_genres': genreId,
         'with_original_language': language,
         'first_air_date_year': year,
         'with_networks': networkId,
         'with_companies': companyId,
+        'with_watch_providers': watchProviderIds,
+        'watch_region': watchProviderIds != null ? watchRegion : null,
+        'with_watch_monetization_types': watchProviderIds != null
+            ? watchMonetizationType
+            : null,
       };
       params.removeWhere((key, value) => value == null);
 

@@ -167,10 +167,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       height: 140.r,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.surface.withOpacity(0.5),
+        color: AppColors.surface.withValues(alpha: 0.5),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.15),
+            color: AppColors.primary.withValues(alpha: 0.15),
             blurRadius: 30,
             spreadRadius: 10,
           ),
@@ -183,7 +183,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
               width: 2,
             ),
           ),
@@ -248,7 +248,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               size: AppSizes.iconMedium,
             ),
             filled: true,
-            fillColor: AppColors.surface.withOpacity(0.4),
+            fillColor: AppColors.surface.withValues(alpha: 0.4),
             contentPadding: EdgeInsets.symmetric(
               vertical: AppSpacing.m + AppSpacing.s,
               horizontal: AppSpacing.m,

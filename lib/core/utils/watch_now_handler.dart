@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/video_source_model.dart';
 import '../widgets/native_video_player.dart';
-import '../widgets/stream_error_dialog.dart';
 import '../widgets/server_selection_bottom_sheet.dart';
 
 class WatchNowHandler {
@@ -22,7 +21,7 @@ class WatchNowHandler {
     // 1. Trigger the modern Floating Server Selection Dialog
     final VideoSource? source = await showDialog<VideoSource>(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) => ServerSelectionBottomSheet(
         tmdbId: tmdbId,
         type: isTvShow ? 'tv' : 'movie',
@@ -56,12 +55,5 @@ class WatchNowHandler {
         ),
       ),
     );
-  }
-
-  /// Helper to show the unified error dialog
-  static void _showError(BuildContext context) {
-    if (context.mounted) {
-      StreamErrorDialog.show(context);
-    }
   }
 }

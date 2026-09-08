@@ -30,7 +30,7 @@ class SearchBarWidget extends StatelessWidget {
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(24.r),
               border: Border.all(
-                color: AppColors.primary.withOpacity(0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 width: 1.5,
               ),
             ),

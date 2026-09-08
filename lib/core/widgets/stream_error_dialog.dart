@@ -8,7 +8,7 @@ class StreamErrorDialog extends StatelessWidget {
   static void show(BuildContext context) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.8),
+      barrierColor: Colors.black.withValues(alpha: 0.8),
       builder: (context) => const StreamErrorDialog(),
     );
   }

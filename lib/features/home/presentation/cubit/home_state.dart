@@ -18,6 +18,7 @@ class HomeSuccess extends HomeState {
   final List<Movie> upcomingMovies;
   final List<TVShow> trendingTvShows;
   final List<TVShow> upcomingTvShows;
+  final List<Media> upcomingReleases;
 
   const HomeSuccess({
     required this.trendingMovies,
@@ -25,6 +26,7 @@ class HomeSuccess extends HomeState {
     required this.upcomingMovies,
     required this.trendingTvShows,
     required this.upcomingTvShows,
+    required this.upcomingReleases,
   });
 }
 

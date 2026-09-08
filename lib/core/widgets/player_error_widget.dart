@@ -50,8 +50,10 @@ class PlayerErrorWidget extends StatelessWidget {
               TextButton(
                 onPressed: onRetry,
                 style: TextButton.styleFrom(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 4.h,
+                  ),
                   foregroundColor: AppColors.primary,
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,

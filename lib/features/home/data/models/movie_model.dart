@@ -2,28 +2,17 @@ import '../../domain/entities/movie.dart';
 
 class MovieModel extends Movie {
   MovieModel({
-    required int id,
-    required String title,
-    String? backdropPath,
-    String? posterPath,
-    required String overview,
-    double? voteAverage,
-    int? voteCount,
-    String? releaseDate,
-    required List<int> genreIds,
-    bool isTvShow = false,
-  }) : super(
-         id: id,
-         title: title,
-         backdropPath: backdropPath,
-         posterPath: posterPath,
-         overview: overview,
-         voteAverage: voteAverage,
-         voteCount: voteCount,
-         releaseDate: releaseDate,
-         genreIds: genreIds,
-         isTvShow: isTvShow,
-       );
+    required super.id,
+    required super.title,
+    super.backdropPath,
+    super.posterPath,
+    required super.overview,
+    super.voteAverage,
+    super.voteCount,
+    super.releaseDate,
+    required super.genreIds,
+    super.isTvShow = false,
+  });
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(

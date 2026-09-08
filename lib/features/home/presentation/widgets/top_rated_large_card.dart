@@ -107,7 +107,7 @@ class TopRatedLargeCard extends StatelessWidget {
                               ),
                               SizedBox(width: 4.w),
                               Text(
-                                '${movie.voteAverage}',
+                                movie.voteAverage?.toStringAsFixed(1) ?? '0.0',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 14.sp,
@@ -116,7 +116,7 @@ class TopRatedLargeCard extends StatelessWidget {
                               ),
                               SizedBox(width: 8.w),
                               Text(
-                                '240k Ratings',
+                                _formatVoteCount(movie.voteCount ?? 0),
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12.sp,
@@ -135,5 +135,14 @@ class TopRatedLargeCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatVoteCount(int count) {
+    if (count >= 1000000) {
+      return '${(count / 1000000).toStringAsFixed(1)}M Ratings';
+    } else if (count >= 1000) {
+      return '${(count / 1000).toStringAsFixed(1)}k Ratings';
+    }
+    return '$count Ratings';
   }
 }

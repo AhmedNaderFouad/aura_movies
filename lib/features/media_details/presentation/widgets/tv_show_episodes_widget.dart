@@ -203,7 +203,7 @@ class TVShowEpisodesWidget extends StatelessWidget {
                     width: 32.r,
                     height: 32.r,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.9),
+                      color: AppColors.primary.withValues(alpha: 0.9),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(

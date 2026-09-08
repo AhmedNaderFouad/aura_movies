@@ -37,12 +37,15 @@ class CustomBottomNavBar extends StatelessWidget {
       margin: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
       padding: EdgeInsets.symmetric(vertical: 12.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D0F14).withOpacity(0.95),
+        color: const Color(0xFF0D0F14).withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(35.r),
-        border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.12),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha: 0.6),
             blurRadius: 25,
             spreadRadius: 2,
             offset: const Offset(0, 12),

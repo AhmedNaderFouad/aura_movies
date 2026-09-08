@@ -38,7 +38,7 @@ class _ServerSelectionBottomSheetState
     {'id': 'zxcstreams', 'name': 'PulseStream'},
     {'id': 'showbox', 'name': 'FluxStream'},
     {'id': 'netmirror', 'name': 'LumaStream'},
-    {'id': 'onetouchtv', 'name': 'OneTouchTV'},
+    {'id': 'onetouchtv', 'name': 'HuntStream'},
   ];
 
   bool _isLoading = false;

@@ -8,6 +8,7 @@ import '../cubit/discover_media_cubit.dart';
 import '../cubit/discover_media_state.dart';
 import '../../domain/entities/brand_entity.dart';
 import '../widgets/trending_card.dart';
+import '../widgets/discover_media_shimmer.dart';
 
 class DiscoverMediaScreen extends StatefulWidget {
   final BrandEntity brand;
@@ -55,6 +56,8 @@ class _DiscoverMediaScreenState extends State<DiscoverMediaScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
           widget.brand.name,
@@ -104,11 +107,7 @@ class _DiscoverMediaScreenState extends State<DiscoverMediaScreen> {
                   if (media.isEmpty &&
                       state is DiscoverMediaLoading &&
                       state.isFirstFetch) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                      ),
-                    );
+                    return const DiscoverMediaShimmer();
                   }
 
                   return GridView.builder(

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
+import '../../../../core/models/media.dart';
 import '../../domain/entities/movie.dart';
 import '../../domain/entities/tv_show.dart';
 import '../../domain/usecases/get_popular_movies_usecase.dart';
@@ -47,6 +48,34 @@ class HomeCubit extends Cubit<HomeState> {
         (tvShow) => tvShow.firstAirDate,
       ).cast<TVShow>();
 
+      // Combine all upcoming releases and filter out any remaining items without posters
+      var upcomingReleases = [...upcomingMovies, ...upcomingTvShows];
+
+      // Double-check: filter out any items that still don't have posters (defensive)
+      upcomingReleases = upcomingReleases.where((item) {
+        return item.posterPath != null && item.posterPath!.isNotEmpty;
+      }).toList();
+
+      // Deduplicate: remove duplicate items (same ID that appear in both lists)
+      final seenIds = <int>{};
+      upcomingReleases = upcomingReleases.where((item) {
+        if (seenIds.contains(item.id)) {
+          return false; // Skip duplicates
+        }
+        seenIds.add(item.id);
+        return true;
+      }).toList();
+
+      upcomingReleases.sort((a, b) {
+        try {
+          final dateA = DateTime.parse(a.releaseDate!);
+          final dateB = DateTime.parse(b.releaseDate!);
+          return dateA.compareTo(dateB);
+        } catch (_) {
+          return 0;
+        }
+      });
+
       emit(
         HomeSuccess(
           trendingMovies: trendingMovies,
@@ -54,6 +83,7 @@ class HomeCubit extends Cubit<HomeState> {
           upcomingMovies: upcomingMovies,
           trendingTvShows: trendingTvShows,
           upcomingTvShows: upcomingTvShows,
+          upcomingReleases: upcomingReleases,
         ),
       );
     } on DioException catch (e) {
@@ -72,7 +102,8 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  /// Filter media by future date and sort by closest date first
+  /// Filter media by future date and sort by closest date first.
+  /// Also filters out items without poster images.
   List<dynamic> _filterAndSortByDate(
     List<dynamic> items,
     String? Function(dynamic) getDateString,
@@ -80,6 +111,11 @@ class HomeCubit extends Cubit<HomeState> {
     final now = DateTime.now();
 
     final filtered = items.where((item) {
+      // Filter out items without poster images
+      final hasPoster =
+          (item.posterPath != null && item.posterPath!.isNotEmpty);
+      if (!hasPoster) return false;
+
       final dateStr = getDateString(item);
       if (dateStr == null || dateStr.isEmpty) return false;
 

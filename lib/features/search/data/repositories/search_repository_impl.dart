@@ -38,8 +38,11 @@ class SearchRepositoryImpl implements SearchRepository {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'primary_release_date.desc',
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   }) async {
     try {
       final data = await apiService.discoverMovies(
@@ -49,6 +52,9 @@ class SearchRepositoryImpl implements SearchRepository {
         year: year,
         sortBy: sortBy,
         companyId: companyId,
+        watchProviderIds: watchProviderIds,
+        watchRegion: watchRegion,
+        watchMonetizationType: watchMonetizationType,
       );
       final results = data['results'] as List? ?? [];
       return results.map((item) => MovieModel.fromJson(item)).toList();
@@ -63,9 +69,12 @@ class SearchRepositoryImpl implements SearchRepository {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'first_air_date.desc',
     int? networkId,
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   }) async {
     try {
       final data = await apiService.discoverTvShows(
@@ -76,6 +85,9 @@ class SearchRepositoryImpl implements SearchRepository {
         sortBy: sortBy,
         networkId: networkId,
         companyId: companyId,
+        watchProviderIds: watchProviderIds,
+        watchRegion: watchRegion,
+        watchMonetizationType: watchMonetizationType,
       );
       final results = data['results'] as List? ?? [];
       return results.map((item) => TVShowModel.fromJson(item)).toList();

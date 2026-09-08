@@ -16,6 +16,7 @@ import '../../../features/media_details/data/repositories/media_details_reposito
 import '../../../features/media_details/domain/usecases/get_media_details_usecase.dart';
 import '../../../features/media_details/domain/usecases/get_media_credits_usecase.dart';
 import '../../../features/media_details/domain/usecases/get_media_recommendations_usecase.dart';
+import '../constants/tmdb_api_constants.dart';
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -61,15 +62,14 @@ class ServiceLocator {
 
     final dioClient = Dio(
       BaseOptions(
-        baseUrl: 'https://api.themoviedb.org/3',
+        baseUrl: TmdbApiConstants.baseUrl,
         headers: {
-          'Authorization':
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMTk0ZGQzZGI3YjJmYmRjODdjZmMyMGNiZGEzYjBkMiIsIm5iZiI6MTc3Nzk5Mjg1NC42Niwic3ViIjoiNjlmYTA0OTYwM2MyZTMwNjA1ZGFhZGQ0Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.96PELO8smmCnMik2dZjn2DRaM2Z6Edw4LkcO9Ut4soM',
+          'Authorization': 'Bearer ${TmdbApiConstants.bearerToken}',
           'Content-Type': 'application/json',
         },
-        receiveTimeout: const Duration(seconds: 30),
-        connectTimeout: const Duration(seconds: 30),
-        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: TmdbApiConstants.receiveTimeout,
+        connectTimeout: TmdbApiConstants.connectTimeout,
+        sendTimeout: TmdbApiConstants.sendTimeout,
       ),
     );
     mediaDetailsApiService = MediaDetailsApiService(dioClient);

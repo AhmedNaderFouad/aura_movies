@@ -10,9 +10,12 @@ class DiscoverTvShowsUseCase {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'first_air_date.desc',
     int? networkId,
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   }) async {
     return await repository.discoverTvShows(
       page: page,
@@ -22,6 +25,9 @@ class DiscoverTvShowsUseCase {
       sortBy: sortBy,
       networkId: networkId,
       companyId: companyId,
+      watchProviderIds: watchProviderIds,
+      watchRegion: watchRegion,
+      watchMonetizationType: watchMonetizationType,
     );
   }
 }

@@ -236,11 +236,12 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
         _authorizePlayback();
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _hasError = true;
           _isInitializing = false;
         });
+      }
     }
   }
 
@@ -270,6 +271,9 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
   void _onControllerUpdate() {
     if (!mounted || _videoPlayerController == null) return;
 
+    // Update subtitles immediately on every position change
+    updateSubtitles(_videoPlayerController);
+
     if (_videoPlayerController!.value.hasError) {
       setState(() => _hasError = true);
       return;
@@ -278,16 +282,15 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
     final currentBuffering = _videoPlayerController!.value.isBuffering;
     if (currentBuffering != _isBuffering) {
       setState(() => _isBuffering = currentBuffering);
-      if (currentBuffering)
-        stopSubtitleTimer();
-      else if (_videoPlayerController!.value.isPlaying)
-        startSubtitleTimer(_videoPlayerController);
+      // We don't stop the timer during buffering anymore,
+      // because we want to update the subtitle to the new position even while loading.
     }
 
-    if (_videoPlayerController!.value.isPlaying)
+    if (_videoPlayerController!.value.isPlaying) {
       startSubtitleTimer(_videoPlayerController);
-    else
+    } else {
       stopSubtitleTimer();
+    }
 
     if (_showControls && mounted) setState(() {});
   }
@@ -354,11 +357,14 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer>
 
   Future<void> _saveProgress() async {
     if (_videoPlayerController == null ||
-        !_videoPlayerController!.value.isInitialized)
+        !_videoPlayerController!.value.isInitialized) {
       return;
+    }
     final position = _videoPlayerController!.value.position;
     final duration = _videoPlayerController!.value.duration;
-    if (position.inSeconds < 10) return;
+    if (position.inSeconds < 10) {
+      return;
+    }
 
     await _watchHistoryService.saveProgress(
       WatchMediaModel(

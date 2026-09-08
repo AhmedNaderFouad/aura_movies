@@ -101,24 +101,55 @@ mixin PlayerSubtitleMixin<T extends StatefulWidget> on State<T> {
 
   void updateSubtitles(VideoPlayerController? controller) {
     if (!mounted || controller == null || subtitleCues.isEmpty) {
-      if (subtitleTextNotifier.value.isNotEmpty)
+      if (subtitleTextNotifier.value.isNotEmpty) {
         subtitleTextNotifier.value = '';
+      }
       return;
     }
 
-    // Exact 150ms delay logic from your request
-    final position =
-        controller.value.position - const Duration(milliseconds: 150);
+    // Use exact video position for perfect synchronization
+    final position = controller.value.position;
+
+    // Fast check: is the current position still within the last found cue?
+    // This optimization helps during normal playback.
+    // However, if we sought, we must do a full search.
 
     int low = 0;
     int high = subtitleCues.length - 1;
-    SubtitleCue? foundCue;
+    List<String> foundTexts = [];
 
+    // Binary search to find at least one matching cue
     while (low <= high) {
       int mid = (low + high) ~/ 2;
       final cue = subtitleCues[mid];
+
       if (position >= cue.start && position <= cue.end) {
-        foundCue = cue;
+        // Found one match, now collect all overlapping matches
+        List<int> indices = [mid];
+
+        // Check backwards for overlaps
+        int i = mid - 1;
+        while (i >= 0 && subtitleCues[i].end >= position) {
+          if (position >= subtitleCues[i].start) {
+            indices.add(i);
+          }
+          i--;
+        }
+
+        // Check forwards for overlaps
+        int j = mid + 1;
+        while (j < subtitleCues.length && subtitleCues[j].start <= position) {
+          if (position <= subtitleCues[j].end) {
+            indices.add(j);
+          }
+          j++;
+        }
+
+        // Sort indices to maintain correct display order
+        indices.sort();
+        for (var index in indices) {
+          foundTexts.add(subtitleCues[index].text);
+        }
         break;
       } else if (position < cue.start) {
         high = mid - 1;
@@ -127,9 +158,11 @@ mixin PlayerSubtitleMixin<T extends StatefulWidget> on State<T> {
       }
     }
 
-    final newText = foundCue?.text ?? '';
-    if (subtitleTextNotifier.value != newText)
+    final newText = foundTexts.join('\n').trim();
+
+    if (subtitleTextNotifier.value != newText) {
       subtitleTextNotifier.value = newText;
+    }
   }
 
   void disposeSubtitleState() {

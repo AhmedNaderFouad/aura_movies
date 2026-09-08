@@ -41,8 +41,9 @@ class LanguageUtils {
       if (entry.key == currentLang) continue;
 
       // Check for code in brackets/parens
-      if (text.contains('[${entry.key}]') || text.contains('(${entry.key})'))
+      if (text.contains('[${entry.key}]') || text.contains('(${entry.key})')) {
         return true;
+      }
 
       // Check for keywords
       for (final kw in entry.value) {

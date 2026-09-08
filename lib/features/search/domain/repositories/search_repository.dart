@@ -6,8 +6,11 @@ abstract class SearchRepository {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'primary_release_date.desc',
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   });
 
   Future<List<dynamic>> discoverTvShows({
@@ -15,8 +18,11 @@ abstract class SearchRepository {
     int? genreId,
     String? language,
     int? year,
-    String sortBy = 'popularity.desc',
+    String sortBy = 'first_air_date.desc',
     int? networkId,
     int? companyId,
+    String? watchProviderIds,
+    String? watchRegion = 'US',
+    String? watchMonetizationType = 'flatrate',
   });
 }
