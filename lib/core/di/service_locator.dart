@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../../../features/home/data/services/movie_api_service.dart';
 import '../../../features/home/data/repositories/movie_repository_impl.dart';
 import '../../../features/home/domain/usecases/get_popular_movies_usecase.dart';
@@ -16,7 +15,8 @@ import '../../../features/media_details/data/repositories/media_details_reposito
 import '../../../features/media_details/domain/usecases/get_media_details_usecase.dart';
 import '../../../features/media_details/domain/usecases/get_media_credits_usecase.dart';
 import '../../../features/media_details/domain/usecases/get_media_recommendations_usecase.dart';
-import '../constants/tmdb_api_constants.dart';
+import 'package:aura_movies/core/network/dio_factory.dart';
+
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -43,8 +43,11 @@ class ServiceLocator {
   late final GetMediaCreditsUseCase getMediaCreditsUseCase;
   late final GetMediaRecommendationsUseCase getMediaRecommendationsUseCase;
 
+
   void init() {
-    movieApiService = MovieApiService();
+    final tmdbDio = DioFactory.createTmdbDio();
+
+    movieApiService = MovieApiService(tmdbDio);
     movieRepository = MovieRepositoryImpl(apiService: movieApiService);
     getPopularMoviesUseCase = GetPopularMoviesUseCase(movieRepository);
     getTopRatedMoviesUseCase = GetTopRatedMoviesUseCase(movieRepository);
@@ -60,19 +63,7 @@ class ServiceLocator {
     discoverMoviesUseCase = DiscoverMoviesUseCase(searchRepository);
     discoverTvShowsUseCase = DiscoverTvShowsUseCase(searchRepository);
 
-    final dioClient = Dio(
-      BaseOptions(
-        baseUrl: TmdbApiConstants.baseUrl,
-        headers: {
-          'Authorization': 'Bearer ${TmdbApiConstants.bearerToken}',
-          'Content-Type': 'application/json',
-        },
-        receiveTimeout: TmdbApiConstants.receiveTimeout,
-        connectTimeout: TmdbApiConstants.connectTimeout,
-        sendTimeout: TmdbApiConstants.sendTimeout,
-      ),
-    );
-    mediaDetailsApiService = MediaDetailsApiService(dioClient);
+    mediaDetailsApiService = MediaDetailsApiService(tmdbDio);
     mediaDetailsRepository = MediaDetailsRepositoryImpl(
       apiService: mediaDetailsApiService,
     );

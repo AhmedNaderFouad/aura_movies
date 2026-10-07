@@ -1,23 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:aura_movies/core/constants/tmdb_api_constants.dart';
+import 'package:aura_movies/core/network/dio_factory.dart';
 
 class MovieApiService {
-  late final Dio _dio;
+  final Dio _dio;
 
-  MovieApiService() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: TmdbApiConstants.baseUrl,
-        headers: {
-          'Authorization': 'Bearer ${TmdbApiConstants.bearerToken}',
-          'Content-Type': 'application/json',
-        },
-        receiveTimeout: TmdbApiConstants.receiveTimeout,
-        connectTimeout: TmdbApiConstants.connectTimeout,
-        sendTimeout: TmdbApiConstants.sendTimeout,
-      ),
-    );
-  }
+  MovieApiService([Dio? dio]) : _dio = dio ?? DioFactory.createTmdbDio();
 
   Future<dynamic> getPopularMovies({int page = 1}) async {
     try {
