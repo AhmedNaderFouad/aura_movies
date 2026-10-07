@@ -1,11 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
-import '../data/services/auth_service.dart';
+import 'package:aura_movies/core/di/service_locator.dart';
+import '../domain/usecases/signup_usecase.dart';
+import '../domain/usecases/google_signin_usecase.dart';
+import '../domain/usecases/apple_signin_usecase.dart';
 import 'signup_state.dart';
 
 class SignupCubit extends Cubit<SignupState> {
-  SignupCubit() : super(const SignupInitial());
+  final SignupUseCase _signupUseCase;
+  final GoogleSignInUseCase _googleSignInUseCase;
+  final AppleSignInUseCase _appleSignInUseCase;
+
+  SignupCubit({
+    SignupUseCase? signupUseCase,
+    GoogleSignInUseCase? googleSignInUseCase,
+    AppleSignInUseCase? appleSignInUseCase,
+  })  : _signupUseCase = signupUseCase ?? sl<SignupUseCase>(),
+        _googleSignInUseCase =
+            googleSignInUseCase ?? sl<GoogleSignInUseCase>(),
+        _appleSignInUseCase = appleSignInUseCase ?? sl<AppleSignInUseCase>(),
+        super(const SignupInitial());
 
   Future<void> signUp({
     required String fullName,
@@ -17,7 +32,7 @@ class SignupCubit extends Cubit<SignupState> {
       emit(const SignupLoading());
 
       // Call the signup use case
-      await AuthService.signupUseCase.call(
+      await _signupUseCase.call(
         email: email,
         password: password,
         fullName: fullName,
@@ -35,7 +50,7 @@ class SignupCubit extends Cubit<SignupState> {
       emit(const SignupLoading());
 
       // Call the google sign in use case
-      await AuthService.googleSignInUseCase.call(rememberMe: rememberMe);
+      await _googleSignInUseCase.call(rememberMe: rememberMe);
 
       emit(const SignupSuccess());
     } catch (e) {
@@ -48,7 +63,7 @@ class SignupCubit extends Cubit<SignupState> {
       emit(const SignupLoading());
 
       // Call the apple sign in use case
-      await AuthService.appleSignInUseCase.call(rememberMe: rememberMe);
+      await _appleSignInUseCase.call(rememberMe: rememberMe);
 
       emit(const SignupSuccess());
     } catch (e) {

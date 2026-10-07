@@ -12,6 +12,8 @@ import '../../../../core/routing/app_router.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/widgets/custom_snackbar.dart';
 import '../../cubit/forgot_password_cubit.dart';
+import 'package:aura_movies/core/di/service_locator.dart';
+
 
 class CheckEmailScreen extends StatelessWidget {
   final String email;
@@ -61,10 +63,11 @@ class CheckEmailScreen extends StatelessWidget {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ForgotPasswordCubit(),
+      create: (context) => sl<ForgotPasswordCubit>(),
       child: BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
         listener: (context, state) {
           if (state is ForgotPasswordSuccess) {

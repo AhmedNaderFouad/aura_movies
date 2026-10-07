@@ -5,9 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/routing/routes.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/app_back_button.dart';
-import '../../../auth/data/services/auth_service.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import 'package:aura_movies/core/di/service_locator.dart';
+import 'package:aura_movies/features/auth/domain/usecases/logout_usecase.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -47,8 +48,10 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.r),
               ),
             ),
+
+
             onPressed: () async {
-              await AuthService.logoutUseCase.call();
+              await sl<LogoutUseCase>().call();
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(
                   context,

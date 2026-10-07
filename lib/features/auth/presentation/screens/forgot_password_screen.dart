@@ -12,6 +12,8 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_snackbar.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../auth/cubit/forgot_password_cubit.dart';
+import 'package:aura_movies/core/di/service_locator.dart';
+
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -38,10 +40,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ForgotPasswordCubit()..checkConnection(),
+      create: (context) => sl<ForgotPasswordCubit>()..checkConnection(),
       child: BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
         listener: (context, state) {
           if (state is ForgotPasswordError) {

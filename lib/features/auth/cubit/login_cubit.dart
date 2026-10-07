@@ -2,11 +2,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
-import '../data/services/auth_service.dart';
+import 'package:aura_movies/core/di/service_locator.dart';
+import '../domain/usecases/login_usecase.dart';
+import '../domain/usecases/logout_usecase.dart';
+import '../domain/usecases/google_signin_usecase.dart';
+import '../domain/usecases/apple_signin_usecase.dart';
 import 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit() : super(const LoginInitial());
+  final LoginUseCase _loginUseCase;
+  final LogoutUseCase _logoutUseCase;
+  final GoogleSignInUseCase _googleSignInUseCase;
+  final AppleSignInUseCase _appleSignInUseCase;
+
+  LoginCubit({
+    LoginUseCase? loginUseCase,
+    LogoutUseCase? logoutUseCase,
+    GoogleSignInUseCase? googleSignInUseCase,
+    AppleSignInUseCase? appleSignInUseCase,
+  })  : _loginUseCase = loginUseCase ?? sl<LoginUseCase>(),
+        _logoutUseCase = logoutUseCase ?? sl<LogoutUseCase>(),
+        _googleSignInUseCase =
+            googleSignInUseCase ?? sl<GoogleSignInUseCase>(),
+        _appleSignInUseCase = appleSignInUseCase ?? sl<AppleSignInUseCase>(),
+        super(const LoginInitial());
 
   Future<void> signIn({
     required String email,
@@ -17,7 +36,7 @@ class LoginCubit extends Cubit<LoginState> {
       emit(const LoginLoading());
 
       // 1. Authenticate and Fetch User
-      await AuthService.loginUseCase.call(
+      await _loginUseCase.call(
         email: email,
         password: password,
         rememberMe: rememberMe,
@@ -32,7 +51,7 @@ class LoginCubit extends Cubit<LoginState> {
         // 2. Email Verification Check
         if (user != null && !user.emailVerified) {
           // Immediately trigger sign out if not verified
-          await AuthService.logoutUseCase.call();
+          await _logoutUseCase.call();
           emit(const LoginEmailNotVerified());
           return;
         }
@@ -49,7 +68,7 @@ class LoginCubit extends Cubit<LoginState> {
       emit(const LoginLoading());
 
       // Call the google sign in use case
-      await AuthService.googleSignInUseCase.call(rememberMe: rememberMe);
+      await _googleSignInUseCase.call(rememberMe: rememberMe);
 
       emit(const LoginSuccess());
     } catch (e) {
@@ -62,7 +81,7 @@ class LoginCubit extends Cubit<LoginState> {
       emit(const LoginLoading());
 
       // Call the apple sign in use case
-      await AuthService.appleSignInUseCase.call(rememberMe: rememberMe);
+      await _appleSignInUseCase.call(rememberMe: rememberMe);
 
       emit(const LoginSuccess());
     } catch (e) {

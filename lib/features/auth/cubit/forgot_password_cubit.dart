@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
-import '../data/services/auth_service.dart';
+import 'package:aura_movies/core/di/service_locator.dart';
+import '../domain/usecases/forgot_password_usecase.dart';
 
 abstract class ForgotPasswordState {
   const ForgotPasswordState();
@@ -29,14 +30,20 @@ class ForgotPasswordNoInternet extends ForgotPasswordState {
 }
 
 class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
-  ForgotPasswordCubit() : super(const ForgotPasswordInitial());
+  final ForgotPasswordUseCase _forgotPasswordUseCase;
+
+  ForgotPasswordCubit({
+    ForgotPasswordUseCase? forgotPasswordUseCase,
+  })  : _forgotPasswordUseCase =
+            forgotPasswordUseCase ?? sl<ForgotPasswordUseCase>(),
+        super(const ForgotPasswordInitial());
 
   Future<void> resetPassword({required String email}) async {
     try {
       emit(const ForgotPasswordLoading());
 
       // Call the forgot password use case
-      await AuthService.forgotPasswordUseCase.call(email: email);
+      await _forgotPasswordUseCase.call(email: email);
 
       emit(const ForgotPasswordSuccess());
     } on DioException catch (e) {

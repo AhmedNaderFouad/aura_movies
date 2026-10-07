@@ -14,6 +14,8 @@ import '../../../../core/widgets/custom_snackbar.dart';
 import 'package:aura_movies/core/constants/app_assets.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
 import '../../../../core/routing/app_router.dart';
+import 'package:aura_movies/core/di/service_locator.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -62,10 +64,11 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SignupCubit()..checkConnection(),
+      create: (context) => sl<SignupCubit>()..checkConnection(),
       child: BlocConsumer<SignupCubit, SignupState>(
         listener: (context, state) {
           if (state is SignupError) {
