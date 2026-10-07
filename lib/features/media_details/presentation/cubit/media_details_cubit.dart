@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:aura_movies/core/constants/media_type.dart';
+import 'package:aura_movies/core/network/api_exception.dart';
 import '../../domain/repositories/media_details_repository.dart';
 import '../../domain/usecases/get_media_details_usecase.dart';
 import '../../domain/usecases/get_media_credits_usecase.dart';
@@ -73,7 +74,10 @@ class MediaDetailsCubit extends Cubit<MediaDetailsState> {
           e.type == DioExceptionType.sendTimeout) {
         emit(MediaDetailsNoInternet());
       } else {
-        emit(MediaDetailsError(e.toString()));
+        final errorMessage = e.error is ApiException
+            ? (e.error as ApiException).message
+            : e.message ?? 'An unexpected error occurred';
+        emit(MediaDetailsError(errorMessage));
       }
     } catch (e) {
       emit(MediaDetailsError(e.toString()));
@@ -109,7 +113,10 @@ class MediaDetailsCubit extends Cubit<MediaDetailsState> {
             e.type == DioExceptionType.sendTimeout) {
           emit(MediaDetailsNoInternet());
         } else {
-          emit(MediaDetailsError(e.toString()));
+          final errorMessage = e.error is ApiException
+              ? (e.error as ApiException).message
+              : e.message ?? 'An unexpected error occurred';
+          emit(MediaDetailsError(errorMessage));
         }
       } catch (e) {
         emit(MediaDetailsError(e.toString()));

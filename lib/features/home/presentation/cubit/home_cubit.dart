@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
+import 'package:aura_movies/core/network/api_exception.dart';
 import '../../../../core/models/media.dart';
 import '../../domain/entities/movie.dart';
 import '../../domain/entities/tv_show.dart';
@@ -93,7 +94,10 @@ class HomeCubit extends Cubit<HomeState> {
           e.type == DioExceptionType.sendTimeout) {
         emit(const HomeNoInternet());
       } else {
-        emit(HomeError(message: e.toString()));
+        final errorMessage = e.error is ApiException
+            ? (e.error as ApiException).message
+            : e.message ?? 'An unexpected error occurred';
+        emit(HomeError(message: errorMessage));
       }
     } on SocketException {
       emit(const HomeNoInternet());

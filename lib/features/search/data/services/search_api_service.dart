@@ -1,23 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:aura_movies/core/constants/tmdb_api_constants.dart';
+import 'package:aura_movies/core/network/dio_factory.dart';
 
 class SearchApiService {
-  late final Dio _dio;
+  final Dio _dio;
 
-  SearchApiService() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: TmdbApiConstants.baseUrl,
-        headers: {
-          'Authorization': 'Bearer ${TmdbApiConstants.bearerToken}',
-          'Content-Type': 'application/json',
-        },
-        receiveTimeout: TmdbApiConstants.receiveTimeout,
-        connectTimeout: TmdbApiConstants.connectTimeout,
-        sendTimeout: TmdbApiConstants.sendTimeout,
-      ),
-    );
-  }
+  SearchApiService([Dio? dio]) : _dio = dio ?? DioFactory.createTmdbDio();
 
   Future<dynamic> multiSearch({required String query, int page = 1}) async {
     try {

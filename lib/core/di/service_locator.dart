@@ -55,7 +55,7 @@ class ServiceLocator {
     getPopularTvShowsUseCase = GetPopularTvShowsUseCase(movieRepository);
     getUpcomingTvShowsUseCase = GetUpcomingTvShowsUseCase(movieRepository);
 
-    searchApiService = SearchApiService();
+    searchApiService = SearchApiService(tmdbDio);
     searchRepository = SearchRepositoryImpl(apiService: searchApiService);
     searchMoviesUseCase = SearchMoviesUseCase(searchRepository);
 

@@ -55,7 +55,8 @@ class DioFactory {
     if (kDebugMode) {
       dio.interceptors.add(
         LogInterceptor(
-          requestHeader: false,
+          request: true,
+          requestHeader: false, // Ensures Bearer token is NEVER logged
           requestBody: false,
           responseHeader: false,
           responseBody: false,

@@ -14,7 +14,9 @@ abstract class ApiException implements Exception {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return const TimeoutException('Connection timed out. Please try again.');
+        return const RequestTimeoutException(
+          'Connection timed out. Please try again.',
+        );
       case DioExceptionType.connectionError:
         return const NetworkException('No internet connection available.');
       case DioExceptionType.badResponse:
@@ -31,7 +33,8 @@ abstract class ApiException implements Exception {
             statusCode: statusCode,
           );
         }
-        final message = error.response?.data?['status_message'] as String? ??
+        final message =
+            error.response?.data?['status_message'] as String? ??
             'Request failed with status $statusCode.';
         return ServerException(message, statusCode: statusCode);
       case DioExceptionType.cancel:
@@ -56,6 +59,6 @@ class UnauthorizedException extends ApiException {
   const UnauthorizedException(super.message, {super.statusCode});
 }
 
-class TimeoutException extends ApiException {
-  const TimeoutException(super.message, {super.statusCode});
+class RequestTimeoutException extends ApiException {
+  const RequestTimeoutException(super.message, {super.statusCode});
 }

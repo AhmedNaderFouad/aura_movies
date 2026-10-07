@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
+import 'package:aura_movies/core/network/api_exception.dart';
 import '../../domain/usecases/search_movies_usecase.dart';
 import '../../domain/usecases/discover_movies_usecase.dart';
 import '../../domain/usecases/discover_tv_shows_usecase.dart';
@@ -107,6 +108,7 @@ class SearchCubit extends Cubit<SearchState> {
       } else {
         emit(SearchSuccess(filteredResults));
       }
+
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout ||
@@ -114,7 +116,10 @@ class SearchCubit extends Cubit<SearchState> {
           e.type == DioExceptionType.sendTimeout) {
         emit(SearchNoInternet());
       } else {
-        emit(SearchError('Failed to search: ${e.toString()}'));
+        final errorMessage = e.error is ApiException
+            ? (e.error as ApiException).message
+            : e.message ?? 'An unexpected error occurred';
+        emit(SearchError('Failed to search: $errorMessage'));
       }
     } catch (e) {
       emit(SearchError('Failed to search: ${e.toString()}'));
