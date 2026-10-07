@@ -10,7 +10,13 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/media_details/presentation/screens/media_details_screen.dart';
 import '../../features/media_details/presentation/cubit/media_details_cubit.dart';
+import '../../features/media_details/domain/repositories/media_details_repository.dart';
+import '../../features/media_details/domain/usecases/get_media_details_usecase.dart';
+import '../../features/media_details/domain/usecases/get_media_credits_usecase.dart';
+import '../../features/media_details/domain/usecases/get_media_recommendations_usecase.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
+import '../../features/search/domain/usecases/discover_movies_usecase.dart';
+import '../../features/search/domain/usecases/discover_tv_shows_usecase.dart';
 import '../../features/watchlist/presentation/screens/watchlist_screen.dart';
 import '../../features/home/presentation/screens/discover_media_screen.dart';
 import '../../features/home/presentation/cubit/discover_media_cubit.dart';
@@ -60,10 +66,10 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (_) => BlocProvider(
           create: (context) => MediaDetailsCubit(
-            getMediaDetailsUseCase: sl.getMediaDetailsUseCase,
-            getMediaCreditsUseCase: sl.getMediaCreditsUseCase,
-            getMediaRecommendationsUseCase: sl.getMediaRecommendationsUseCase,
-            repository: sl.mediaDetailsRepository,
+            getMediaDetailsUseCase: sl<GetMediaDetailsUseCase>(),
+            getMediaCreditsUseCase: sl<GetMediaCreditsUseCase>(),
+            getMediaRecommendationsUseCase: sl<GetMediaRecommendationsUseCase>(),
+            repository: sl<MediaDetailsRepository>(),
           ),
           child: MediaDetailsScreen(mediaId: id, mediaType: type),
         ),
@@ -94,8 +100,8 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (_) => BlocProvider(
           create: (context) => DiscoverMediaCubit(
-            discoverMoviesUseCase: sl.discoverMoviesUseCase,
-            discoverTvShowsUseCase: sl.discoverTvShowsUseCase,
+            discoverMoviesUseCase: sl<DiscoverMoviesUseCase>(),
+            discoverTvShowsUseCase: sl<DiscoverTvShowsUseCase>(),
           ),
           child: DiscoverMediaScreen(brand: brand),
         ),
