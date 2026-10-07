@@ -8,6 +8,8 @@ import '../../../../core/widgets/app_cached_network_image.dart';
 import '../../../../core/routing/routes.dart';
 import '../cubit/watchlist_cubit.dart';
 import '../cubit/watchlist_state.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class WatchlistScreen extends StatefulWidget {
   const WatchlistScreen({super.key});
@@ -142,13 +144,14 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
+
                   // Movie Poster
                   movie.posterPath != null
                       ? AppCachedNetworkImage(
                           imageUrl:
                               'https://image.tmdb.org/t/p/w500${movie.posterPath}',
                           placeholder: Image.asset(
-                            'assets/images/bg_img.jpg',
+                            AppAssets.bgImg,
                             fit: BoxFit.cover,
                           ),
                         )

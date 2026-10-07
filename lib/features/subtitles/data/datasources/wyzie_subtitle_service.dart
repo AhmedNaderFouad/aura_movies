@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:aura_movies/core/config/env_config.dart';
 import '../models/subtitle_model.dart';
 
 class SubtitleService {
   final Dio _dio = Dio();
   static const String _baseUrl = 'https://sub.wyzie.ru/search';
-  static const String _apiKey = 'wyzie-8t3o0xj0bnyz6g0qe08dotei43ls6cxp';
+  static String get _apiKey => EnvConfig.wyzieApiKey;
 
   Future<List<SubtitleModel>> fetchSubtitles({
     required String tmdbId,

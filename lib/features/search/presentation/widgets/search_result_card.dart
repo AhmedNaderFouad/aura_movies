@@ -6,6 +6,8 @@ import '../../../../core/routing/routes.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
 import '../../../../features/home/domain/entities/movie.dart';
 import '../../../../features/home/domain/entities/tv_show.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class SearchResultCard extends StatelessWidget {
   final dynamic item;
@@ -72,6 +74,7 @@ class SearchResultCard extends StatelessWidget {
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.r),
                 bottomLeft: Radius.circular(16.r),
+
               ),
               child: SizedBox(
                 width: 90.w,
@@ -80,7 +83,7 @@ class SearchResultCard extends StatelessWidget {
                     ? AppCachedNetworkImage(
                         imageUrl: 'https://image.tmdb.org/t/p/w500$posterPath',
                         placeholder: Image.asset(
-                          'assets/images/bg_img.jpg',
+                          AppAssets.bgImg,
                           fit: BoxFit.cover,
                         ),
                       )

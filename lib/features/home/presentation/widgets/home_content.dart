@@ -17,6 +17,8 @@ import '../widgets/brand_section.dart';
 import '../../domain/entities/brand_entity.dart';
 import '../../../watchlist/presentation/cubit/watchlist_cubit.dart';
 import '../../../watchlist/presentation/cubit/watchlist_state.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class HomeContent extends StatelessWidget {
   final HomeSuccess state;
@@ -168,6 +170,7 @@ class HomeContent extends StatelessWidget {
 
           SizedBox(height: 32.h),
 
+
           // 5. Popular Networks Section (Streaming Platforms)
           BrandSection(
             title: 'Popular Networks',
@@ -175,49 +178,49 @@ class HomeContent extends StatelessWidget {
               BrandEntity(
                 id: 8,
                 name: 'Netflix',
-                logoPath: 'assets/logos/netflix.png',
+                logoPath: AppAssets.logoNetflix,
                 networkId: 213,
                 isNetwork: true,
               ),
               BrandEntity(
                 id: 9,
                 name: 'Amazon Prime Video',
-                logoPath: 'assets/logos/amazon-prime-video.png',
+                logoPath: AppAssets.logoAmazonPrime,
                 networkId: 1024,
                 isNetwork: true,
               ),
               BrandEntity(
                 id: 337,
                 name: 'Disney+',
-                logoPath: 'assets/logos/disney.png',
+                logoPath: AppAssets.logoDisney,
                 networkId: 2739,
                 isNetwork: true,
               ),
               BrandEntity(
                 id: 350,
                 name: 'Apple TV+',
-                logoPath: 'assets/logos/apple-tv.png',
+                logoPath: AppAssets.logoAppleTv,
                 networkId: 2552,
                 isNetwork: true,
               ),
               BrandEntity(
                 id: 1899,
                 name: 'HBO',
-                logoPath: 'assets/logos/hbo.png',
+                logoPath: AppAssets.logoHbo,
                 networkId: 49,
                 isNetwork: true,
               ),
               BrandEntity(
                 id: 15,
                 name: 'Hulu',
-                logoPath: 'assets/logos/hulu.png',
+                logoPath: AppAssets.logoHulu,
                 networkId: 453,
                 isNetwork: true,
               ),
               BrandEntity(
                 id: 80,
                 name: 'AMC',
-                logoPath: 'assets/logos/amc.png',
+                logoPath: AppAssets.logoAmc,
                 networkId: 67,
                 isNetwork: true,
               ),
@@ -240,37 +243,37 @@ class HomeContent extends StatelessWidget {
               BrandEntity(
                 id: 420,
                 name: 'Marvel Studios',
-                logoPath: 'assets/logos/marvel-studios.png',
+                logoPath: AppAssets.logoMarvelStudios,
                 companyId: 420,
               ),
               BrandEntity(
                 id: 3,
                 name: 'Pixar Animation Studios',
-                logoPath: 'assets/logos/pixar.png',
+                logoPath: AppAssets.logoPixar,
                 companyId: 3,
               ),
               BrandEntity(
                 id: 2,
                 name: 'Walt Disney Pictures',
-                logoPath: 'assets/logos/walt-disney-pictures.png',
+                logoPath: AppAssets.logoWaltDisney,
                 companyId: 2,
               ),
               BrandEntity(
                 id: 174,
                 name: 'Warner Bros.',
-                logoPath: 'assets/logos/wb-warner-bros.png',
+                logoPath: AppAssets.logoWarnerBros,
                 companyId: 174,
               ),
               BrandEntity(
                 id: 4,
                 name: 'Paramount Pictures',
-                logoPath: 'assets/logos/paramount-pictures.png',
+                logoPath: AppAssets.logoParamountPictures,
                 companyId: 4,
               ),
               BrandEntity(
                 id: 25,
                 name: '20th Century Fox',
-                logoPath: 'assets/logos/20th-century-fox.png',
+                logoPath: AppAssets.logoTwentiethCenturyFox,
                 companyId: 25,
               ),
             ],

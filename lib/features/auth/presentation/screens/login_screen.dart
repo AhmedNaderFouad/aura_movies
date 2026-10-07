@@ -12,6 +12,8 @@ import '../../../../core/widgets/custom_snackbar.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/routing/app_router.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -87,6 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
               FocusManager.instance.primaryFocus?.unfocus();
             },
             child: Scaffold(
+
               extendBodyBehindAppBar: true,
               extendBody: true,
               backgroundColor: AppColors.background,
@@ -97,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Transform.scale(
                     scale: 1.4,
                     child: Image.asset(
-                      'assets/images/bg_img.jpg',
+                      AppAssets.bgImg,
                       fit: BoxFit.cover,
                       alignment: const Alignment(0, 0.3),
                       color: Colors.black.withValues(alpha: 0.5),
@@ -276,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SocialButton(
               icon: Image.asset(
-                'assets/icons/google_icon.png',
+                AppAssets.googleIcon,
                 width: 24.w,
                 height: 24.h,
               ),

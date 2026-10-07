@@ -1,5 +1,7 @@
+import 'package:aura_movies/core/config/env_config.dart';
+
 class ApiConstants {
-  static const String baseUrl = 'https://aura-movies-scraper.vercel.app';
+  static String get baseUrl => EnvConfig.scraperBaseUrl;
 
   static const Map<String, List<String>> languageMap = {
     'ar': ['arabic', 'ar', 'ara', 'arb', 'عربي', 'العربية'],

@@ -7,6 +7,8 @@ import '../../../../core/widgets/app_cached_network_image.dart';
 import '../../../../core/routing/routes.dart';
 import '../../domain/entities/movie.dart';
 import '../../domain/entities/tv_show.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class HomeCarouselSlider extends StatefulWidget {
   final List<Movie> trendingMovies;
@@ -72,6 +74,7 @@ class _HomeCarouselSliderState extends State<HomeCarouselSlider> {
                       // Backdrop Image
                       Positioned.fill(
                         child: Container(
+
                           margin: EdgeInsets.symmetric(horizontal: 5.w),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(24.r),
@@ -80,7 +83,7 @@ class _HomeCarouselSliderState extends State<HomeCarouselSlider> {
                                     imageUrl:
                                         'https://image.tmdb.org/t/p/original$backdropPath',
                                     placeholder: Image.asset(
-                                      'assets/images/bg_img.jpg',
+                                      AppAssets.bgImg,
                                       fit: BoxFit.cover,
                                     ),
                                   )

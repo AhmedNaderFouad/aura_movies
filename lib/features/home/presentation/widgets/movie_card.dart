@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
 import '../../domain/entities/movie.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -37,6 +39,7 @@ class MovieCard extends StatelessWidget {
           child: Stack(
             children: [
               // Poster image with AspectRatio
+
               AspectRatio(
                 aspectRatio: 2 / 3,
                 child: Container(
@@ -46,7 +49,7 @@ class MovieCard extends StatelessWidget {
                           imageUrl:
                               'https://image.tmdb.org/t/p/w500${movie.posterPath}',
                           placeholder: Image.asset(
-                            'assets/images/bg_img.jpg',
+                            AppAssets.bgImg,
                             fit: BoxFit.cover,
                           ),
                           errorWidget: Center(

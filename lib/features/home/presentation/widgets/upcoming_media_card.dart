@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
 import '../../../../core/models/media.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class UpcomingMediaCard extends StatelessWidget {
   final Media media;
@@ -42,13 +44,14 @@ class UpcomingMediaCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24.r),
                 child: SizedBox(
                   height: 150.h,
+
                   width: double.infinity,
                   child: media.backdropPath != null
                       ? AppCachedNetworkImage(
                           imageUrl:
                               'https://image.tmdb.org/t/p/w500${media.backdropPath}',
                           placeholder: Image.asset(
-                            'assets/images/bg_img.jpg',
+                            AppAssets.bgImg,
                             fit: BoxFit.cover,
                           ),
                         )

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -85,7 +86,7 @@ class CheckEmailScreen extends StatelessWidget {
                 Transform.scale(
                   scale: 1.4,
                   child: Image.asset(
-                    'assets/images/bg_img.jpg',
+                    AppAssets.bgImg,
                     fit: BoxFit.cover,
                     alignment: const Alignment(0, 0.3),
                     color: Colors.black.withValues(alpha: 0.75),

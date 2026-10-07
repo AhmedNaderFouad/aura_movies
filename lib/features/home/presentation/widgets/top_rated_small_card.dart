@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class TopRatedSmallCard extends StatelessWidget {
   final dynamic movie;
@@ -27,13 +29,14 @@ class TopRatedSmallCard extends StatelessWidget {
         child: Stack(
           children: [
             ClipRRect(
+
               borderRadius: BorderRadius.circular(24.r),
               child: movie.backdropPath != null
                   ? AppCachedNetworkImage(
                       imageUrl:
                           'https://image.tmdb.org/t/p/w500${movie.backdropPath}',
                       placeholder: Image.asset(
-                        'assets/images/bg_img.jpg',
+                        AppAssets.bgImg,
                         fit: BoxFit.cover,
                       ),
                       width: double.infinity,

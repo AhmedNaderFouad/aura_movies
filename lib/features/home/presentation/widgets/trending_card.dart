@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/genre_map.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
+
 
 class TrendingCard extends StatelessWidget {
   final String? posterPath;
@@ -42,6 +44,7 @@ class TrendingCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(24.r),
                         color: AppColors.surface,
+
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24.r),
@@ -50,7 +53,7 @@ class TrendingCard extends StatelessWidget {
                                 imageUrl:
                                     'https://image.tmdb.org/t/p/w500$posterPath',
                                 placeholder: Image.asset(
-                                  'assets/images/bg_img.jpg',
+                                  AppAssets.bgImg,
                                   fit: BoxFit.cover,
                                 ),
                               )

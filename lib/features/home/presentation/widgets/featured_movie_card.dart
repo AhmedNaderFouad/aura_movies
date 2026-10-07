@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_cached_network_image.dart';
 import '../../domain/entities/movie.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
 
 class FeaturedMovieCard extends StatelessWidget {
   final Movie movie;
@@ -27,6 +28,8 @@ class FeaturedMovieCard extends StatelessWidget {
         height: 400.h,
         width: double.infinity,
         child: Stack(
+
+
           children: [
             // Background image
             Positioned.fill(
@@ -35,7 +38,7 @@ class FeaturedMovieCard extends StatelessWidget {
                       imageUrl:
                           'https://image.tmdb.org/t/p/original${movie.backdropPath}',
                       placeholder: Image.asset(
-                        'assets/images/bg_img.jpg',
+                        AppAssets.bgImg,
                         fit: BoxFit.cover,
                       ),
                     )

@@ -11,6 +11,7 @@ import '../../cubit/signup_cubit.dart';
 import '../../cubit/signup_state.dart';
 import '../widgets/social_button.dart';
 import '../../../../core/widgets/custom_snackbar.dart';
+import 'package:aura_movies/core/constants/app_assets.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
 import '../../../../core/routing/app_router.dart';
 
@@ -92,6 +93,8 @@ class _SignupScreenState extends State<SignupScreen> {
             onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
             child: Scaffold(
               extendBodyBehindAppBar: true,
+
+
               extendBody: true,
               body: Stack(
                 fit: StackFit.expand,
@@ -100,7 +103,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   Transform.scale(
                     scale: 1.4,
                     child: Image.asset(
-                      'assets/images/bg_img.jpg',
+                      AppAssets.bgImg,
                       fit: BoxFit.cover,
                       alignment: const Alignment(0, 0.3),
                       color: Colors.black.withValues(alpha: 0.55),
@@ -267,7 +270,7 @@ class _SignupScreenState extends State<SignupScreen> {
             SizedBox(width: 16.w),
             Expanded(
               child: SocialButton(
-                icon: Image.asset('assets/icons/google_icon.png', width: 22.w),
+                icon: Image.asset(AppAssets.googleIcon, width: 22.w),
                 text: 'Google',
                 onTap: () {
                   context.read<SignupCubit>().signUpWithGoogle();

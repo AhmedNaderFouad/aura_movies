@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:aura_movies/core/config/env_config.dart';
 import '../models/subtitle_model.dart';
 
 class OpenSubtitlesService {
   final Dio _dio = Dio();
   static const String _baseUrl = 'https://api.opensubtitles.com/api/v1';
-  static const String _apiKey = 'ZIa45NH3pd1n3JTUxTT3TcK84UMJ65lR';
+  static String get _apiKey => EnvConfig.openSubtitlesApiKey;
 
   Future<List<SubtitleModel>> searchSubtitles({
     required String tmdbId,

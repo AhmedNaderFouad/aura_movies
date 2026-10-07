@@ -7,7 +7,7 @@ import '../../utils/language_utils.dart';
 class VaPlayerProvider {
   final Dio _dio = Dio();
 
-  static const String _baseUrl = ApiConstants.baseUrl;
+  static String get _baseUrl => ApiConstants.baseUrl;
 
   Future<List<VideoSource>> fetchStreams({
     required String tmdbId,
