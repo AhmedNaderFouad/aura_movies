@@ -7,7 +7,7 @@ import '../services/streaming_providers/vaplayer_provider.dart';
 import '../services/streaming_providers/onetouchtv_provider.dart';
 import '../services/streaming_providers/netmirror_provider.dart';
 import '../services/streaming_providers/showbox_provider.dart';
-import '../services/streaming_providers/zxcstreams_provider.dart';
+import '../services/streaming_providers/vidlink_provider.dart';
 import 'stream_error_dialog.dart';
 
 class ServerSelectionBottomSheet extends StatefulWidget {
@@ -33,9 +33,9 @@ class ServerSelectionBottomSheet extends StatefulWidget {
 
 class _ServerSelectionBottomSheetState
     extends State<ServerSelectionBottomSheet> {
-  final List<Map<String, dynamic>> _providers = [
+  static const List<Map<String, String>> _providers = [
     {'id': 'vaplayer', 'name': 'NovaStream'},
-    {'id': 'zxcstreams', 'name': 'PulseStream'},
+    {'id': 'vidlink', 'name': 'PulseStream'},
     {'id': 'showbox', 'name': 'FluxStream'},
     {'id': 'netmirror', 'name': 'LumaStream'},
     {'id': 'onetouchtv', 'name': 'HuntStream'},
@@ -73,6 +73,16 @@ class _ServerSelectionBottomSheetState
             cancelToken: _cancelToken,
           );
           break;
+        case 'vidlink':
+          sources = await VidLinkProvider().fetchStreams(
+            tmdbId: widget.tmdbId,
+            type: widget.type,
+            season: widget.season,
+            episode: widget.episode,
+            originalLanguage: widget.originalLanguage,
+            cancelToken: _cancelToken,
+          );
+          break;
         case 'onetouchtv':
           sources = await OneTouchTVProvider().fetchStreams(
             tmdbId: widget.tmdbId,
@@ -95,16 +105,6 @@ class _ServerSelectionBottomSheetState
           break;
         case 'showbox':
           sources = await ShowboxProvider().fetchStreams(
-            tmdbId: widget.tmdbId,
-            type: widget.type,
-            season: widget.season,
-            episode: widget.episode,
-            originalLanguage: widget.originalLanguage,
-            cancelToken: _cancelToken,
-          );
-          break;
-        case 'zxcstreams':
-          sources = await ZXCStreamsProvider().fetchStreams(
             tmdbId: widget.tmdbId,
             type: widget.type,
             season: widget.season,
@@ -164,7 +164,9 @@ class _ServerSelectionBottomSheetState
                 separatorBuilder: (context, index) => SizedBox(height: 12.h),
                 itemBuilder: (context, index) {
                   final provider = _providers[index];
-                  final isSelected = _selectedProviderId == provider['id'];
+                  final String providerId = provider['id']!;
+                  final String providerName = provider['name']!;
+                  final isSelected = _selectedProviderId == providerId;
 
                   return Material(
                     color: AppColors.primary.withValues(alpha: 0.1),
@@ -172,7 +174,7 @@ class _ServerSelectionBottomSheetState
                     child: InkWell(
                       onTap: _isLoading
                           ? null
-                          : () => _handleProviderSelection(provider['id']),
+                          : () => _handleProviderSelection(providerId),
                       borderRadius: BorderRadius.circular(30.r),
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -192,7 +194,7 @@ class _ServerSelectionBottomSheetState
                           children: [
                             Expanded(
                               child: Text(
-                                provider['name'],
+                                providerName,
                                 style: TextStyle(
                                   color: isSelected
                                       ? AppColors.primary

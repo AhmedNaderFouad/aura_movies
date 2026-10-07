@@ -93,7 +93,7 @@ class HlsQualityParser {
     }
 
     // 3. Add static qualities from source that weren't found in manifest
-    // This is critical for providers like NetMirror/ZXC that provide direct links already
+    // This is critical for providers like NetMirror that provide direct links already
     for (var q in source.qualities) {
       final labelLower = q.label.toLowerCase();
       final bool isDuplicateUrl = seenUrls.contains(q.url);
